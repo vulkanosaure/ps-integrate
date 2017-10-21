@@ -2,7 +2,10 @@
 #include "debug.jsx";
 #include "utils.jsx";
 #include "export.jsx";
+#include "dialog.jsx";
+#include "template-utils.jsx";
 #include "generate-script/generate-haxe.jsx";
+#include "generate-script/generate-html-css.jsx";
 
 
 for(var i=0; i<5; i++) trace(".");
@@ -12,14 +15,13 @@ trace("===========================");
 var doc = app.activeDocument;
 trace("doc : "+doc);
 
-
+/*
 //var exportPath = activeDocument.path;
 var exportPath = Folder.userData;
 trace("exportPath : "+exportPath);
+*/
 
 
-var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
-exportFolder.remove();
 
 
 
@@ -175,40 +177,35 @@ function get_type(layer, name, isroot, level)
 
 
 
-
-
-
-//397, 114 (group)
-//
-
-
-
-recursive_loop(doc, null, null, 0);
-
-function testend(list)
+function main(settings)
 {
-	trace("end");
+	exportPath = settings.destination;
+	
+	var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
+	exportFolder.remove();
+	
+	recursive_loop(doc, null, null, 0);
+
+	//generation des templates
+
+	var templates;
+	templates = FUNCTIONS_GENERATE_TEMPLATE[settings.indexTpl](settings.indexTpl, listItem);
+
+
+	//ecritures des templates
+
+	for(var i in templates){
+		
+		var tpl = templates[i];
+		var path2 = EXPORT_FOLDER + "/" + EXPORT_FOLDER_TPL + "/";
+		createFile(exportPath, path2 + tpl.filename, tpl.content);
+		
+	}
 }
 
-testend(listItem);
 
 
-//generation des templates
-
-var templates = generateTemplatesHaxe(listItem);
-
-
-//ecritures des templates
-
-for(var i in templates){
-	
-	var tpl = templates[i];
-	var path2 = EXPORT_FOLDER + "/" + EXPORT_FOLDER_TPL + "/";
-	createFile(exportPath, path2 + tpl.filename, tpl.content);
-	
-}
-
-
+showDialog(main);
 
 
 
