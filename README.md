@@ -8,11 +8,22 @@ Script for image export + template generation
 - Photoshop CS3 or higher
 
 
-
 # todo
 
-- Haxe template generation
+- Haxe template generation (en cours)
 - HTML/CSS template generation
 - ~~configuration dialog~~
 - delete folder before generation
-- txt template system for each element type (btn, container, image (bg or not)
+
+
+# todo templates
+
+- Button (type ou option)
+- layout plus poussé (margin, centrage)
+
+
+gestion text en haxe : faire une classe générique qui prend un objet de config en entrée (but : réduire le nombre de ligne de Textfield)
+	- l'objet sera des variables qui seront définies dans un fichier styles_text.hx
+	- (intégrer ce fichier à part dans la template)
+	comme ça on a vraiment un fonctionnement aligné sur le HTML/CSS
+	

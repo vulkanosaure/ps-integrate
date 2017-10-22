@@ -146,7 +146,7 @@ function create_item(layer, name, type, parentItem, level)
 		textdata.font = ti.font;
 		textdata.size = ti.size.value;
 		textdata.text  =ti.contents;
-		textdata.capitalization = ti.capitalization;
+		textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
 		output["textdata"] = textdata;
 		
 	}
@@ -205,8 +205,10 @@ function main(settings)
 
 
 
-showDialog(main);
+//showDialog(main);
 
+trace("activeDocument.path : "+activeDocument.path);
+main({destination : activeDocument.path, indexTpl : 1});
 
 
 

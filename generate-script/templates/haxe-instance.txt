@@ -1,0 +1,4 @@
+var {{var}}:{{classname}} = new {{classname}}({{paramconst}});
+{{parent}}.addChild({{var}});
+{{var}}.idLayout = "{{var}}";
+LayoutManager.addItem({{var}}, {{layout_props}});

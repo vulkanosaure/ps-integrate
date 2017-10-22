@@ -178,6 +178,15 @@ function applySettings(dlg)
 
 
 
+function loadFilePath(path)
+{
+	var scriptFileDirectory = new File($.fileName).parent;
+	var file = new File(scriptFileDirectory + "/" + path);
+	var content = loadResource(file);
+	return content;
+}
+
+
 
 function loadResource(file)
 {

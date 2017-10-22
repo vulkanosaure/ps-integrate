@@ -65,7 +65,7 @@ function createFile(basepath, path, content)
 	
 	var file=new File(basepath + "/" + path);
 	file.encoding = "UTF8";
-    file.open("e", "TEXT", "????");
+    file.open("w", "TEXT", "????");
     file.writeln(content);
     file.close();
 	
