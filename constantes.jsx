@@ -1,4 +1,4 @@
-﻿var PREFIX = "ps__";
+﻿var PREFIX = "ps--";
 
 var PREFIX_LENGTH = PREFIX.length;
 

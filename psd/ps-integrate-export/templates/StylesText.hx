@@ -3,5 +3,5 @@ const Aller_Bold_188485_24:Object = {
 	"font" : "Aller-Bold",
 	"size" : 24,
 	"uppercase" : true,
-};
 
+};

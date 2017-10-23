@@ -48,7 +48,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
 		
-		tracerec("_________________________", level);
+		//tracerec("_________________________", level);
 		tracerec("c : "+isContainer+", kind : "+layer.kind+", name : "+name+", plname : "+parentlayername+", piname : "+parentitemname, level);
 		tracerec("type : "+type, level);
 		
@@ -73,12 +73,14 @@ function recursive_loop(container, parentItem, parentLayer, level)
 
 		}
 		
-		if(isContainer){
+		if(isContainer && (type == "" || type == TYPE_CONTAINER)){
 			
 			parentLayer = layer;
-			if(type == TYPE_CONTAINER) parentItem = item;
 			
-			recursive_loop(layer, parentItem, parentLayer, level + 1);
+			var newParentItem = parentItem;
+			if(type == TYPE_CONTAINER) newParentItem = item;
+			
+			recursive_loop(layer, newParentItem, parentLayer, level + 1);
 			
 		}
 	
@@ -101,7 +103,7 @@ function create_item(layer, name, type, parentItem, level)
 	//output.layerName = name;
 	output.name = get_value_option_safe(name, OPT_NAME);
 	if(output.name == ""){
-		output.name = "ps-" + type + "-" + getLayerId(app.activeDocument, layer);
+		output.name = "" + type + "-" + getLayerId(app.activeDocument, layer);
 	}
 	
 	var bounds = layer.bounds;
@@ -144,9 +146,9 @@ function create_item(layer, name, type, parentItem, level)
 		var textdata = {};
 		textdata.color = ti.color.rgb.hexValue;
 		textdata.font = ti.font;
-		textdata.size = ti.size.value;
+		textdata.size = Math.round(ti.size.value);
 		textdata.text  =ti.contents;
-		textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
+		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
 		output["textdata"] = textdata;
 		
 	}

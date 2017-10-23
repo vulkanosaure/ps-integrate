@@ -51,6 +51,14 @@
 			var parentname = (parent != null) ? parent.name : "";
 			tracerec("item : "+item.name+", parentname : "+parentname, level);
 			
+			
+			//separator
+			if(level == 0){
+				tpl_add_line("//______________________________________________");
+				tpl_add_line("//"+item.name);
+				tpl_br(3);
+			}
+			
 			//instanciation / integration code
 			var itemCode = getItemCode(item, parent);
 			tpl_add_block(itemCode, 0);
@@ -73,6 +81,8 @@
 
 				rec(item.childrens, item, level + 1);
 			}
+			
+			if(level == 0) tpl_br(5);
 			
 		}
 		
@@ -163,7 +173,6 @@
 	function getVarname(str)
 	{
 		str = str.replace(/-/g, "_");
-		if(str.substr(0, 3)=="ps_") str = str.substr(3);	
 		//remove all chars not good for variable names
 		
 		return str;

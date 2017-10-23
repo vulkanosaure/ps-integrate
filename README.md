@@ -18,8 +18,15 @@ Script for image export + template generation
 
 # todo templates
 
+- j'ai modifié le prefix initial : ps--, type est une option comme les autres, ordre importe pas
 - Button (type ou option)
+	button est un container ? (pour le texte)
+	oui, au moins de le scan, apres selon l'export, on choisi de l'utiliser ou pas
+
 - layout plus poussé (margin, centrage)
+- text width
+- empecher la dupplication de same img (set same path+name ?)
+- permettre "-" dans name (ou bien le stipuler dans la doc)
 
 
 gestion text en haxe : faire une classe générique qui prend un objet de config en entrée (but : réduire le nombre de ligne de Textfield)
