@@ -187,6 +187,24 @@ function loadFilePath(path)
 }
 
 
+var cache_filepath = {};
+function loadFilePath_cache(path)
+{
+	var pathkey = path.replace(/\//g, "");
+	var pathkey = path.replace(/\./g, "");
+	
+	var output;
+	if(cache_filepath[pathkey] != undefined){
+		output = cache_filepath[pathkey];
+	}
+	else{
+		output = loadFilePath(path);
+		cache_filepath[pathkey] = output;
+	}
+	return output;
+}
+
+
 
 function loadResource(file)
 {

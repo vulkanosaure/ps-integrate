@@ -38,3 +38,22 @@ function get_tpl_content()
 {
 	return tpl_content;
 }
+
+
+function convertTemplate(path, params)
+{
+	var output = loadFilePath_cache(path);
+	
+	for(var k in params){
+		var regexp = new RegExp("{{"+k+"}}", "g");
+		output = output.replace(regexp, params[k]);
+	}
+	return output;
+}
+
+
+
+
+
+
+

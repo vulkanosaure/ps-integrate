@@ -8,16 +8,17 @@ function has_option(name, idoption)
 {
 	var isprefix = (name.substr(0, PREFIX_LENGTH) == PREFIX);
 	if(!isprefix) return false;
-	var hasoption = (name.indexOf(idoption) != -1);
+	var hasoption = (name.indexOf("--" + idoption+"=") != -1);
 	return hasoption;
 }
 
 function get_value_option(name, idoption)
 {
 	//trace("get_value_option : "+name+", idoption : "+idoption);
-	var regexp = new RegExp(idoption+"=(\\w+)");
+	var regexp = new RegExp("--" + idoption + "=(([\\w%]+(-(?!-))?)+)");
 	output = name.match(regexp);
 	//trace("output : "+output);
+	if(output == null) return "";
 	return output[1];
 }
 
@@ -36,7 +37,7 @@ function get_forced_type(name)
 
 function get_natural_type(layer)
 {
-	if(layer.typename == "LayerSet") return TYPE_GFX;
+	if(layer.typename == "LayerSet") return TYPE_CONTAINER;
 	else{
 		if(layer.kind == LayerKind.NORMAL) return TYPE_GFX;
 		else if(layer.kind == LayerKind.TEXT) return TYPE_TEXT;
@@ -67,6 +68,12 @@ function getLayerId(doc, layer) {
 function getUnitValue(unitvalue)
 {
 	return unitvalue.value;
+}
+
+
+function getPercentValue(value)
+{
+	return +value.substr(0, value.length-1);
 }
 
 

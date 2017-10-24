@@ -18,6 +18,14 @@
 }
 
 
+function fileExist(path, basepath)
+{
+	var file= File(basepath + "/" + path);
+	trace("file exists : "+path+" : "+file.exists);
+	return file.exists;
+}
+
+
 function createFolderStructure(basepath, path)
 {
 	var tab = path.split("/");
@@ -27,10 +35,14 @@ function createFolderStructure(basepath, path)
 	for(i = 0; i<len; i++){
 		var folder = tab[i];
 		cumul += folder + "/";
+		
 		var f = new Folder(basepath + "/" + cumul);
 		if (!f.exists)  f.create();
+		
 	}
 }
+
+
 
 
 
