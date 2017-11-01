@@ -1,6 +1,7 @@
 ﻿function saveLayer(layer, path, basepath, shouldMerge) 
 {
     activeDocument.activeLayer = layer;
+	
     dupLayers();
     if (shouldMerge === undefined || shouldMerge === true) {
 		trace("activeDocument : "+activeDocument);

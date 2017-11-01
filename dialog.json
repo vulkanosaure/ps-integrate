@@ -22,7 +22,10 @@
 				orientation: "row",
 				txtNaming: StaticText {text: "Templates :", preferredSize: [80, 20]},
 				drdNaming: DropDownList {preferredSize: [160, 20], properties: {items: ["HTML/CSS", "Haxe"]}},
-				
+			},
+			grp2: Group {
+				orientation: "row",
+				cbNaming: Checkbox {text: "Overwrite images"},
 			}
 		},
 		buttons: Group {

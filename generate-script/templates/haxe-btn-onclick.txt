@@ -1,1 +1,1 @@
-{{var}}.clickHandler = MVCRoot.getController("").onclick;
+//{{var}}.clickHandler = MVCRoot.getController("").onclick;

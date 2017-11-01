@@ -8,6 +8,7 @@ var DEFAULT_SETTINGS = {
 	// common
 	destination: app.stringIDToTypeID("destFolder"),
 	indexTpl: app.stringIDToTypeID("indexTpl"),
+	overwrite: app.stringIDToTypeID("overwrite"),
 };
 
 
@@ -68,6 +69,12 @@ function showDialog(handler)
 
 	// file naming options
 	dlg.funcArea.content.grpTemplate.drdNaming.selection = 0;
+	
+	
+	dlg.funcArea.content.grp2.cbNaming.onClick = function() {
+		prefs.overwrite = this.value;
+		trace("prefs.overwrite : "+prefs.overwrite);
+	};
 
 
 	// buttons
@@ -81,6 +88,7 @@ function showDialog(handler)
 		handler(settings);
 		
 		dlg.close(1);
+		
 	};
 	dlg.funcArea.buttons.btnCancel.onClick = function() {
 		dlg.close(0);
@@ -113,9 +121,12 @@ function saveSettings(dlg)
 	var desc = new ActionDescriptor();
 
 	with (dlg.funcArea.content) {
+		trace("grp2.cbNaming.value : "+grp2.cbNaming.value);
+		trace("grpTemplate.drdNaming.selection.index : "+grpTemplate.drdNaming.selection.index);
 		
 		desc.putString(DEFAULT_SETTINGS.destination, grpDest.txtDest.text);
 		desc.putInteger(DEFAULT_SETTINGS.indexTpl, grpTemplate.drdNaming.selection.index);
+		desc.putBoolean(DEFAULT_SETTINGS.overwrite, grp2.cbNaming.value);
 	}
 	// "true" means setting persists across Photoshop launches.
 	app.putCustomOptions(USER_SETTINGS_ID, desc, true);
@@ -139,6 +150,7 @@ function getSettings()
 		result = {
 			destination: desc.getString(DEFAULT_SETTINGS.destination),
 			indexTpl: desc.getInteger(DEFAULT_SETTINGS.indexTpl),
+			overwrite: desc.getBoolean(DEFAULT_SETTINGS.overwrite),
 		};
 	
 	}
@@ -171,6 +183,10 @@ function applySettings(dlg)
 		
 		var drdNamingIdx = settings.indexTpl;
 		grpTemplate.drdNaming.selection = (drdNamingIdx >= 0) ? drdNamingIdx : 0;
+		
+		if (grp2.cbNaming.value != settings.overwrite) {
+			grp2.cbNaming.notify();
+		}
 	}
 }
 

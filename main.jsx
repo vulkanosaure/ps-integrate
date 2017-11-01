@@ -1,6 +1,7 @@
 ﻿#include "constantes.jsx";
 #include "debug.jsx";
 #include "utils.jsx";
+#include "layer-utils.jsx";
 #include "export.jsx";
 #include "dialog.jsx";
 #include "template-utils.jsx";
@@ -28,6 +29,7 @@ var overwrite;
 
 
 var listItem = [];
+
 
 function recursive_loop(container, parentItem, parentLayer, level)
 {
@@ -69,6 +71,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 				
 				if(overwrite || !fileExist(path, exportPath)){
 					saveLayer(layer, path, exportPath, false);
+					trace("saveLayer "+path);
 				}
 			}
 
@@ -76,12 +79,13 @@ function recursive_loop(container, parentItem, parentLayer, level)
 		
 		if(isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)){
 			
-			parentLayer = layer;
+			parentLayerx = layer;
 			
 			var newParentItem = parentItem;
 			if(CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
 			
 			recursive_loop(layer, newParentItem, parentLayer, level + 1);
+			
 			
 		}
 	
@@ -110,7 +114,7 @@ function create_item(layer, name, type, parentItem, level)
 	if(parentItem != null){
 		var bounds = layer.bounds;
 		output.position = [getUnitValue(bounds[0]), getUnitValue(bounds[1])];
-		
+
 		output.width = getUnitValue(bounds[2]) - getUnitValue(bounds[0]);
 		output.height = getUnitValue(bounds[3]) - getUnitValue(bounds[1]);
 	}
@@ -135,10 +139,15 @@ function create_item(layer, name, type, parentItem, level)
 	}
 	
 	
+	tracerec("item "+name+", parentItem : "+((parentItem) ? parentItem.name : "")+", position : "+output.position, level);
+	
+	//save pos absolute
+	output.position_abs = [output.position[0], output.position[1]];
+	
 	//substract parent position
 	if(parentItem){
-		output.position[0] -= parentItem.position[0];
-		output.position[1] -= parentItem.position[1];
+		output.position[0] -= parentItem.position_abs[0];
+		output.position[1] -= parentItem.position_abs[1];
 	}
 	
 	
@@ -219,8 +228,8 @@ function create_item(layer, name, type, parentItem, level)
 	
 	//font information (regroupées en un objet) pour type TXT
 	if(type == TYPE_TEXT){
-		tracerec("textItem : "+layer.textItem, level);
 		var ti = layer.textItem;
+		tracerec("textItem : "+layer.textItem+", " + ti.contents, level);
 		
 		var textdata = {};
 		textdata.color = ti.color.rgb.hexValue;
@@ -228,12 +237,29 @@ function create_item(layer, name, type, parentItem, level)
 		textdata.size = Math.round(ti.size.value);
 		textdata.text  =ti.contents.replace(/\r/g, "\\n");
 		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
+		trace("textdata.text : "+textdata.text);
+		
+		try{ textdata.leading = getUnitValue(ti.leading); } catch(e){};
+		trace("textdata.leading : "+textdata.leading);
+		
+		textdata.letterspacing = ti.tracking;
+		
+		if(ti.justification == "Justification.CENTER") textdata.halign = "center";
+		else if(ti.justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
+		else if(ti.justification == "Justification.LEFT") textdata.halign = "left";
+		else if(ti.justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
+		else if(ti.justification == "Justification.RIGHT") textdata.halign = "right";
+		else if(ti.justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
+		else textdata.halign = "left";
+		
+		trace("ti.justification : "+ti.justification);
+		trace("textdata.halign : "+textdata.halign);
+		trace("textdata.letterspacing : "+textdata.letterspacing);
+		
+		
 		output["textdata"] = textdata;
 		
 	}
-	
-	//coordonnées... ?
-	
 	
 	
 	return output;
@@ -260,6 +286,9 @@ function get_type(layer, name, isroot, level)
 
 function main(settings)
 {
+	trace("main, settings.overwrite :"+settings.overwrite);	
+	if(settings.overwrite == undefined) settings.overwrite = false;
+	
 	exportPath = settings.destination;
 	overwrite = settings.overwrite;
 	
@@ -274,10 +303,9 @@ function main(settings)
 	var templates;
 	templates = generate_template(settings.indexTpl, listItem);
 
-
 	//ecritures des templates
 
-	for(var i in templates){
+	for(var i=0; i<templates.length; i++){
 		
 		var tpl = templates[i];
 		var path2 = EXPORT_FOLDER + "/" + EXPORT_FOLDER_TPL + "/";
@@ -294,10 +322,10 @@ function check(items)
 
 
 
-//showDialog(main);
+showDialog(main);
 
 trace("activeDocument.path : "+activeDocument.path);
-main({destination : activeDocument.path, indexTpl : 1, overwrite:false});
+//main({destination : activeDocument.path, indexTpl : 1, overwrite:false});
 
 
 

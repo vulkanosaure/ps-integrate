@@ -8,6 +8,7 @@
 	var listStylesText = new Array();
 	
 	var styleTextFile = "StylesText";
+	var baseIndent = 2;
 	
 	tpl_reset();
 	
@@ -20,18 +21,19 @@
 	//styles fonts
 	
 	tpl_reset();
+	baseIndent = 1;
 	
 	var len = listStylesText .length;
 	for(var i = 0; i < len; i++){
 			
 		var textdata = listStylesText [i];
 		var str = getStyleTextCode(textdata);
-		tpl_add_block(str, 0);
+		tpl_add_block(str, baseIndent);
 		
 	}
 	output.push({filename : styleTextFile + ".hx",  content : get_tpl_content()});
 	
-	
+	trace("retour output.length : "+output.length);
 	return output;
 	
 	
@@ -39,7 +41,8 @@
 	function rec(items, parent, level)
 	{
 		var len = items.length;
-		for(var i=0; i<len; i++){
+		//for(var i=0; i<len; i++){
+		for(var i=len - 1; i>=0; i--){
 			
 			var item = items[i];
 			
@@ -48,21 +51,25 @@
 			
 			
 			//separator
-			if(level == 0){
-				tpl_add_line("//______________________________________________");
-				tpl_add_line("//"+item.name);
-				tpl_br(3);
+			if(CONTAINERS_TYPE.indexOf(item.type) != -1  || level == 0){
+				
+				var tplname = level == 0 ? item.name.toUpperCase() : item.name;
+				var templateprefix = (level == 0) ? "-big" : "-small";
+				var str = convertTemplate("generate-script/templates/haxe-separator"+templateprefix+".txt", {name: tplname});
+				tpl_add_block(str, baseIndent);
+				var nbline = (level == 0) ? 3 : 1;
+				tpl_br(nbline, baseIndent);
 			}
 			
 			//instanciation / integration code
 			var itemCode = getItemCode(item, parent);
-			tpl_add_block(itemCode, 0);
+			tpl_add_block(itemCode, baseIndent);
 			
-			tpl_br(2);
+			tpl_br(2, baseIndent);
 			
 			if(item.type == TYPE_TEXT){
 				
-				var idstyletext = getIDstyletext(item.textdata);
+				var idstyletext = getStyleTextID(item.textdata);
 				
 				//trace("listStylesTextID : "+typeof listStylesTextID);
 				
@@ -77,8 +84,8 @@
 				rec(item.childrens, item, level + 1);
 			}
 			
-			if(i == len - 1) tpl_br(2);
-			if(level == 0) tpl_br(5);
+			if(i == len - 1) tpl_br(2, baseIndent);
+			if(level == 0) tpl_br(5, baseIndent);
 			
 		}
 		
@@ -128,6 +135,9 @@
 		if(ly == "top" && y != 0) layout_props["margin-top"] = y;
 		else if(ly == "bottom") layout_props["margin-bottom"] = item.margin_bottom;
 		else if(ly == "center") layout_props["center-v"] = item.center_v / 100;
+		
+		if(lx !="left") layout_props["width"] = item.width;
+		if(ly != "top") layout_props["height"] = item.height;
 	
 		var layout_props_str = propsToString(layout_props);
 		//LayoutManager.addItem(_btnrate, { "center-h" : 0.5, "margin-top" : 200} );
@@ -139,15 +149,15 @@
 			"parent": parentname,
 			"paramconst": paramconst,
 			"layout_props": layout_props_str,
-			
 		};
+		
 		var str = convertTemplate("generate-script/templates/haxe-instance.txt", data);
 		
 		
 		
 		if(item.type == TYPE_TEXT){
 			
-			data = {"var" : varname, "text" : item.textdata.text};
+			data = {"var" : varname, "text" : item.textdata.text, "width" : item.width};
 			var str2 = convertTemplate("generate-script/templates/haxe-set-text.txt", data);
 			str += "\n" + str2;
 		}
@@ -173,33 +183,48 @@
 		output += textdata.color;
 		output += "_";
 		output += textdata.size;
+		
+		output += textdata.halign.substr(0, 1) + "";
+		output += textdata.letterspacing + "";
+		if(textdata.leading != undefined) output += textdata.leading + "";
+		
 		output = getVarname(output);
 		return output;
 	}
+	
 
 
 	function getStyleTextCode(textdata)
 	{
 		var stylename = getStyleTextID(textdata);
 		var props = {};
-		var ignoreprops = ["text"];
-		for(var i in textdata){
-			if(ignoreprops .indexOf(i) == -1) props[i] = textdata[i];
+		
+		var mapProps = {
+			'color' : ['', '0x'],
+			'font' : ['', '"', '"'],
+			'size' : null,
+			'leading' : null,
+			'letterspacing' : null,
+			'halign' : ['', '"', '"'],
+		};
+		
+		for(var i in mapProps){
+			//trace("textdata["+i+"] : "+textdata[i]);
+			if(textdata[i] != undefined){
+				
+				var tab = mapProps[i];
+				var propname = (tab != null && tab.length >= 1 && tab[0] != "") ? propname = tab[0] : i;
+				var char1 = (tab != null && tab.length >= 2) ? tab[1] : "";
+				var char2 = (tab != null && tab.length >= 3) ? tab[2] : "";
+				
+				props[propname] = char1 + textdata[i] + char2;
+			}
 		}
 		
-		props["color"] = "0x" + props["color"];
-		props["font"] = '"' + props["font"] + '"';
-		//props["uppercase"] = '"' + props["text"] + '"';
-		
 		var props_str = propsToString(props, true);
-		
 		var data = {"stylename" : stylename, "props" : props_str};
 		var str = convertTemplate("generate-script/templates/haxe-style-text.txt", data);
-		/*
-		var str = _styletextTpl;
-		str = str.replace(/{{stylename}}/g, stylename);
-		str = str.replace(/{{props}}/g, props_str);
-		*/
+		
 		return str;
 	}
 	
@@ -238,16 +263,6 @@
 		return output;
 	}
 
-	function getIDstyletext(textdata)
-	{
-		var output = "";
-		output += textdata.color + "";
-		output += textdata.font + "";
-		output += textdata.size + "";
-		output += textdata.text + "";
-		output += textdata.capitalization + "";
-		return output;
-	}
 	
 
 }

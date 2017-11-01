@@ -27,10 +27,14 @@ function tpl_add_block(content, indent)
 }
 
 
-function tpl_br(nb)
+function tpl_br(nb, indent)
 {
 	var str = "";
-	for(var i =0; i<nb; i++) str += "\n";
+	var strindent = "";
+	for(var i =0; i<indent; i++) strindent += "\t";
+	for(var i =0; i<nb; i++){
+		str += strindent + "\n";
+	}
 	tpl_content += str;
 }
 
