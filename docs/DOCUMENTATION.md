@@ -1,6 +1,6 @@
-#Documentation
+# Documentation
 
-##Layers naming
+## Layers naming
 
 By default, PS-integrate will ignore all layers unless you prefix it with:
 
@@ -17,46 +17,46 @@ ps--optionA=A--optionB=B...
 
 
 
-##Options list
+## Options list
 
-####type
+#### type
 The most important type, you should always set it first. See section below for details
 
-####path
+#### path
 The folder in which the layer will be exported.
 *If inside a container, this path is relative to the container's path.*
 
-####filename
+#### filename
 The name of the file to be exported.
 If not specified, and ID will be automatically generated.
 
-####name
+#### name
 The name of the element, used template generation.
 If not specified, and ID will be automatically generated.
 
-####bgparent
+#### bgparent
 An option used in the HTML template.
 
 *Only available for type gfx*
 TODO
 
-####gfxtype
+#### gfxtype
 
 *Only available for type gfx*
 TODO
 
-####btnc
+#### btnc
 - **bg** : will be treated as a background of the parent. *There can only be one*
 - **child** : will be treated as a child of the *btnc*
 
 *Only available for children of a container of typebtnc. Default value : 'bg' for image layer, 'item' for text layer*
 
-####layoutx
+#### layoutx
 - **left** (default) : the template system will position the element in pixel from the left
 - **right** : the template system will position the element in pixel from the right
 - **center** : the template system will position the element in % value
 
-####layouty
+#### layouty
 - **left** (default) : the template system will position the element in pixel from the left
 - **right** : the template system will position the element in pixel from the right
 - **center** : the template system will position the element in % value
@@ -81,24 +81,24 @@ If the element is nested in a container, depending of the kind of layer (NORMAL,
 There are 5 types of element
 
 
-####Graphic (gfx)
+#### Graphic (gfx)
 Will be exported directly.
 
 *If nested in a container, a layer of kind NORMAL will be considered as a graphic automatically*
 
-####Text (txt)
+#### Text (txt)
 Will not be exported.
 Informations of font, size, color, leading, align will be collected for the template system.
 
 *If nested in a container, a layer of kind TEXT will be considered as a text automatically*
 
-####Container (cont)
+#### Container (cont)
 A container is a group of other element, and will not be exported directly. It will be used by the template system to manage  integration.
 
-####Button (btn)
+#### Button (btn)
 A button is considered as a graphic, but will be treated accordingly by the template system.
 
-####Button container (btnc)
+#### Button container (btnc)
 Simillar to a button, but it can contain childrens of type 'text' and 'gfx' only. 
 *See option 'btnc' for details*
 
