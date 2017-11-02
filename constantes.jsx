@@ -16,11 +16,11 @@ var BTNS_TYPE = [TYPE_BTN, TYPE_BTNC];
 //only options that we can set in layers names
 var OPT_TYPE = "type";
 var OPT_PATH = "path";
-var OPT_NAME = "name";
 var OPT_FILENAME = "filename";
+var OPT_NAME = "name";
 var OPT_BGPARENT = "bgparent";
-var OPT_GFX_TYPE = "gfxtype";
-var OPT_BTNC = "btnc";		//bg-child
+var OPT_GFX_TYPE = "gfxtype";				//layout-data
+var OPT_BTNC = "btnc";						//bg-child
 var OPT_LAYOUT_X = "layoutx";			//left left% center right right%
 var OPT_LAYOUT_Y = "layouty";			//top top% center bottom bottom%
 var OPT_POS_X = "x";

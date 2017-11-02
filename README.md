@@ -1,11 +1,28 @@
 # PS-integrate
 
-Script for exporting layers from Photoshop + template generation
+This script is intended to help converting a Photoshop document into a code integration, in a highly customizable way.
+It is a substitute to the **slice tool** from Photoshop, which i never found suitable for my usage.
+
+It uses a set of layer naming rules for specifying informations suchs as image paths, names, etc...
+
+A code template will be generated, the template system is higly customizable to add / modify new language templates.
+
+The template handles :
+
+- containers
+- layout
+- text 
+- buttons
 
 
 ## Dependencies
 
 - Photoshop CS3 or higher
+
+
+## Installation
+
+TODO
 
 
 ## Documentation
@@ -20,9 +37,12 @@ Everything is explained here :
 
 ## Todo
 
-- [x] configuration dialog
-- [x] mode overwrite TODO : dialog
-- [ ] refermer les calques apres ouverture
+
+- [ ] HTML template
+- [ ] Refactoring for multi-template system
+- [ ] Close layers after script execution
+- [x] Configuration dialog
+- [x] Overwrite mode in dialog
 
 
 
