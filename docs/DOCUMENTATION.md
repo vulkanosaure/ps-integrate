@@ -20,19 +20,24 @@ ps--optionA=A--optionB=B...
 ## Options list
 
 #### type
-The most important type, you should always set it first. See section below for details
+The most important type, you should always set it first. 
+
+*See section below for details*
 
 #### path
 The folder in which the layer will be exported.
-*If inside a container, this path is relative to the container's path.*
+
+*If inside a container, this path is relative to the container's path. Default : empty*
 
 #### filename
 The name of the file to be exported.
-If not specified, and ID will be automatically generated.
+
+*If not specified, and ID will be automatically generated.*
 
 #### name
 The name of the element, used template generation.
-If not specified, and ID will be automatically generated.
+
+*If not specified, and ID will be automatically generated.*
 
 #### bgparent
 An option used in the HTML template.
@@ -103,3 +108,8 @@ Simillar to a button, but it can contain childrens of type 'text' and 'gfx' only
 *See option 'btnc' for details*
 
 
+
+
+## Templates
+
+TODO
