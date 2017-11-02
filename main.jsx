@@ -1,7 +1,6 @@
 ﻿#include "constantes.jsx";
 #include "debug.jsx";
 #include "utils.jsx";
-#include "layer-utils.jsx";
 #include "export.jsx";
 #include "dialog.jsx";
 #include "template-utils.jsx";
@@ -242,20 +241,20 @@ function create_item(layer, name, type, parentItem, level)
 		try{ textdata.leading = getUnitValue(ti.leading); } catch(e){};
 		trace("textdata.leading : "+textdata.leading);
 		
-		textdata.letterspacing = ti.tracking;
+		try{ textdata.letterspacing = ti.tracking; } catch(e){ textdata.letterspacing= 0;};
 		
-		if(ti.justification == "Justification.CENTER") textdata.halign = "center";
-		else if(ti.justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
-		else if(ti.justification == "Justification.LEFT") textdata.halign = "left";
-		else if(ti.justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
-		else if(ti.justification == "Justification.RIGHT") textdata.halign = "right";
-		else if(ti.justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
-		else textdata.halign = "left";
+		try{
+			if(ti.justification == "Justification.CENTER") textdata.halign = "center";
+			else if(ti.justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
+			else if(ti.justification == "Justification.LEFT") textdata.halign = "left";
+			else if(ti.justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
+			else if(ti.justification == "Justification.RIGHT") textdata.halign = "right";
+			else if(ti.justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
+			else textdata.halign = "left";
+		}
+		catch(e){ textdata.halign = "left"; };
 		
-		trace("ti.justification : "+ti.justification);
 		trace("textdata.halign : "+textdata.halign);
-		trace("textdata.letterspacing : "+textdata.letterspacing);
-		
 		
 		output["textdata"] = textdata;
 		

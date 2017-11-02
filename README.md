@@ -1,57 +1,58 @@
-# ps-integrate
+# PS-integrate
 
-Script for image export + template generation
+Script for exporting layers from Photoshop + template generation
 
 
-# dependencies
+## Dependencies
 
 - Photoshop CS3 or higher
 
 
-# todo
+## Documentation
 
-- Haxe template generation (en cours)
-- HTML/CSS template generation
-##- ~~configuration dialog~~
-##- mode overwrite TODO : dialog
-- refermer les calques apres ouverture
+A special set of rules are defined to indicates what to export, where, and how to generate the templates.
+
+Everything is explained here :
+[Documentation](docs/DOCUMENTATION.md)
 
 
-# todo templates
 
-##- j'ai modifié le prefix initial : ps--, type est une option comme les autres, ordre importe pas
-##- Button (type ou option)
 
-## layout plus poussé (margin, centrage)
-##- empecher la dupplication de same img (set same path+name ?)
-##- permettre "-" dans name (ou bien le stipuler dans la doc)
-## - VText (en haxe)
+## Todo
 
-# - text width (only if multiline ?)
+- [x] configuration dialog
+- ~~mode overwrite TODO : dialog~~
+- [ ] refermer les calques apres ouverture
+
+
+
+### todo templates
+
+- ~~j'ai modifié le prefix initial : ps--, type est une option comme les autres, ordre importe pas~~
+- ~~Button (type ou option)~~
+
+- ~~layout plus poussé (margin, centrage)~~
+- ~~empecher la dupplication de same img (set same path+name ?)~~
+- ~~permettre "-" dans name (ou bien le stipuler dans la doc)~~
+- ~~VText (en haxe)~~
+
+- ~~text width (only if multiline ?)~~
 	
+- ~~z-index inversé (jsais pas exactement ds quelle mesure, a la racine a l'air de garder l'ordre)~~
+
+- ~~gestion text en haxe : faire une classe générique qui prend un objet de config en entrée (but : réduire le nombre de ligne de Textfield)~~
 	
-# - z-index inversé (jsais pas exactement ds quelle mesure, a la racine àa a l'air de garder l'ordre)
+- ~~generation template, ~~
 
-
-##gestion text en haxe : faire une classe générique qui prend un objet de config en entrée (but : réduire le nombre de ligne de Textfield)
+- ~~haxe : générer tout avec 2 indents (les linebreak aussi)~~
 	
+- ~~correspondance entre leading PS et starling~~
+- ~~text height trop petite, starling resize font vers le bas (bcp)~~
+- ~~export maquette memory, check loader, bug de containers ?~~
 
-## generation template, 
-	automatiser une fonction ou on donne le path du fichier template, l'objet converti
 
-## - haxe : générer tout avec 2 indents (les linebreak aussi)
 	
-
-
-# - correspondance entre leading PS et starling
-
-## - text height trop petite, starling resize font vers le bas (bcp)
-
-
-
-- export maquette memory, check loader, bug de containers ?
-	
-todo errors handler
+### todo errors handler
 
 - hors dev : tester la vitesse avec / sans export, voir si on fait ça ds une premiere phase, ou pdt le scan global
 - check que toutes les noms de propriétés existent
