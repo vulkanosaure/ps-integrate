@@ -5,7 +5,13 @@
 #include "dialog.jsx";
 #include "template-utils.jsx";
 #include "template.jsx";
+#include "errors-utils.jsx";
 
+
+var regex = OPTIONS_RULES[OPT_FILENAME];
+var match1 = regex.exec("image");
+var match2 = regex.exec("image.png");
+trace("ok");
 
 for(var i=0; i<5; i++) trace(".");
 trace("===========================");
@@ -25,6 +31,8 @@ var exportPath = Folder.userData;
 trace("exportPath : "+exportPath);
 */
 var overwrite;
+var listErrors = [];
+
 
 
 var listItem = [];
@@ -44,6 +52,16 @@ function recursive_loop(container, parentItem, parentLayer, level)
 		var isContainer = (layer.typename == "LayerSet");
 		var name = layer.name;
 		
+		if(has_prefix(name)){
+			var errors = check_error_layername(name, parentItem);
+			if(errors.length > 0){
+				trace("errors : "+errors);
+				listErrors = listErrors.concat(errors);
+			}
+			
+		}
+		
+	
 		var isRoot = (parentItem == null);
 		var type = get_type(layer, name, isRoot, level);
 		
@@ -55,6 +73,12 @@ function recursive_loop(container, parentItem, parentLayer, level)
 			
 			var item = create_item(layer, name, type, parentItem, level);
 			tracerec("item type : "+type+", name: "+item.name+", path : "+item.path+", btnc : "+item.btnc+", width : "+item.width+", height : "+item.height, level);
+			
+			var errors = check_error_item(name, item);
+			if(errors.length > 0){
+				trace("errors : "+errors);
+				listErrors = listErrors.concat(errors);
+			}
 			
 			if(!item["disable"]){
 				if(isRoot) listItem.push(item);
@@ -90,6 +114,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 	
 	}
 }
+
 
 
 
@@ -260,6 +285,7 @@ function create_item(layer, name, type, parentItem, level)
 		
 	}
 	
+	output.parent = parentItem;
 	
 	return output;
 }
@@ -296,6 +322,8 @@ function main(settings)
 	
 	recursive_loop(doc, null, null, 0);
 	check(listItem);
+	var l = listErrors;
+	trace("listErrors : "+listErrors);
 
 	//generation des templates
 

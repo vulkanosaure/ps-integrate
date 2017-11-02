@@ -1,9 +1,9 @@
 # PS-integrate
 
-This script is intended to help converting a Photoshop document into a code integration, in a highly customizable way.
+Convert a Photoshop document into a code integration, in a highly customizable way.
 It is a substitute to the **slice tool** from Photoshop, which i never found suitable for my usage.
 
-It uses a set of layer naming rules for specifying informations suchs as image paths, names, etc...
+It uses a set of layer naming rules for specifying informations such as image paths, names, etc...
 
 A code template will be generated, the template system is higly customizable to add / modify new language templates.
 
@@ -27,10 +27,9 @@ TODO
 
 ## Documentation
 
-A special set of rules are defined to indicates what to export, where, and how to generate the templates.
+A special set of rules are defined to indicate what to export, where, and how to generate the templates.
 
-Everything is explained here :
-[Documentation](docs/DOCUMENTATION.md)
+Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 
 
 
@@ -41,6 +40,7 @@ Everything is explained here :
 - [ ] HTML template
 - [ ] Refactoring for multi-template system
 - [ ] Close layers after script execution
+- [ ] Handle JPG export (option format and quality)
 - [x] Configuration dialog
 - [x] Overwrite mode in dialog
 
@@ -67,15 +67,12 @@ Everything is explained here :
 	
 ### todo errors handler
 
-- [ ] hors dev : tester la vitesse avec / sans export, voir si on fait ça ds une premiere phase, ou pdt le scan global
-- [ ] check que toutes les noms de propriétés existent
-- [ ] check que toutes les values sont autorisés pour chaque propriétés (trouver un format global dans constantes.jsx)
-- [ ] éventuellement séparer errors et warning
-- [ ] voir comment afficher un dialog pour les afficher hors debug
-- [ ] only text et gfx autorisé dans btnc
-- [ ] prop btnc only autorisé dans btnc
-
-- [ ] documentation
-	a noter pour haxe: 2 points a rajouter manuellement : nom police, uppercase
+- [x] check que toutes les noms de propriétés existent
+- [x] check que toutes les values sont autorisés pour chaque propriétés (trouver un format global dans constantes.jsx)
+- [x] only text et gfx autorisé dans btnc
+- [x] prop btnc only autorisé dans btnc
+- [ ] only one btnc = bg
+- [ ] don't include .extension in path
+- [ ] afficher un dialog pour les afficher hors debug
 
 

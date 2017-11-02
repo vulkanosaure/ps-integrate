@@ -30,7 +30,9 @@ The folder in which the layer will be exported.
 *If inside a container, this path is relative to the container's path. Default : empty*
 
 #### filename
-The name of the file to be exported.
+The name of the file to be exported, don't include the file extension
+
+*__note__ : only png export is handled at the moment*
 
 *If not specified, and ID will be automatically generated.*
 
@@ -62,8 +64,8 @@ TODO
 - **center** : the template system will position the element in % value
 
 #### layouty
-- **left** (default) : the template system will position the element in pixel from the left
-- **right** : the template system will position the element in pixel from the right
+- **top** (default) : the template system will position the element in pixel from the top
+- **bottom** : the template system will position the element in pixel from the bottom
 - **center** : the template system will position the element in % value
 
 TODO : x, y, width, height
@@ -104,7 +106,7 @@ A container is a group of other element, and will not be exported directly. It w
 A button is considered as a graphic, but will be treated accordingly by the template system.
 
 #### Button container (btnc)
-Simillar to a button, but it can contain childrens of type 'text' and 'gfx' only. 
+Simillar to a button, but it can contain children of element of type 'text' and 'gfx' only. 
 *See option 'btnc' for details*
 
 
@@ -113,3 +115,8 @@ Simillar to a button, but it can contain childrens of type 'text' and 'gfx' only
 ## Templates
 
 TODO
+
+
+#### Notes for HaXe template
+- think of renaming font accordingly
+- set uppercase option if needed
