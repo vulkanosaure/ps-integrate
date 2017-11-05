@@ -45,6 +45,19 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 - [x] Overwrite mode in dialog
 
 
+## Current
+
+- [x] refactoring template-functions
+- [x] close tags (separate file, suffix -close)
+- [x] nblinebreak
+- [x] dialog, get directory ddlist tpl
+- [ ] json config
+- [ ] html
+- [ ] background-image
+- [ ] doc
+- [x] generer errors dans un errors.log
+
+
 
 ### todo templates
 

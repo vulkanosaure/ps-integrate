@@ -3,15 +3,13 @@
 #include "utils.jsx";
 #include "export.jsx";
 #include "dialog.jsx";
+#include "errors-utils.jsx";
 #include "template-utils.jsx";
 #include "template.jsx";
-#include "errors-utils.jsx";
+#include "template-functions.jsx";
 
 
-var regex = OPTIONS_RULES[OPT_FILENAME];
-var match1 = regex.exec("image");
-var match2 = regex.exec("image.png");
-trace("ok");
+
 
 for(var i=0; i<5; i++) trace(".");
 trace("===========================");
@@ -32,19 +30,18 @@ trace("exportPath : "+exportPath);
 */
 var overwrite;
 var listErrors = [];
-
-
-
 var listItem = [];
 
 
 function recursive_loop(container, parentItem, parentLayer, level)
 {
 	//tracerec("recursive_loop", level);
-	var len = container.layers.length;
+	
+	var layers = container.layers;
+	var len = layers.length;
 
 	for(var i=0; i<len; i++){
-		var layer = container.layers[i];
+		var layer = layers[i];
 		
 		var enable = (layer.visible);
 		if(!enable) continue;
@@ -52,20 +49,21 @@ function recursive_loop(container, parentItem, parentLayer, level)
 		var isContainer = (layer.typename == "LayerSet");
 		var name = layer.name;
 		
+		
 		if(has_prefix(name)){
 			var errors = check_error_layername(name, parentItem);
 			if(errors.length > 0){
 				trace("errors : "+errors);
 				listErrors = listErrors.concat(errors);
 			}
-			
 		}
+		
 		
 	
 		var isRoot = (parentItem == null);
 		var type = get_type(layer, name, isRoot, level);
 		
-		var parentlayername = (parentLayer) ? parentLayer.name : "";
+		//var parentlayername = (parentLayer) ? parentLayer.name : "";
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
 		
@@ -86,6 +84,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 			}
 			
 			if(EXPORTS_TYPE.indexOf(type) != -1){
+				
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if(item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
@@ -96,13 +95,15 @@ function recursive_loop(container, parentItem, parentLayer, level)
 					saveLayer(layer, path, exportPath, false);
 					trace("saveLayer "+path);
 				}
+				
 			}
 
 		}
 		
 		if(isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)){
 			
-			parentLayerx = layer;
+			//parentLayer = layer;
+			parentLayer = null;
 			
 			var newParentItem = parentItem;
 			if(CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
@@ -123,6 +124,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 function create_item(layer, name, type, parentItem, level)
 {
 	var output = {};
+
 	
 	if(CONTAINERS_TYPE.indexOf(type) != -1) output.childrens = [];
 	
@@ -253,7 +255,6 @@ function create_item(layer, name, type, parentItem, level)
 	//font information (regroupées en un objet) pour type TXT
 	if(type == TYPE_TEXT){
 		var ti = layer.textItem;
-		tracerec("textItem : "+layer.textItem+", " + ti.contents, level);
 		
 		var textdata = {};
 		textdata.color = ti.color.rgb.hexValue;
@@ -261,7 +262,8 @@ function create_item(layer, name, type, parentItem, level)
 		textdata.size = Math.round(ti.size.value);
 		textdata.text  =ti.contents.replace(/\r/g, "\\n");
 		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
-		trace("textdata.text : "+textdata.text);
+		
+		tracerec("textItem : "+layer.textItem+", " + textdata.text, level);
 		
 		try{ textdata.leading = getUnitValue(ti.leading); } catch(e){};
 		trace("textdata.leading : "+textdata.leading);
@@ -269,12 +271,13 @@ function create_item(layer, name, type, parentItem, level)
 		try{ textdata.letterspacing = ti.tracking; } catch(e){ textdata.letterspacing= 0;};
 		
 		try{
-			if(ti.justification == "Justification.CENTER") textdata.halign = "center";
-			else if(ti.justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
-			else if(ti.justification == "Justification.LEFT") textdata.halign = "left";
-			else if(ti.justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
-			else if(ti.justification == "Justification.RIGHT") textdata.halign = "right";
-			else if(ti.justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
+			var justification = ti.justification;
+			if(justification == "Justification.CENTER") textdata.halign = "center";
+			else if(justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
+			else if(justification == "Justification.LEFT") textdata.halign = "left";
+			else if(justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
+			else if(justification == "Justification.RIGHT") textdata.halign = "right";
+			else if(justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
 			else textdata.halign = "left";
 		}
 		catch(e){ textdata.halign = "left"; };
@@ -323,22 +326,31 @@ function main(settings)
 	recursive_loop(doc, null, null, 0);
 	check(listItem);
 	var l = listErrors;
-	trace("listErrors : "+listErrors);
+	//trace("listErrors : "+listErrors);
+	
+	
 
 	//generation des templates
 
+	var tpl_id = tpl_ids[settings.indexTpl];
 	var templates;
-	templates = generate_template(settings.indexTpl, listItem);
+	templates = generate_template(listItem, tpl_id);
 
 	//ecritures des templates
 
 	for(var i=0; i<templates.length; i++){
 		
 		var tpl = templates[i];
-		var path2 = EXPORT_FOLDER + "/" + EXPORT_FOLDER_TPL + "/";
+		var path2 = EXPORT_FOLDER + "/" + tpl_id + "/";
 		createFile(exportPath, path2 + tpl.filename, tpl.content);
 		
 	}
+	
+	if(listErrors.length > 0){
+		showDialogError(listErrors);
+		createErrorFile(listErrors);
+	}
+	else showDialogOK();
 	
 }
 
@@ -349,7 +361,11 @@ function check(items)
 
 
 
-showDialog(main);
+var tpl_ids = get_tpl_ids();
+//var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
+var tpl_labels = tpl_ids;
+
+showDialog(main, tpl_labels);
 
 trace("activeDocument.path : "+activeDocument.path);
 //main({destination : activeDocument.path, indexTpl : 1, overwrite:false});

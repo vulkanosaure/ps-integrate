@@ -41,18 +41,9 @@ OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
 
 
-
 var EXPORT_FOLDER = "ps-integrate-export";
 
 var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";
 
-
-var TPL_CONFIG = {
-	HTML_CSS : 0,
-	HAXE : 1,
-}
-
-var FUNCTIONS_GENERATE_TEMPLATE = {};
-
-
+var DEBUG_MODE = true;

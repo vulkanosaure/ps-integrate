@@ -1,0 +1,197 @@
+une template est composé de plusieurs 
+templatefile
+
+dans un fichier text à part
+
+{
+	"main" : {
+		"filename" : "template.hx",
+		"base_indent" : 2,
+		"tpl_files" : {
+			"separator_big" : "",
+			"separator_small" : "",
+		}
+		
+	},
+	
+	"textformat" : {
+		
+		"file" : {
+			"filename" : "",
+			"base_indent" : 0,
+		}
+		
+	},
+	
+	"layout" : {
+		
+	}
+	
+}
+
+on a une premiere phase recursive 
+	on en génère un fichier d'intégration
+	
++ fichiers additionneles
+
+
+
+_______________________
+FONCTION REC
+
+getItemCode
+	
+	tpl haxe instance
+		new
+		addchild
+		layout
+	
+	if text	
+		text width
+		set text
+	
+	if btn
+		onclick
+		
+if text	
+	recolte info
+
+	
+_______________________
+LIST TEXT INFO
+
+	tpl text definition
+	
+
+	
+	
+pour du html je voudrais quoi ?
+
+<div id="{{name}}>
+
+cette ligne s'instancie et s'addchild
+le layout sera géré dans un fichier à part
+
+clairement il faut une template séparé pour chaque type
+	container
+	gfx
+	text
+	btn / btnc mélangé (pour l'instant)
+
+
+dans la template common
+	ya des params
+	avec logique specifique a la template
+		
+	
+	layout_props => 
+		c'est un objet de propriété sur le layout
+		c'est proche de ce que les css contiendra, mais pas exactement
+			px, %, 
+			faudrait pouvoir:
+				- remaper des props
+				- skiper 
+				- ajouter des prefix / suffix a la value
+				- multiplicateur (difficulté : quand arrondir ?)
+	
+	
+	faire un parrallèle avec les data textuelles
+		
+		j'aurai arbitrairement pu choisir de mettre les textdata dans un objet direct
+		mais je prefere les collecter et les lister ds une template a part
+		
+		
+	Layout et text, ya un parallèle
+		jsais pas si il existe potenciellement d'autre chose pareil, mais on va considérer que oui
+		
+	
+	
+TODO :
+	actuellement :
+		listStylesText et listStylesTextID 
+		
+	ces choses recoltables sont de toutes façon récoltés
+		on les garde statiques
+		on spécifie si oui ou non on leur ajoute un fichier de definition
+		on met a null si pas de définition
+		
+	
+	
+ce qu'on veut
+
+
+selon layoutx / layouty
+	présence
+
+	
+	
+____________________________________________________________________
+
+.classname{
+	
+	background-img:"{{path}}/{{filename}}";
+	
+	margin-right:10px;
+	width:50px;
+	
+	position:absolute;
+	left:(0.5 * 100)%;
+	margin-left:-(width * 0.5)px;
+	
+}
+
+
+{"center-h" : 0.5, "center-v" : 0.93, "width" : 702, "height" : 474}
+
+
+public static var SDSans_FillOne_2A7DC0_70 = {
+	"color" : 0x2A7DC0,
+	"font" : "font_0",
+	"size" : 85,
+	"halign" : "left",
+	"uppercase" : true,
+};
+
+
+.font-p{
+    color:white;
+    font-family: "palanquinsemibold";
+    font-size:12px;
+    text-transform: uppercase;
+    line-height: 120%;
+}
+
+____________________________________________________________________
+2 SCENARIOS
+
+il existe 2 cas :
+- on le veut dans le main
+- on le veut dans un listing à part
+
+Si on le veut dans le main :
+	- la recuperation n'a pas d'interet, on dupplique l'information chaque fois que nécéssaire
+	- le contenu va s'incarner dans une {{variable}}
+	
+qu'est ce que {{txt_style_id}}
+	un nom de reference qui fait le lien entre main et listing
+	
+dans le cas du layout :
+	on va choisir qqchose comme {{varname}}
+	on va qd mm créer la variable à part, et lui assigner varname, 
+	{{layout_id}} = varname
+
+
+{{layout_props}}
+
+est le layout dans le main
+	{{data_layout}}
+	{{data_textformat}}
+
+
+si on veut rapidement switcher les text data vers le main
+	
+		
+pourquoi sur les text pas de recursion sur chaque item ?
+	avec les textes, on a fait de la réutilisation
+	pas avec le layout
+	

@@ -39,9 +39,10 @@ function get_natural_type(layer)
 {
 	if(layer.typename == "LayerSet") return TYPE_CONTAINER;
 	else{
-		if(layer.kind == LayerKind.NORMAL) return TYPE_GFX;
-		else if(layer.kind == LayerKind.TEXT) return TYPE_TEXT;
-		else throw new Error("whats that "+layer.kind);
+		var kind = layer.kind;
+		if(kind == LayerKind.NORMAL) return TYPE_GFX;
+		else if(kind == LayerKind.TEXT) return TYPE_TEXT;
+		else throw new Error("whats that "+kind);
 	}
 }
 

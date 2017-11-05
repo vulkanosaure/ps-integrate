@@ -1,3 +1,0 @@
-﻿{{var}}.textWidth = {{width}};
-{{var}}.text = "{{text}}";
-{{var}}.init();

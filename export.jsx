@@ -2,9 +2,8 @@
 {
     activeDocument.activeLayer = layer;
 	
-    dupLayers();
+    dupLayers(layer);
     if (shouldMerge === undefined || shouldMerge === true) {
-		trace("activeDocument : "+activeDocument);
         activeDocument.mergeVisibleLayers();
     }
     activeDocument.trim(TrimType.TRANSPARENT,true,true,true,true);
@@ -25,6 +24,22 @@ function fileExist(path, basepath)
 	trace("file exists : "+path+" : "+file.exists);
 	return file.exists;
 }
+
+function get_tpl_ids(path, basepath)
+{
+	var output = [];
+	var scriptFileDirectory = new File($.fileName).parent;
+	var folder = new Folder(scriptFileDirectory + "/templates");
+	trace("len : "+folder.length);
+	var files = folder.getFiles();
+	var len = files.length;
+	for(var i =0; i<len; i++){
+		var file = files[i];
+		output.push(file.name);
+	}
+	return output;
+}
+
 
 
 function createFolderStructure(basepath, path)
@@ -47,12 +62,12 @@ function createFolderStructure(basepath, path)
 
 
 
-function dupLayers() { 
+function dupLayers(layer) { 
     var desc143 = new ActionDescriptor();
         var ref73 = new ActionReference();
         ref73.putClass( charIDToTypeID('Dcmn') );
     desc143.putReference( charIDToTypeID('null'), ref73 );
-    desc143.putString( charIDToTypeID('Nm  '), activeDocument.activeLayer.name );
+    desc143.putString( charIDToTypeID('Nm  '), layer.name );
         var ref74 = new ActionReference();
         ref74.putEnumerated( charIDToTypeID('Lyr '), charIDToTypeID('Ordn'), charIDToTypeID('Trgt') );
     desc143.putReference( charIDToTypeID('Usng'), ref74 );

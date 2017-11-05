@@ -1,46 +1,109 @@
-﻿generate_template = function(indextpl, items)
+﻿generate_template = function(items, tpl_id)
 {
-	trace("generate_template ("+indextpl+")");
+	trace("generate_template ("+tpl_id+")");
 	
 	var output = [];
 	
-	var listStylesTextID = new Array();
-	var listStylesText = new Array();
+	var listTextFormatID = new Array();
+	var listTextFormat = new Array();
 	
-	var styleTextFile = "StylesText";
 	var baseIndent = 2;
+	var path_tpl = "templates/"+tpl_id+"/";
+	
+	var textFormatFile= true;
+	var layoutFile= true;
+	
+	var bIndentation = true;
+	
+	var config_layout = {
+		br_std : 1,
+		br_before_separator : 1,
+		br_after_separator : 1,
+	};
+	var config_main = {
+		br_std : 0,
+		br_before_separator : 1,
+		br_after_separator : 0,
+		br_before_closingtag : 1,
+	};
+	
+	//haxe: 2, 1, 2
+	
+	var closeTags = true;
+	var closeTagsConfig = {
+		start:"<",
+		end:">",
+		close:"/",
+	};
+	
+	
+	
+	
+	//MAIN
 	
 	tpl_reset();
+	rec(items, null, 0, "main");
+	
+	output.push({filename : "main.hx",  content : get_tpl_content()});
 	
 	
-	rec(items, null, 0);
-	
-	output.push({filename : "template.hx",  content : get_tpl_content()});
 	
 	
-	//styles fonts
+	//TEXT FORMAT
 	
-	tpl_reset();
-	baseIndent = 1;
-	
-	var len = listStylesText .length;
-	for(var i = 0; i < len; i++){
+	if(textFormatFile){
+		
+		tpl_reset();
+		baseIndent = 1;
+		
+		var len = listTextFormat .length;
+		for(var i = 0; i < len; i++){
+				
+			var textdata = listTextFormat[i];
+			var data_str = TPL_FUNCTIONS[tpl_id].getTextFormatData(textdata);
 			
-		var textdata = listStylesText [i];
-		var str = getStyleTextCode(textdata);
-		tpl_add_block(str, baseIndent);
+			var textformat_id = getTextFormatID(textdata);
+			var data = {"textformat_id" : textformat_id, "data" : data_str};
+			var str = convertTemplate(path_tpl + "textformat/textformat.txt", data);
+			
+			tpl_add_block(str, baseIndent);
+			
+		}
+		output.push({filename : "textformat.hx",  content : get_tpl_content()});
 		
 	}
-	output.push({filename : styleTextFile + ".hx",  content : get_tpl_content()});
 	
-	trace("retour output.length : "+output.length);
+	
+	//LAYOUT
+	
+	if(layoutFile){
+		
+		tpl_reset();
+		baseIndent = 1;
+		rec(items, null, 0, "layout");
+		//todo : in rec function
+		
+		output.push({filename : "layout.hx",  content : get_tpl_content()});
+	}
+	
+	
 	return output;
 	
 	
 	
-	function rec(items, parent, level)
+	
+	
+	
+	//___________________________________________________________________________________________
+	
+	
+	function rec(items, parent, level, type)
 	{
 		var len = items.length;
+		var config;
+		if(type == "main") config = config_main;
+		else if(type == "layout") config = config_layout;
+		
 		//for(var i=0; i<len; i++){
 		for(var i=len - 1; i>=0; i--){
 			
@@ -49,231 +112,182 @@
 			var parentname = (parent != null) ? parent.name : "";
 			tracerec("item : "+item.name+", parentname : "+parentname, level);
 			
+			var iscontainer = CONTAINERS_TYPE.indexOf(item.type) != -1;
+			
+			var indent = baseIndent;
+			if(type == "main" && bIndentation){
+				indent += level;
+			}
 			
 			//separator
+			
 			if(CONTAINERS_TYPE.indexOf(item.type) != -1  || level == 0){
 				
 				var tplname = level == 0 ? item.name.toUpperCase() : item.name;
 				var templateprefix = (level == 0) ? "-big" : "-small";
-				var str = convertTemplate("generate-script/templates/haxe-separator"+templateprefix+".txt", {name: tplname});
-				tpl_add_block(str, baseIndent);
-				var nbline = (level == 0) ? 3 : 1;
-				tpl_br(nbline, baseIndent);
+				var str = convertTemplate(path_tpl + type + "/separator"+templateprefix+".txt", {name: tplname});
+				
+				var nbline;
+				
+				if(get_tpl_content() != ""){
+					nbline = (level == 0) ? 5 : config.br_before_separator;
+					tpl_br(nbline, indent, 1.5);
+				}
+				
+				tpl_add_block(str, indent);
+				
+				nbline = (level == 0) ? 4 : config.br_after_separator;
+				tpl_br(nbline, indent, 1);
 			}
 			
-			//instanciation / integration code
-			var itemCode = getItemCode(item, parent);
-			tpl_add_block(itemCode, baseIndent);
+			var itemCode;
 			
-			tpl_br(2, baseIndent);
+			if(type == "main"){
+				//instanciation / integration code
+				itemCode = getItemCode(item, parent, textFormatFile, layoutFile);
+				
+				var linebreak = (!closeTags || iscontainer);
+				tpl_add_block(itemCode, indent, linebreak);
+				
+				if(closeTags && !iscontainer){
+					var str = getCloseTag(closeTagsConfig, itemCode);
+					if(str != "") tpl_add_line(str, 0);
+				}
+				
+			}
+			else if(type == "layout"){
+				
+				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item);
+				
+				var layout_id = getLayoutID(item);
+				var data = {"layout_id" : layout_id, "data" : data_str};
+				var str = convertTemplate(path_tpl + "layout/layout.txt", data);
+				
+				tpl_add_block(str, indent);
+				
+			}
 			
-			if(item.type == TYPE_TEXT){
+			//line breaks
+			tpl_br(config.br_std, indent, 2);
+			
+			
+			
+			if(type == "main" && textFormatFile && item.type == TYPE_TEXT){
 				
-				var idstyletext = getStyleTextID(item.textdata);
+				var textformat_id = getTextFormatID(item.textdata);
+				//trace("listTextFormatID : "+typeof listTextFormatID);
 				
-				//trace("listStylesTextID : "+typeof listStylesTextID);
-				
-				if(listStylesTextID.indexOf(idstyletext) == -1){
-					listStylesTextID.push(idstyletext);
-					listStylesText.push(item.textdata);
+				if(listTextFormatID.indexOf(textformat_id) == -1){
+					listTextFormatID.push(textformat_id);
+					listTextFormat.push(item.textdata);
 				}
 			}
 			
-			if(CONTAINERS_TYPE.indexOf(item.type) != -1){
+			if(iscontainer){
 
-				rec(item.childrens, item, level + 1);
+				rec(item.childrens, item, level + 1, type);
 			}
 			
-			if(i == len - 1) tpl_br(2, baseIndent);
-			if(level == 0) tpl_br(5, baseIndent);
+			
+			//close tags
+			
+			if(type == "main" && closeTags && iscontainer){
+				
+				var str = getCloseTag(closeTagsConfig, itemCode);
+				if(str != ""){
+					if(config.br_before_closingtag > 0) tpl_br(config.br_before_closingtag, indent, 4);
+					tpl_add_line(str, indent);
+				}
+			}
+			
 			
 		}
 		
 	}
+	
+	
+	
+	
 
 
 	
-	function getItemCode(item, parent)
+	function getItemCode(item, parent, _tffile, _layoutfile)
 	{
 		//instanciation + integration
 		
 		var varname = getVarname(item.name);
-		var classname;
-		if(item.type == TYPE_CONTAINER) classname = "LayoutSprite";
-		else if(item.type == TYPE_GFX) classname = "VImage";
-		else if(item.type == TYPE_TEXT) classname = "VText";
-		else if(item.type == TYPE_BTN || item.type == TYPE_BTNC) classname = "VButton1";
-		
-		
-		var parentname = (parent != null) ? getVarname(parent.name) : "container";
-		
-		var paramconst = "";
-		if(item.type == TYPE_GFX || item.type == TYPE_BTN){
-			paramconst = '"' + item.path + "/" + item[OPT_FILENAME] + '"';
-		}
-		else if(item.type == TYPE_BTNC){
-			paramconst = '"' + item.path + "/" + item[OPT_FILENAME] + '"';
-		}
-		
-		else if(item.type == TYPE_TEXT){
-			paramconst = styleTextFile + "." + getStyleTextID(item.textdata);
-		}
-		
-		//layout code
-		
-		var x = item.position[0];
-		var y = item.position[1];
-		var lx = item[OPT_LAYOUT_X];
-		var ly = item[OPT_LAYOUT_Y];
-		
-		var layout_props = {};
-		
-		if(lx == "left" && x != 0) layout_props["margin-left"] = x;
-		else if(lx == "right") layout_props["margin-right"] = item.margin_right;
-		else if(lx == "center") layout_props["center-h"] = item.center_h / 100;
-		
-		if(ly == "top" && y != 0) layout_props["margin-top"] = y;
-		else if(ly == "bottom") layout_props["margin-bottom"] = item.margin_bottom;
-		else if(ly == "center") layout_props["center-v"] = item.center_v / 100;
-		
-		if(lx !="left") layout_props["width"] = item.width;
-		if(ly != "top") layout_props["height"] = item.height;
-	
-		var layout_props_str = propsToString(layout_props);
-		//LayoutManager.addItem(_btnrate, { "center-h" : 0.5, "margin-top" : 200} );
-		
+		var parent_varname = (parent != null) ? getVarname(parent.name) : "container";
+		var layout_id = getLayoutID(item);
 		
 		var data = {
-			"var": varname,
-			"classname": classname,
-			"parent": parentname,
-			"paramconst": paramconst,
-			"layout_props": layout_props_str,
+			"varname": varname,
+			"parent_varname": parent_varname,
+			"layout_id" : layout_id,
 		};
 		
-		var str = convertTemplate("generate-script/templates/haxe-instance.txt", data);
 		
-		
-		
-		if(item.type == TYPE_TEXT){
-			
-			data = {"var" : varname, "text" : item.textdata.text, "width" : item.width};
-			var str2 = convertTemplate("generate-script/templates/haxe-set-text.txt", data);
-			str += "\n" + str2;
+		if(!_tffile && item.type == TYPE_TEXT){
+			data["textformat_data"] = TPL_FUNCTIONS[tpl_id].getTextFormatData(item.textdata);
 		}
 		
-		if(BTNS_TYPE.indexOf(item.type) != -1){
-			
-			data = {"var" : varname};
-			var str3 = convertTemplate("generate-script/templates/haxe-btn-onclick.txt", data);
-			str += "\n"+ str3;
+		if(!_layoutfile){
+			data["layout_data"] = TPL_FUNCTIONS[tpl_id].getLayoutData(item);
 		}
 		
-			
-		return str;
-	}
-	
-	
-
-	function getStyleTextID(textdata)
-	{
-		var output = "";
-		output += textdata.font;
-		output += "_";
-		output += textdata.color;
-		output += "_";
-		output += textdata.size;
+		var ignore = ["childrens", "layoutx", "layouty", "parent", "position", "position_abs"];
+		data["x"] = item.position[0];
+		data["y"] = item.position[1];
 		
-		output += textdata.halign.substr(0, 1) + "";
-		output += textdata.letterspacing + "";
-		if(textdata.leading != undefined) output += textdata.leading + "";
-		
-		output = getVarname(output);
-		return output;
-	}
-	
-
-
-	function getStyleTextCode(textdata)
-	{
-		var stylename = getStyleTextID(textdata);
-		var props = {};
-		
-		var mapProps = {
-			'color' : ['', '0x'],
-			'font' : ['', '"', '"'],
-			'size' : null,
-			'leading' : null,
-			'letterspacing' : null,
-			'halign' : ['', '"', '"'],
-		};
-		
-		for(var i in mapProps){
-			//trace("textdata["+i+"] : "+textdata[i]);
-			if(textdata[i] != undefined){
-				
-				var tab = mapProps[i];
-				var propname = (tab != null && tab.length >= 1 && tab[0] != "") ? propname = tab[0] : i;
-				var char1 = (tab != null && tab.length >= 2) ? tab[1] : "";
-				var char2 = (tab != null && tab.length >= 3) ? tab[2] : "";
-				
-				props[propname] = char1 + textdata[i] + char2;
+		for(var k in item){
+			if(ignore.indexOf(k) == -1){
+				//trace("- add property : "+k);
+				data[k] = item[k];
 			}
 		}
 		
-		var props_str = propsToString(props, true);
-		var data = {"stylename" : stylename, "props" : props_str};
-		var str = convertTemplate("generate-script/templates/haxe-style-text.txt", data);
 		
-		return str;
-	}
-	
-	
-	
-	function getVarname(str)
-	{
-		str = str.replace(/-/g, "_");
-		//remove all chars not good for variable names
 		
-		return str;
-	}
-	
-	
-	
-	function propsToString(props, multiline)
-	{
-		if(multiline == undefined) multiline = false;
+		var str = "";
 		
-		var output = "{";
-		if(multiline) output += "\n\t";
-		var tab = [];
-		for(var i in props){
-			var str = '"' + i + '" : ' + props[i];
+		if(item.type == TYPE_CONTAINER){
 			
-			tab.push(str);
+			var str2 = convertTemplate(path_tpl + "main/"+item.type+".txt", data);
+			str += str2;
 		}
-	
-		var str;
-		if(!multiline) str = ", ";
-		else str = ",\n\t";
-		output += tab.join(str);
+		else if(item.type == TYPE_GFX){
+			
+			var str2 = convertTemplate(path_tpl + "main/"+item.type+".txt", data);
+			str += str2;
+		}
+		else if(item.type == TYPE_TEXT){
+			
+			data["textformat_id"] = getTextFormatID(item.textdata);
+			
+			//eventuellement une boucle sur textdata ici
+			data["text"] = item.textdata.text;
+			
+			var str2 = convertTemplate(path_tpl + "main/"+item.type+".txt", data);
+			str += str2;
+		}
 		
-		if(multiline) output += ",\n";
-		output += "}";
-		return output;
+		else if(BTNS_TYPE.indexOf(item.type) != -1){
+			
+			var str3 = convertTemplate(path_tpl + "main/"+TYPE_BTN+".txt", data);
+			str += str3;
+		}
+		
+		
+		var common_post_str = convertTemplate(path_tpl + "main/common-post.txt", data);
+		if(common_post_str != ""){
+			str += "\n" + common_post_str;
+		}
+		
+			
+		return str;
 	}
-
-	
 
 }
 
 
-Array.prototype.indexOf = function(value)
-{
-	var len = this.length;
-	for(var i = 0; i< len; i++){
-		//trace("this["+i+"] : "+this[i]);
-		if(this[i] == value) return i;
-	}
-	return -1;
-}
+
+

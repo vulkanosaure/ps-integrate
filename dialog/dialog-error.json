@@ -1,0 +1,14 @@
+﻿dialog {
+	text: "Errors",
+	orientation: "stack",
+	alignChildren: "left",
+	alignment: "left",
+	
+	content: Group {
+		orientation: "column",
+		alignChildren: "left",
+		
+	}
+}
+
+

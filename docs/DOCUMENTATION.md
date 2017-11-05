@@ -116,7 +116,24 @@ Simillar to a button, but it can contain children of element of type 'text' and 
 
 TODO
 
+#### Template variable
 
-#### Notes for HaXe template
+- varname
+- parent_varname
+- text
+- txt_style_id
+- filename
+- width / height
+- name
+- path
+- type
+- x / y
+
+//TODO : maybe textdata ?
+
+
+
+
+#### Notes for HaXe
 - think of renaming font accordingly
 - set uppercase option if needed

@@ -78,6 +78,7 @@ function check_error_item(name, item)
 
 function getErrorObject(msg, path, name)
 {
+	if(path == "") path = "root";
 	return {msg: msg, path: path, name: name};
 }
 
@@ -98,4 +99,25 @@ function getItemStructureStr(item)
 	tab.reverse();
 	var str = tab.join(" / ");
 	return str;
+}
+
+
+function createErrorFile(listErrors)
+{
+	var path2 = EXPORT_FOLDER + "/";
+	
+	var content = "";
+	
+	var len = listErrors.length;
+	for(var i = 0; i<len; i++){
+		
+		var obj = listErrors[i];
+		var str = "";
+		str += "Msg : "+obj.msg+"\n";
+		str += "Path : "+obj.path+"\n";
+		str += "Layer name : "+obj.name+"\n";
+		content += str + "\n";
+	}
+	createFile(exportPath, path2 + "errors.log", content);
+	
 }
