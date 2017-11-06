@@ -1,1 +1,1 @@
-public static var {{textformat_id}} = {{data}};
+.{{textformat_id}}{{data}}

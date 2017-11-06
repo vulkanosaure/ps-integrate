@@ -51,7 +51,7 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 - [x] close tags (separate file, suffix -close)
 - [x] nblinebreak
 - [x] dialog, get directory ddlist tpl
-- [ ] json config
+- [x] json config
 - [ ] html
 - [ ] background-image
 - [ ] doc

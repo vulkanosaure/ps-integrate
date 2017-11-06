@@ -8,6 +8,7 @@
 #include "template.jsx";
 #include "template-functions.jsx";
 
+#include "lib/jamJSON.jsx";
 
 
 
@@ -178,6 +179,7 @@ function create_item(layer, name, type, parentItem, level)
 	
 	
 	//layout
+	output.margin_left = output.position[0];
 	if(has_option(name, OPT_LAYOUT_X)){
 		var layout = get_value_option(name, OPT_LAYOUT_X);
 		
@@ -189,6 +191,7 @@ function create_item(layer, name, type, parentItem, level)
 	}
 	else output[OPT_LAYOUT_X] = "left";
 	
+	output.margin_top = output.position[1];
 	if(has_option(name, OPT_LAYOUT_Y)){
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
 		
@@ -324,17 +327,20 @@ function main(settings)
 	exportFolder.remove();
 	
 	recursive_loop(doc, null, null, 0);
-	check(listItem);
 	var l = listErrors;
 	//trace("listErrors : "+listErrors);
 	
 	
 
 	//generation des templates
-
+	
 	var tpl_id = tpl_ids[settings.indexTpl];
+	
+	
+	var config_str = loadFilePath("templates/"+tpl_id+"/config.json");
+	var config = jamJSON.parse(config_str, true);
 	var templates;
-	templates = generate_template(listItem, tpl_id);
+	templates = generate_template(listItem, tpl_id, config);
 
 	//ecritures des templates
 
@@ -354,10 +360,7 @@ function main(settings)
 	
 }
 
-function check(items)
-{
-	trace("test");
-}
+
 
 
 
@@ -365,7 +368,16 @@ var tpl_ids = get_tpl_ids();
 //var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
 var tpl_labels = tpl_ids;
 
-showDialog(main, tpl_labels);
+if(DEBUG_MODE){
+	var settings = {
+		overwrite : false,
+		destination : activeDocument.path,
+		indexTpl : 0,
+	};
+	main(settings);
+}
+else showDialog(main, tpl_labels);
+
 
 trace("activeDocument.path : "+activeDocument.path);
 //main({destination : activeDocument.path, indexTpl : 1, overwrite:false});

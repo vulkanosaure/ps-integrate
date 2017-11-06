@@ -1,4 +1,4 @@
-﻿generate_template = function(items, tpl_id)
+﻿generate_template = function(items, tpl_id, config)
 {
 	trace("generate_template ("+tpl_id+")");
 	
@@ -7,35 +7,20 @@
 	var listTextFormatID = new Array();
 	var listTextFormat = new Array();
 	
-	var baseIndent = 2;
+	var configMain = config.main;
+	var configTextformat = config.textformat;
+	var configLayout = config.layout;
+	
+	var baseIndent = configMain.base_indent;
 	var path_tpl = "templates/"+tpl_id+"/";
 	
-	var textFormatFile= true;
-	var layoutFile= true;
+	var textFormatFile= (configTextformat.file != undefined);
+	var layoutFile= (configLayout.file != undefined);
 	
-	var bIndentation = true;
+	var bIndentation = configMain.indent;
 	
-	var config_layout = {
-		br_std : 1,
-		br_before_separator : 1,
-		br_after_separator : 1,
-	};
-	var config_main = {
-		br_std : 0,
-		br_before_separator : 1,
-		br_after_separator : 0,
-		br_before_closingtag : 1,
-	};
-	
-	//haxe: 2, 1, 2
-	
-	var closeTags = true;
-	var closeTagsConfig = {
-		start:"<",
-		end:">",
-		close:"/",
-	};
-	
+	var closeTags = configMain.close_tags;
+	var closeTagsConfig = configMain.close_tags_config;
 	
 	
 	
@@ -44,7 +29,8 @@
 	tpl_reset();
 	rec(items, null, 0, "main");
 	
-	output.push({filename : "main.hx",  content : get_tpl_content()});
+	var filename = configMain.filename;
+	output.push({filename : filename,  content : get_tpl_content()});
 	
 	
 	
@@ -54,7 +40,8 @@
 	if(textFormatFile){
 		
 		tpl_reset();
-		baseIndent = 1;
+		
+		baseIndent = configTextformat.file.base_indent;
 		
 		var len = listTextFormat .length;
 		for(var i = 0; i < len; i++){
@@ -69,7 +56,9 @@
 			tpl_add_block(str, baseIndent);
 			
 		}
-		output.push({filename : "textformat.hx",  content : get_tpl_content()});
+		
+		var filename = configTextformat.file.filename;
+		output.push({filename : filename,  content : get_tpl_content()});
 		
 	}
 	
@@ -79,11 +68,12 @@
 	if(layoutFile){
 		
 		tpl_reset();
-		baseIndent = 1;
+		baseIndent = configLayout.file.base_indent;
 		rec(items, null, 0, "layout");
 		//todo : in rec function
 		
-		output.push({filename : "layout.hx",  content : get_tpl_content()});
+		var filename = configLayout.file.filename;
+		output.push({filename : filename,  content : get_tpl_content()});
 	}
 	
 	
@@ -100,9 +90,13 @@
 	function rec(items, parent, level, type)
 	{
 		var len = items.length;
-		var config;
-		if(type == "main") config = config_main;
-		else if(type == "layout") config = config_layout;
+		var linebreaks;
+		if(type == "main"){
+			linebreaks = configMain.linebreaks;
+		}
+		else if(type == "layout"){
+			linebreaks = configLayout.file.linebreaks;
+		}
 		
 		//for(var i=0; i<len; i++){
 		for(var i=len - 1; i>=0; i--){
@@ -130,13 +124,13 @@
 				var nbline;
 				
 				if(get_tpl_content() != ""){
-					nbline = (level == 0) ? 5 : config.br_before_separator;
+					nbline = (level == 0) ? 5 : linebreaks.before;
 					tpl_br(nbline, indent, 1.5);
 				}
 				
 				tpl_add_block(str, indent);
 				
-				nbline = (level == 0) ? 4 : config.br_after_separator;
+				nbline = (level == 0) ? 4 : linebreaks.after;
 				tpl_br(nbline, indent, 1);
 			}
 			
@@ -168,7 +162,7 @@
 			}
 			
 			//line breaks
-			tpl_br(config.br_std, indent, 2);
+			tpl_br(linebreaks.std, indent, 2);
 			
 			
 			
@@ -195,7 +189,7 @@
 				
 				var str = getCloseTag(closeTagsConfig, itemCode);
 				if(str != ""){
-					if(config.br_before_closingtag > 0) tpl_br(config.br_before_closingtag, indent, 4);
+					if(linebreaks.before_closetag > 0) tpl_br(linebreaks.before_closetag, indent, 4);
 					tpl_add_line(str, indent);
 				}
 			}
