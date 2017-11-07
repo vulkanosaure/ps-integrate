@@ -46,4 +46,4 @@ var EXPORT_FOLDER = "ps-integrate-export";
 var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";
 
-var DEBUG_MODE = false;
+var DEBUG_MODE = true;

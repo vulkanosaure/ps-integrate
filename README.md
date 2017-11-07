@@ -53,9 +53,20 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 - [x] dialog, get directory ddlist tpl
 - [x] json config
 - [ ] html
-- [ ] background-image
 - [ ] doc
 - [x] generer errors dans un errors.log
+
+
+## HTML
+
+- absolute VS flux
+- [ ] background-image
+		avec btnc, on fait deja plus ou moins ça
+		fusionner la logique
+- [x] si je met un container en absolute, jdois aussi mettre sa dimensions a 100% / 100% / pas genant
+- [ ] chopper la police
+- [ ] letter spacing / ne pas le spécifier si ds une certaine marge
+
 
 
 

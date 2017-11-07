@@ -1,1 +1,1 @@
-<div>
+<div class="{{layout_id}}">

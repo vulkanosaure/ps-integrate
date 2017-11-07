@@ -372,7 +372,7 @@ if(DEBUG_MODE){
 	var settings = {
 		overwrite : false,
 		destination : activeDocument.path,
-		indexTpl : 0,
+		indexTpl : 1,
 	};
 	main(settings);
 }

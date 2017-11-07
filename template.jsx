@@ -259,6 +259,7 @@
 			
 			//eventuellement une boucle sur textdata ici
 			data["text"] = item.textdata.text;
+			data["text_br"] = item.textdata.text.replace(/\\n/g, "<br />");
 			
 			var str2 = convertTemplate(path_tpl + "main/"+item.type+".txt", data);
 			str += str2;

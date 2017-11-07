@@ -142,6 +142,8 @@ function propsToString(props, options)
 	if(options.multiline == undefined) options.multiline = false;
 	if(options.quoteProperty == undefined) options.quoteProperty = "double";	//none-simple-double
 	if(options.separator == undefined) options.separator = ",";
+	if(options.equal == undefined) options.equal = " : ";
+	
 	
 	var output = "{";
 	if(options.multiline) output += "\n\t";
@@ -150,7 +152,7 @@ function propsToString(props, options)
 		var quotestr = "";
 		if(options.quoteProperty == "simple") quotestr = "'";
 		else if(options.quoteProperty == "double") quotestr = '"';
-		var str = quotestr + i + quotestr + ' : ' + props[i];
+		var str = quotestr + i + quotestr + options.equal + props[i];
 		tab.push(str);
 	}
 
@@ -174,9 +176,13 @@ function mapProps(model, props)
 	var output = {};
 	for(var i in model){
 		
-		if(props[i] != undefined){
+		var tab = model[i];
+		
+		if(props[i] != undefined || (tab != null && tab.value != undefined)){
 			
-			var tab = model[i];
+			var value;
+			if(tab != null && tab.value != undefined) value = tab.value;
+			else value = props[i];
 			var propname = (tab != null && tab.name != undefined) ? tab.name : i;
 			
 			var prefix = (tab != null && tab.prefix != undefined) ? tab.prefix : "";
@@ -184,14 +190,23 @@ function mapProps(model, props)
 			
 			if(tab != null){
 				if(tab.quote != undefined){
-					var strquote = (tab.quote == "simple") ? "'" : '"';
+					var strquote;
+					if(tab.quote == "simple") strquote = "'";
+					else if(tab.quote == "double") strquote = '"';
+					else strquote = "";
 					prefix = strquote;
-					sufix= strquote;
+					sufix = strquote;
 				}
 			}
 			
-			output[propname] = prefix + props[i] + sufix;
+			if(tab != null && tab.multiplier != undefined){
+				value *= tab.multiplier;
+				if(tab.round) value = Math.round(value);
+			}
+			
+			output[propname] = prefix + value + sufix;
 		}
+		
 	}
 	return output;
 }
