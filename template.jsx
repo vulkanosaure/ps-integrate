@@ -50,7 +50,7 @@
 			var data_str = TPL_FUNCTIONS[tpl_id].getTextFormatData(textdata);
 			
 			var textformat_id = getTextFormatID(textdata);
-			var data = {"textformat_id" : textformat_id, "data" : data_str};
+			var data = {"textformat_id" : textformat_id, "textformat_data" : data_str};
 			var str = convertTemplate(path_tpl + "textformat/textformat.txt", data);
 			
 			tpl_add_block(str, baseIndent);
@@ -130,7 +130,7 @@
 				
 				tpl_add_block(str, indent);
 				
-				nbline = (level == 0) ? 4 : linebreaks.after;
+				nbline = (level == 0) ? 3 : linebreaks.after;
 				tpl_br(nbline, indent, 1);
 			}
 			
@@ -154,7 +154,7 @@
 				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item);
 				
 				var layout_id = getLayoutID(item);
-				var data = {"layout_id" : layout_id, "data" : data_str};
+				var data = {"layout_id" : layout_id, "layout_data" : data_str};
 				var str = convertTemplate(path_tpl + "layout/layout.txt", data);
 				
 				tpl_add_block(str, indent);

@@ -47,12 +47,6 @@
 			}
 		}
 	}
-
-	if(has_option(name, OPT_BTNC)){
-		if(parentItem == null || parentItem.type != TYPE_BTNC){
-			output.push(getErrorObject("Property '"+OPT_BTNC+"' is only allowed for children of element of type '"+TYPE_BTNC+"'", getItemStructureStr(parentItem), name));
-		}
-	}
 	
 	return output;
 }

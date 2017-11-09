@@ -20,7 +20,6 @@ var OPT_FILENAME = "filename";
 var OPT_NAME = "name";
 var OPT_BGPARENT = "bgparent";
 var OPT_GFX_TYPE = "gfxtype";
-var OPT_BTNC = "btnc";
 var OPT_LAYOUT_X = "layoutx";
 var OPT_LAYOUT_Y = "layouty";
 var OPT_POS_X = "x";
@@ -36,7 +35,6 @@ OPTIONS_RULES[OPT_FILENAME] = new RegExp("^(?!.*\.png$).*");
 OPTIONS_RULES[OPT_NAME] = new RegExp(".*(?<!(\.png)|(\.jpg))$", "i");	//not working yet
 OPTIONS_RULES[OPT_BGPARENT] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
-OPTIONS_RULES[OPT_BTNC] = ["bg", "child"];
 OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
 

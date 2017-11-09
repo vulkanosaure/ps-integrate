@@ -86,6 +86,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 			
 			if(EXPORTS_TYPE.indexOf(type) != -1){
 				
+				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if(item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
@@ -228,30 +229,15 @@ function create_item(layer, name, type, parentItem, level)
 		
 		output[OPT_BGPARENT] = get_value_option_safe(name, OPT_BGPARENT);
 		output[OPT_BGPARENT] = (output[OPT_BGPARENT] == "1");
-	}
-	
-	
-	
-	//btnc 
-	//if(parentItem) tracerec("parentItem, type : "+parentItem.type+", name : "+parentItem.name, level);
-	
-	if(parentItem != null && parentItem[OPT_TYPE] == TYPE_BTNC){
 		
-		var btnc = get_value_option_safe(name, OPT_BTNC);
-		if(btnc == ""){
-			if(type == TYPE_GFX) btnc = "bg";
-			else if(type == TYPE_TEXT) btnc = "item";
-			else throw new Error("only text et gfx autorisé dans btnc ("+type+")");
-		}
-		output[OPT_BTNC] = btnc;
-		
-		if(btnc == "bg"){
-			parentItem.path = output[OPT_PATH];
+		if(output[OPT_BGPARENT]){
+			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
+			parentItem.has_graphic = true;
 			output["disable"] = true;
 		}
-		
 	}
+	
 	
 	
 	
@@ -368,7 +354,7 @@ var tpl_ids = get_tpl_ids();
 //var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
 var tpl_labels = tpl_ids;
 
-if(DEBUG_MODE){
+if(DEBUG_MODE && false){
 	var settings = {
 		overwrite : false,
 		destination : activeDocument.path,

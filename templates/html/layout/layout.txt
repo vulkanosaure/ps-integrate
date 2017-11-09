@@ -1,1 +1,1 @@
-.{{layout_id}}{{data}}
+.{{layout_id}}{{layout_data}}

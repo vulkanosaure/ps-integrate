@@ -67,12 +67,14 @@ TPL_FUNCTIONS["html"] = {
 
 	getTextFormatData : function (textdata, path_tpl)
 	{
+		var mletterspacing = 0.00114285 * textdata.size;
+		
 		var propsModel = {
 			'color' : {prefix : '#'},
 			'font' : {name : 'font-family', quote : 'simple'},
 			'size' : {name : 'font-size', sufix : 'px'},
 			'leading' : {name : 'line-height', sufix : 'px'},
-			'letterspacing' : {name : 'letter-spacing', sufix : 'px'},
+			'letterspacing' : {name : 'letter-spacing', sufix : 'px', multiplier : mletterspacing, round:true},
 			'halign' : {name : 'text-align', quote : 'none'},
 		};
 		
@@ -115,16 +117,23 @@ TPL_FUNCTIONS["html"] = {
 		if(lx != "left") propsModel["width"] = {sufix : "px"};
 		if(ly != "top") propsModel["height"] = {sufix : "px"};
 		
-		if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){
+		// if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){
+		if(item.has_graphic){
 			var path = base_folder_img + "/" + item.path;
 			if(item.path != "") path += "/";
 			path += item.filename;
 			path += ".png";
 			propsModel["background-image"] = {value : path, prefix : "url('/", sufix : "')"};
 			
-			propsModel["width"] = {sufix : "px"};
+			propsModel["width"] = {sufix : "px", br : false};
 			propsModel["height"] = {sufix : "px"};
 		
+		}
+		
+		//CONTAINER ROOT => dimensions 100% / 100%
+		if(item.parent == null && item.type == TYPE_CONTAINER){
+			propsModel["width"] = {value : '100%'};
+			propsModel["height"] = {value : '100%'};
 		}
 		
 		

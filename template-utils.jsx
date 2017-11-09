@@ -188,6 +188,7 @@ function mapProps(model, props)
 			var prefix = (tab != null && tab.prefix != undefined) ? tab.prefix : "";
 			var sufix = (tab != null && tab.sufix != undefined) ? tab.sufix : "";4
 			
+			
 			if(tab != null){
 				if(tab.quote != undefined){
 					var strquote;

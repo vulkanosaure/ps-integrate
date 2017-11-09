@@ -60,13 +60,12 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 ## HTML
 
 - absolute VS flux
-- [ ] background-image
+- [x] background-image
 		avec btnc, on fait deja plus ou moins ça
 		fusionner la logique
 - [x] si je met un container en absolute, jdois aussi mettre sa dimensions a 100% / 100% / pas genant
-- [ ] chopper la police
-- [ ] letter spacing / ne pas le spécifier si ds une certaine marge
-
+- [x] chopper la police
+- [x] letter spacing / ne pas le spécifier si ds une certaine marge
 
 
 

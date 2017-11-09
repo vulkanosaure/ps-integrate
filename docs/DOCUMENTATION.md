@@ -42,21 +42,16 @@ The name of the element, used template generation.
 *If not specified, and ID will be automatically generated.*
 
 #### bgparent
-An option used in the HTML template.
-
+- **1**
+- **0**
+Defines a graphic element to be passed to the parent. 
+This is mandatory for 1 child of an element of type 'btnc'
 *Only available for type gfx*
-TODO
 
 #### gfxtype
 
 *Only available for type gfx*
 TODO
-
-#### btnc
-- **bg** : will be treated as a background of the parent. *There can only be one*
-- **child** : will be treated as a child of the *btnc*
-
-*Only available for children of a container of typebtnc. Default value : 'bg' for image layer, 'item' for text layer*
 
 #### layoutx
 - **left** (default) : the template system will position the element in pixel from the left
@@ -114,7 +109,29 @@ Simillar to a button, but it can contain children of element of type 'text' and 
 
 ## Templates
 
-TODO
+A template must have a directory in the ````template```` folder, named by the id of the template.
+
+The folder must have a ````config.json```` file.
+3 subfolders :
+- main
+- layout
+- textformat
+
+
+## Template functions
+
+In the file ````template-functions.jsx````, a new entry must be created in the object ````TPL_FUNCTIONS```` with 2 functions
+
+#### getTextFormatData
+A function that must return the string that will be displayed in ````textformat_data````
+
+#### getLayoutData
+A function that must return the string that will be displayed in ````layout_data````
+
+
+
+
+
 
 #### Template variable
 
@@ -128,11 +145,36 @@ TODO
 - path
 - type
 - x / y
+- textformat
+- textformat_id
+- layout
+- layout_id
 
-//TODO : maybe textdata ?
+
+#### Textformat variable
+
+- textformat_id
+- textformat_data
+
+#### Layout variable
+
+- layout_id
+- layout_data
+
+
+#### Config file
+
+TODO
 
 
 
+TODO :
+	- fichier de config.json
+	- expliquer les templates
+	- expliquer le délire listing ou pas listing
+	
+	
+	
 
 #### Notes for HaXe
 - think of renaming font accordingly

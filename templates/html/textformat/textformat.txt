@@ -1,1 +1,1 @@
-.{{textformat_id}}{{data}}
+.{{textformat_id}}{{textformat_data}}
