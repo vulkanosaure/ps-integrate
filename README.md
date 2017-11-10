@@ -37,24 +37,41 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 ## Todo
 
 
-- [ ] HTML template
-- [ ] Refactoring for multi-template system
 - [ ] Close layers after script execution
 - [ ] Handle JPG export (option format and quality)
+- [ ] Compilation (faster execution ?)
+- [ ] not override if filename already met (save time)
 - [x] Configuration dialog
 - [x] Overwrite mode in dialog
 
+- [ ] shortcut :
+	- if only propname => =1
+	- for some property with predefined value, activate shorcut => only value (type)
+		center, centerx, centery, top, left, bottom, right
+	- define special keyword with k => v associated
+	
 
-## Current
+- container => prefixchildren
+	numerote les children a partir de 0 préfixée
+	
+- absolument supprimer le résultat d'avant (problème de droits..)
+	et enlever propriété override si j'arrive
+	
+- dialog init, preselect "run"
+
 
 - [x] refactoring template-functions
 - [x] close tags (separate file, suffix -close)
 - [x] nblinebreak
 - [x] dialog, get directory ddlist tpl
 - [x] json config
-- [ ] html
-- [ ] doc
+- [x] html
+- [x] doc
 - [x] generer errors dans un errors.log
+
+
+
+
 
 
 ## HTML

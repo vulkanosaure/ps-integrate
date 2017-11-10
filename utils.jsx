@@ -15,7 +15,7 @@ function has_option(name, idoption)
 function get_value_option(name, idoption)
 {
 	//trace("get_value_option : "+name+", idoption : "+idoption);
-	var regexp = new RegExp("--" + idoption + "=(([\\w%]+(-(?!-))?)+)");
+	var regexp = new RegExp("--" + idoption + "=(([\\w%/]+(-(?!-))?)+)");
 	output = name.match(regexp);
 	//trace("output : "+output);
 	if(output == null) return "";

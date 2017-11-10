@@ -106,6 +106,7 @@ function recursive_loop(container, parentItem, parentLayer, level)
 			
 			//parentLayer = layer;
 			parentLayer = null;
+			tracerec("reccc type : "+type, level);
 			
 			var newParentItem = parentItem;
 			if(CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
@@ -186,7 +187,10 @@ function create_item(layer, name, type, parentItem, level)
 		
 		var parentsize= parentItem ? parentItem.width : DOC_WIDTH;
 		if(layout == "right") output.margin_right = parentsize - (output.position[0] + output.width);
-		else if(layout == "center") output.center_h = Math.round(output.position[0] / (parentsize - output.width) * 100);
+		else if(layout == "center"){
+			output.center_h = Math.round(output.position[0] / (parentsize - output.width) * 100);
+			if(isNaN(output.center_h)) output.center_h = 0.5;
+		}
 		
 		output[OPT_LAYOUT_X] = layout;
 	}
@@ -198,7 +202,10 @@ function create_item(layer, name, type, parentItem, level)
 		
 		var parentsize= parentItem ? parentItem.height : DOC_HEIGHT;
 		if(layout == "bottom") output.margin_bottom = parentsize - (output.position[1] + output.height);
-		else if(layout == "center") output.center_v = Math.round(output.position[1] / (parentsize - output.height) * 100);
+		else if(layout == "center"){
+			output.center_v = Math.round(output.position[1] / (parentsize - output.height) * 100);
+			if(isNaN(output.center_v)) output.center_v = 0.5;
+		}
 		
 		output[OPT_LAYOUT_Y] = layout;
 	}
@@ -291,7 +298,7 @@ function get_type(layer, name, isroot, level)
 	var forced_type = get_forced_type(name);
 	if(forced_type != "") return forced_type;
 	
-	if(!isroot){
+	if(!isroot || has_prefix(name)){
 		var natural_type = get_natural_type(layer);
 		if(natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
 		else return "";
