@@ -1,13 +1,13 @@
 ﻿#include "constantes.jsx";
 #include "debug.jsx";
 #include "utils.jsx";
+#include "layers.jsx";
 #include "export.jsx";
 #include "dialog.jsx";
 #include "errors-utils.jsx";
 #include "template-utils.jsx";
 #include "template.jsx";
 #include "template-functions.jsx";
-
 #include "lib/jamJSON.jsx";
 
 
@@ -32,6 +32,26 @@ trace("exportPath : "+exportPath);
 var overwrite;
 var listErrors = [];
 var listItem = [];
+
+
+function testrec(container)
+{
+	var layers = container.layers;	//+0
+	
+	var len = layers.length;		//+4
+	
+	for(var i=0; i<len; i++){
+		var layer = layers[i];		//+26
+		
+		var isContainer = (layer.typename == "LayerSet");		//+0
+		if(layer.visible && isContainer){
+			testrec(layer);
+		}
+		
+	}
+}
+
+
 
 
 function recursive_loop(container, parentItem, parentLayer, level)
@@ -316,8 +336,22 @@ function main(settings)
 	exportPath = settings.destination;
 	overwrite = settings.overwrite;
 	
-	var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
-	exportFolder.remove();
+	if(overwrite){
+		var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
+		exportFolder.remove();
+	
+	}
+	
+	/* 
+	//trace("layers : "+layers);
+	//testrec(doc);
+	traverseLayersAMFlat(doc, function(doc, layer){
+		trace("layer.name : "+layer.name);
+	});
+	trace("layers.len : "+layers.length);
+	showDialogOK();
+	return;
+	*/
 	
 	recursive_loop(doc, null, null, 0);
 	var l = listErrors;

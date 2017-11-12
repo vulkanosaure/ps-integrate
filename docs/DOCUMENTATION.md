@@ -171,7 +171,6 @@ TODO
 TODO :
 	- fichier de config.json
 	- expliquer les templates
-	- expliquer le délire listing ou pas listing
 	
 	
 	
@@ -179,3 +178,37 @@ TODO :
 #### Notes for HaXe
 - think of renaming font accordingly
 - set uppercase option if needed
+
+
+## Photoshop tricks
+
+#### Performances
+
+To improove performances, disable layer thumbnail in the layer option pannel.
+
+**Some other tricks i read but that depends on your system / configuration, so no garanty**
+- Execute photoshop as an administrator
+- In preferences / performances : disable "use GPU processor"
+
+
+
+#### Useful shortcuts
+
+- Ctrl + G 			:	group layers (or layersets)
+- Ctrl + Shift + G	: 	ungroup
+- Ctrl + E			: 	merge selected layers
+- Ctrl + Shift + E	: 	merge visible layers ? (to test)
+- Delete 			: 	delete layers
+- Tab / Shift+tab (when editing layer name) : edit next / prev
+- Ctrl+, Ctrl+;		: 	move up / down layer
+
+- Ctrl+[]			: 	select layer below / above (qwerty)
+- Alt + :!			:	select layer below / above (azerty)
+- Alt + Shift + :!	:	add layer below / above to selection (azerty)
+
+**some changes i added in edit / keyboard shorcut**
+
+- F2				:	rename layer
+- Ctrl+H			: 	layer / hide
+- Shift+F2			: 	hide other layers (new action)
+
