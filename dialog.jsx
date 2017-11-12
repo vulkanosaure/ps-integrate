@@ -189,6 +189,8 @@ function showDialog(handler, tpl_labels)
 
 
 	// buttons
+	dlg.funcArea.buttons.btnRun.active= true;
+	
 	dlg.funcArea.buttons.btnRun.onClick = function() {
 		// collect arguments for saving and proceed
 		trace("btnRun.onclick");

@@ -78,3 +78,66 @@ function getPercentValue(value)
 }
 
 
+function handleShorcuts(name)
+{
+	
+	//for some specific registered case : if value only, convert into prop=value
+	
+	for(var k in OPTIONS_SHORCUTS){
+		var tabprop = OPTIONS_SHORCUTS[k];
+		var len = tabprop.length;
+		for(var k2 = 0; k2 < len; k2++){
+			var _prop = tabprop[k2];
+			
+			//case middle
+			var regexp = new RegExp("--" + _prop + "--");
+			var replace = "--" + k + "=" + _prop + "--";
+			name = name.replace(regexp, replace);
+			
+			//case end
+			var regexp = new RegExp("--" + _prop + "$");
+			var replace = "--" + k + "=" + _prop + "";
+			name = name.replace(regexp, replace);
+			
+		}
+		
+		
+	}
+	
+	//specific keyboard with property association
+	
+	for(var k in OPTIONS_SHORCUTS2){
+		var replace = OPTIONS_SHORCUTS2[k];
+		var _prop = k;
+		
+		//case middle
+		var regexp = new RegExp("--" + _prop + "--");
+		name = name.replace(regexp, "--" + replace + "--");
+		
+		//case end
+		var regexp = new RegExp("--" + _prop + "$");
+		name = name.replace(regexp, "--" + replace + "");
+		
+	}
+	
+	//if only prop, add = 1
+	var len = OPTIONS_SHORCUTS3.length;
+	for(var i = 0; i<len; i++){
+		var _prop = OPTIONS_SHORCUTS3[i];
+		
+		//case middle
+		var regexp = new RegExp("--" + _prop + "--");
+		var replace = "--" + _prop + "=1" + "--";
+		name = name.replace(regexp, replace);
+		
+		//case end
+		var regexp = new RegExp("--" + _prop + "$");
+		var replace = "--" + _prop + "=1" + "";
+		name = name.replace(regexp, replace);
+		
+	}
+	
+	return name;
+	
+}
+

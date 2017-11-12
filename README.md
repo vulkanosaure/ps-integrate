@@ -37,27 +37,19 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 ## Todo
 
 
-- [ ] Close layers after script execution
 - [ ] Handle JPG export (option format and quality)
-- [ ] Compilation (faster execution ?)
-- [ ] not override if filename already met (save time)
+- [ ] container => prefixchildren
+	numerote les children a partir de 0 préfixée
+
 - [x] Configuration dialog
 - [x] Overwrite mode in dialog
 
-- [ ] shortcut :
+- [x] shortcut :
 	- if only propname => =1
 	- for some property with predefined value, activate shorcut => only value (type)
 		center, centerx, centery, top, left, bottom, right
 	- define special keyword with k => v associated
 	
-
-- container => prefixchildren
-	numerote les children a partir de 0 préfixée
-	
-- absolument supprimer le résultat d'avant (problème de droits..)
-	et enlever propriété override si j'arrive
-	
-- dialog init, preselect "run"
 
 
 - [x] refactoring template-functions

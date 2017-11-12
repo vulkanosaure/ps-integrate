@@ -72,11 +72,16 @@ function recursive_loop(container, parentItem, parentLayer, level)
 		
 		
 		if(has_prefix(name)){
+			
+			//shortcuts
+			name = handleShorcuts(name);
+			
 			var errors = check_error_layername(name, parentItem);
 			if(errors.length > 0){
 				trace("errors : "+errors);
 				listErrors = listErrors.concat(errors);
 			}
+			
 		}
 		
 		
@@ -339,7 +344,7 @@ function main(settings)
 	if(overwrite){
 		var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
 		exportFolder.remove();
-	
+		
 	}
 	
 	/* 
@@ -390,7 +395,7 @@ function main(settings)
 
 
 
-
+ 
 var tpl_ids = get_tpl_ids();
 //var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
 var tpl_labels = tpl_ids;
@@ -405,9 +410,17 @@ if(DEBUG_MODE && false){
 }
 else showDialog(main, tpl_labels);
 
+/* 
+var proptest = "ps--gfx--center--bgparent"; 
+var proptest2 = "ps--centery";
+var proptest3 = "ps--center--bgparent--btnc";
+
+trace("shorcut 1 : "+handleShorcuts(proptest));
+trace("shorcut 2 : "+handleShorcuts(proptest2));
+trace("shorcut 3 : "+handleShorcuts(proptest3));
 
 trace("activeDocument.path : "+activeDocument.path);
 //main({destination : activeDocument.path, indexTpl : 1, overwrite:false});
-
+ */
 
 

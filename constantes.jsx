@@ -38,6 +38,21 @@ OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
 
+//if only value found : add property=value
+var OPTIONS_SHORCUTS = {};
+OPTIONS_SHORCUTS[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_BTN, TYPE_BTNC, TYPE_CONTAINER];
+OPTIONS_SHORCUTS[OPT_LAYOUT_X] = ["left", "right"];
+OPTIONS_SHORCUTS[OPT_LAYOUT_Y] = ["top", "bottom"];
+
+//keywords with special meaning
+var OPTIONS_SHORCUTS2 = {};
+OPTIONS_SHORCUTS2["centerx"] = "layoutx=center";
+OPTIONS_SHORCUTS2["centery"] = "layouty=center";
+OPTIONS_SHORCUTS2["center"] = "layoutx=center--layouty=center";
+
+//
+var OPTIONS_SHORCUTS3 = [OPT_BGPARENT];
+
 
 var EXPORT_FOLDER = "ps-integrate-export";
 
