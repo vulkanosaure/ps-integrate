@@ -37,6 +37,7 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 ## Todo
 
 
+- [ ] Warning d'erreur : ajouter btn close (critique sur CC 2017)
 - [ ] Handle JPG export (option format and quality)
 - [ ] container => prefixchildren
 	numerote les children a partir de 0 préfixée

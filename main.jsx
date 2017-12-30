@@ -119,7 +119,13 @@ function recursive_loop(container, parentItem, parentLayer, level)
 				//tracerec("path : "+path, level);
 				
 				if(overwrite || !fileExist(path, exportPath)){
-					saveLayer(layer, path, exportPath, false);
+                        
+                       var bounds = null;
+                       if(parentItem && parentItem[OPT_EQUALOFFSET]==1){
+                           bounds = parentItem.bounds;
+                       }
+                       
+					saveLayer(layer, path, exportPath, false, bounds);
 					trace("saveLayer "+path);
 				}
 				
@@ -164,9 +170,12 @@ function create_item(layer, name, type, parentItem, level)
 		output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
 	}
 	output[OPT_FILENAME] = output[OPT_NAME];
+    
+    var bounds = layer.bounds;
+    output.bounds = bounds;
 	
 	if(parentItem != null){
-		var bounds = layer.bounds;
+		
 		output.position = [getUnitValue(bounds[0]), getUnitValue(bounds[1])];
 
 		output.width = getUnitValue(bounds[2]) - getUnitValue(bounds[0]);
@@ -252,7 +261,10 @@ function create_item(layer, name, type, parentItem, level)
 		}
 		output[OPT_PATH] += path;
 	}
-	
+
+    if(type == TYPE_CONTAINER){
+        output[OPT_EQUALOFFSET] = get_value_option_safe(name, OPT_EQUALOFFSET);
+    }
 	
 	if(type == TYPE_GFX){
 		

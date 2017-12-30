@@ -63,8 +63,15 @@ TODO
 - **bottom** : the template system will position the element in pixel from the bottom
 - **center** : the template system will position the element in % value
 
+#### equaloffset
+- **1**
+- **0**
+Forces all the gfx childrens of the container to be exported at the size of the container (handy for game sprites)
+*Only available for type container*
+
 TODO : x, y, width, height
 servait à forcer la position / dimension d'un container. width/height possible à 100% only
+
 
 
 ## Element types

@@ -26,6 +26,7 @@ var OPT_POS_X = "x";
 var OPT_POS_Y = "y";
 var OPT_WIDTH = "width";
 var OPT_HEIGHT = "height";
+var OPT_EQUALOFFSET = "equaloffset";
 
 
 var OPTIONS_RULES = {};
@@ -34,6 +35,7 @@ OPTIONS_RULES[OPT_PATH] = "*";
 OPTIONS_RULES[OPT_FILENAME] = new RegExp("^(?!.*\.png$).*");
 OPTIONS_RULES[OPT_NAME] = new RegExp(".*(?<!(\.png)|(\.jpg))$", "i");	//not working yet
 OPTIONS_RULES[OPT_BGPARENT] = [0, 1];
+OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
@@ -50,8 +52,9 @@ OPTIONS_SHORCUTS2["centerx"] = "layoutx=center";
 OPTIONS_SHORCUTS2["centery"] = "layouty=center";
 OPTIONS_SHORCUTS2["center"] = "layoutx=center--layouty=center";
 
-//
+//if found, add =1 behind
 var OPTIONS_SHORCUTS3 = [OPT_BGPARENT];
+var OPTIONS_SHORCUTS3 = [OPT_EQUALOFFSET];
 
 
 var EXPORT_FOLDER = "ps-integrate-export";

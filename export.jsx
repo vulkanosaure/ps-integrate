@@ -1,4 +1,4 @@
-﻿function saveLayer(layer, path, basepath, shouldMerge) 
+﻿function saveLayer(layer, path, basepath, shouldMerge, bounds) 
 {
     activeDocument.activeLayer = layer;
 	
@@ -6,8 +6,9 @@
     if (shouldMerge === undefined || shouldMerge === true) {
         activeDocument.mergeVisibleLayers();
     }
-    activeDocument.trim(TrimType.TRANSPARENT,true,true,true,true);
-	
+    if(!bounds) activeDocument.trim(TrimType.TRANSPARENT,true,true,true,true);
+	else activeDocument.crop(bounds);
+    
 	//create folder if needed
 	createFolderStructure(basepath, path);
 	
