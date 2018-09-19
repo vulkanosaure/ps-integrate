@@ -42,7 +42,8 @@ function get_natural_type(layer)
 		var kind = layer.kind;
 		if(kind == LayerKind.NORMAL) return TYPE_GFX;
 		else if(kind == LayerKind.TEXT) return TYPE_TEXT;
-		else throw new Error("whats that "+kind);
+		else return TYPE_CONTAINER;
+		//else throw new Error("whats that "+kind+", name : "+layer.name);
 	}
 }
 

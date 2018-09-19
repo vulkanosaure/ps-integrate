@@ -4,6 +4,7 @@
 #include "layers.jsx";
 #include "export.jsx";
 #include "dialog.jsx";
+#include "layer-utils.jsx";
 #include "errors-utils.jsx";
 #include "template-utils.jsx";
 #include "template.jsx";
@@ -12,17 +13,17 @@
 
 
 
-for(var i=0; i<5; i++) trace(".");
+for (var i = 0; i < 5; i++) trace(".");
 trace("===========================");
 
 
 var doc = app.activeDocument;
-trace("doc : "+doc);
+trace("doc : " + doc);
 
 var DOC_WIDTH = getUnitValue(doc.width);
 var DOC_HEIGHT = getUnitValue(doc.height);
 
-trace("doc width/height : "+DOC_WIDTH+" / "+DOC_HEIGHT);
+trace("doc width/height : " + DOC_WIDTH + " / " + DOC_HEIGHT);
 
 /*
 //var exportPath = activeDocument.path;
@@ -32,121 +33,128 @@ trace("exportPath : "+exportPath);
 var overwrite;
 var listErrors = [];
 var listItem = [];
+var globalSettings;
 
 
-function testrec(container)
-{
+function testrec(container) {
 	var layers = container.layers;	//+0
-	
+
 	var len = layers.length;		//+4
-	
-	for(var i=0; i<len; i++){
+
+	for (var i = 0; i < len; i++) {
 		var layer = layers[i];		//+26
-		
+
 		var isContainer = (layer.typename == "LayerSet");		//+0
-		if(layer.visible && isContainer){
+		if (layer.visible && isContainer) {
 			testrec(layer);
 		}
-		
+
 	}
 }
 
 
 
 
-function recursive_loop(container, parentItem, parentLayer, level)
-{
+
+
+function recursive_loop(container, parentItem, parentLayer, level) {
 	//tracerec("recursive_loop", level);
-	
+
 	var layers = container.layers;
 	var len = layers.length;
 
-	for(var i=0; i<len; i++){
+	for (var _i = 0; _i < len; _i++) {
+
+		var i;
+		if (globalSettings.indexTpl == 0) i = _i;
+		else i = len - 1 - _i;
+
+
 		var layer = layers[i];
-		
+
 		var enable = (layer.visible);
-		if(!enable) continue;
-		
+		if (!enable) continue;
+
 		var isContainer = (layer.typename == "LayerSet");
 		var name = layer.name;
-		
-		
-		if(has_prefix(name)){
-			
+
+
+		if (has_prefix(name)) {
+
 			//shortcuts
 			name = handleShorcuts(name);
-			
+
 			var errors = check_error_layername(name, parentItem);
-			if(errors.length > 0){
-				trace("errors : "+errors);
+			if (errors.length > 0) {
+				trace("errors : " + errors);
 				listErrors = listErrors.concat(errors);
-			}
-			
-		}
-		
-		
-	
-		var isRoot = (parentItem == null);
-		var type = get_type(layer, name, isRoot, level);
-		
-		//var parentlayername = (parentLayer) ? parentLayer.name : "";
-		var parentitemname = (parentItem) ? parentItem.name : "";
-		
-		
-		if(type != ""){
-			
-			var item = create_item(layer, name, type, parentItem, level);
-			tracerec("item type : "+type+", name: "+item.name+", path : "+item.path+", btnc : "+item.btnc+", width : "+item.width+", height : "+item.height, level);
-			
-			var errors = check_error_item(name, item);
-			if(errors.length > 0){
-				trace("errors : "+errors);
-				listErrors = listErrors.concat(errors);
-			}
-			
-			if(!item["disable"]){
-				if(isRoot) listItem.push(item);
-				else parentItem.childrens.push(item);
-			}
-			
-			if(EXPORTS_TYPE.indexOf(type) != -1){
-				
-				item.has_graphic = true;
-				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
-				if(item.path != "") path += item.path + "/";
-				path += item[OPT_FILENAME];
-				path += ".png";
-				//tracerec("path : "+path, level);
-				
-				if(overwrite || !fileExist(path, exportPath)){
-                        
-                       var bounds = null;
-                       if(parentItem && parentItem[OPT_EQUALOFFSET]==1){
-                           bounds = parentItem.bounds;
-                       }
-                       
-					saveLayer(layer, path, exportPath, false, bounds);
-					trace("saveLayer "+path);
-				}
-				
 			}
 
 		}
-		
-		if(isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)){
-			
+
+
+
+		var isRoot = (parentItem == null);
+		var type = get_type(layer, name, isRoot, level);
+
+		//var parentlayername = (parentLayer) ? parentLayer.name : "";
+		var parentitemname = (parentItem) ? parentItem.name : "";
+
+
+		if (type != "") {
+
+			var item = create_item(layer, name, type, parentItem, level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + item.width + ", height : " + item.height, level);
+
+			var errors = check_error_item(name, item);
+			if (errors.length > 0) {
+				trace("errors : " + errors);
+				listErrors = listErrors.concat(errors);
+			}
+
+			if (!item["disable"]) {
+				if (isRoot) listItem.push(item);
+				else parentItem.childrens.push(item);
+			}
+
+			if (EXPORTS_TYPE.indexOf(type) != -1) {
+
+				item.has_graphic = true;
+				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
+				if (item.path != "") path += item.path + "/";
+				path += item[OPT_FILENAME];
+				path += ".png";
+				//tracerec("path : "+path, level);
+
+				if (overwrite || !fileExist(path, exportPath)) {
+
+					var bounds = null;
+					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
+						bounds = parentItem.bounds;
+					}
+
+					saveLayer(layer, path, exportPath, false, bounds);
+					trace("saveLayer " + path);
+				}
+
+			}
+
+		}
+
+		if (isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)) {
+
 			//parentLayer = layer;
 			parentLayer = null;
-			tracerec("reccc type : "+type, level);
-			
+			tracerec("reccc type : " + type, level);
+
 			var newParentItem = parentItem;
-			if(CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
-			
+			if (CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
+
 			recursive_loop(layer, newParentItem, parentLayer, level + 1);
-			
-			
+
+
 		}
-	
+
 	}
 }
 
@@ -155,174 +163,215 @@ function recursive_loop(container, parentItem, parentLayer, level)
 
 
 
-function create_item(layer, name, type, parentItem, level)
-{
+function create_item(layer, name, type, parentItem, level) {
 	var output = {};
 
-	
-	if(CONTAINERS_TYPE.indexOf(type) != -1) output.childrens = [];
-	
+
+	if (CONTAINERS_TYPE.indexOf(type) != -1) output.childrens = [];
+
 	output[OPT_TYPE] = type;
-	
+
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
-	if(output[OPT_NAME] == ""){
+	if (output[OPT_NAME] == "") {
 		output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
 	}
 	output[OPT_FILENAME] = output[OPT_NAME];
-    
-    var bounds = layer.bounds;
-    output.bounds = bounds;
-	
-	if(parentItem != null){
-		
-		output.position = [getUnitValue(bounds[0]), getUnitValue(bounds[1])];
 
-		output.width = getUnitValue(bounds[2]) - getUnitValue(bounds[0]);
-		output.height = getUnitValue(bounds[3]) - getUnitValue(bounds[1]);
+	// var bounds = layer.bounds;
+	var bounds = getBounds(layer, type);
+	output.bounds = bounds;
+
+	if (parentItem != null) {
+
+
+		var x1 = getUnitValue(bounds[0]);
+		var y1 = getUnitValue(bounds[1]);
+		var x2 = getUnitValue(bounds[2]);
+		var y2 = getUnitValue(bounds[3]);
+
+		if (x1 < 0) x1 = 0;
+		if (y1 < 0) y1 = 0;
+
+		output.position = [x1, y1];
+		output.width = x2 - x1;
+		output.height = y2 - y1;
+
+		trace("output.width : " + output.width + ", output.height:  " + output.height);
+		trace("getUnitValue(bounds[2]) : " + getUnitValue(bounds[2]) + ", getUnitValue(bounds[0]:  " + getUnitValue(bounds[0]));
 	}
-	else{
+	else {
 		output.position = [0, 0];
 		output.width = DOC_WIDTH;
 		output.height = DOC_HEIGHT;
 	}
-	
-	if(has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
-	if(has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
-	
-	if(has_option(name, OPT_WIDTH)){
+
+	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
+	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
+
+	if (has_option(name, OPT_WIDTH)) {
 		var val = get_value_option(name, OPT_WIDTH);
 		val = getPercentValue(val) / 100;
 		output[OPT_WIDTH] = Math.round(val * DOC_WIDTH);
 	}
-	if(has_option(name, OPT_HEIGHT)){
+	if (has_option(name, OPT_HEIGHT)) {
 		var val = get_value_option(name, OPT_HEIGHT);
 		val = getPercentValue(val) / 100;
 		output[OPT_HEIGHT] = Math.round(val * DOC_HEIGHT);
 	}
-	
-	
-	tracerec("item "+name+", parentItem : "+((parentItem) ? parentItem.name : "")+", position : "+output.position, level);
-	
+
+
+	tracerec("item " + name + ", parentItem : " + ((parentItem) ? parentItem.name : "") + ", position : " + output.position, level);
+
 	//save pos absolute
 	output.position_abs = [output.position[0], output.position[1]];
-	
+
 	//substract parent position
-	if(parentItem){
+	if (parentItem) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
 	}
+
+
+
+	//divide units for @x2
+
+	if (output[OPT_WIDTH]) output[OPT_WIDTH] = Math.round(output[OPT_WIDTH] * 0.5);
+	if (output[OPT_HEIGHT]) output[OPT_HEIGHT] = Math.round(output[OPT_HEIGHT] * 0.5);
+	if (output.position) {
+		if (output.position[0]) output.position[0] = Math.round(output.position[0] * 0.5);
+		if (output.position[1]) output.position[1] = Math.round(output.position[1] * 0.5);
+	}
 	
-	
+
+
+
+
+
 	//layout
 	output.margin_left = output.position[0];
-	if(has_option(name, OPT_LAYOUT_X)){
+	if (has_option(name, OPT_LAYOUT_X)) {
 		var layout = get_value_option(name, OPT_LAYOUT_X);
-		
-		var parentsize= parentItem ? parentItem.width : DOC_WIDTH;
-		if(layout == "right") output.margin_right = parentsize - (output.position[0] + output.width);
-		else if(layout == "center"){
+
+		var parentsize = parentItem ? parentItem.width : DOC_WIDTH;
+		if (layout == "right") output.margin_right = parentsize - (output.position[0] + output.width);
+		else if (layout == "center") {
 			output.center_h = Math.round(output.position[0] / (parentsize - output.width) * 100);
-			if(isNaN(output.center_h)) output.center_h = 0.5;
+			if (isNaN(output.center_h)) output.center_h = 0.5;
 		}
-		
+
 		output[OPT_LAYOUT_X] = layout;
 	}
 	else output[OPT_LAYOUT_X] = "left";
-	
+
 	output.margin_top = output.position[1];
-	if(has_option(name, OPT_LAYOUT_Y)){
+	if (has_option(name, OPT_LAYOUT_Y)) {
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
-		
-		var parentsize= parentItem ? parentItem.height : DOC_HEIGHT;
-		if(layout == "bottom") output.margin_bottom = parentsize - (output.position[1] + output.height);
-		else if(layout == "center"){
+
+		var parentsize = parentItem ? parentItem.height : DOC_HEIGHT;
+		if (layout == "bottom") output.margin_bottom = parentsize - (output.position[1] + output.height);
+		else if (layout == "center") {
 			output.center_v = Math.round(output.position[1] / (parentsize - output.height) * 100);
-			if(isNaN(output.center_v)) output.center_v = 0.5;
+			if (isNaN(output.center_v)) output.center_v = 0.5;
 		}
-		
+
 		output[OPT_LAYOUT_Y] = layout;
 	}
 	else output[OPT_LAYOUT_Y] = "top";
-	
-	
-	
-	
-	
-	if(type != TYPE_TEXT){
-		
+
+
+
+
+
+	if (type != TYPE_TEXT) {
+
 		var path = get_value_option_safe(name, OPT_PATH);
 		path = removePathSlash(path);
-		
+
 		output[OPT_PATH] = "";
-		if(parentItem != null && parentItem.path != ""){
+		if (parentItem != null && parentItem.path != "") {
 			output[OPT_PATH] += parentItem.path;
-			if(path != "") output[OPT_PATH] += "/";
+			if (path != "") output[OPT_PATH] += "/";
 		}
 		output[OPT_PATH] += path;
 	}
 
-    if(type == TYPE_CONTAINER){
-        output[OPT_EQUALOFFSET] = get_value_option_safe(name, OPT_EQUALOFFSET);
-    }
-	
-	if(type == TYPE_GFX){
-		
+	if (type == TYPE_CONTAINER) {
+		output[OPT_EQUALOFFSET] = get_value_option_safe(name, OPT_EQUALOFFSET);
+	}
+
+	if (type == TYPE_GFX) {
+
 		output[OPT_GFX_TYPE] = get_value_option_safe(name, OPT_GFX_TYPE);
-		if(output[OPT_GFX_TYPE] == "") output[OPT_GFX_TYPE] = "layout";	//layout/data
-		
+		if (output[OPT_GFX_TYPE] == "") output[OPT_GFX_TYPE] = "layout";	//layout/data
+
 		output[OPT_BGPARENT] = get_value_option_safe(name, OPT_BGPARENT);
 		output[OPT_BGPARENT] = (output[OPT_BGPARENT] == "1");
-		
-		if(output[OPT_BGPARENT]){
+
+		if (output[OPT_BGPARENT]) {
 			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
 			parentItem.has_graphic = true;
 			output["disable"] = true;
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	//font information (regroupées en un objet) pour type TXT
-	if(type == TYPE_TEXT){
+	if (type == TYPE_TEXT) {
 		var ti = layer.textItem;
-		
+
 		var textdata = {};
-		textdata.color = ti.color.rgb.hexValue;
+		trace("name : " + name + ", kind : " + layer.kind);
+		try {
+			textdata.color = ti.color.rgb.hexValue;
+		}
+		catch (e) {
+			textdata.color = 0x888888;
+		}
+
 		textdata.font = ti.font;
 		textdata.size = Math.round(ti.size.value);
-		textdata.text  =ti.contents.replace(/\r/g, "\\n");
+		textdata.text = ti.contents.replace(/\r/g, "\\n");
 		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
-		
-		tracerec("textItem : "+layer.textItem+", " + textdata.text, level);
-		
-		try{ textdata.leading = getUnitValue(ti.leading); } catch(e){};
-		trace("textdata.leading : "+textdata.leading);
-		
-		try{ textdata.letterspacing = ti.tracking; } catch(e){ textdata.letterspacing= 0;};
-		
-		try{
+
+
+
+		tracerec("textItem : " + layer.textItem + ", " + textdata.text, level);
+
+		try { textdata.leading = Math.round(getUnitValue(ti.leading)); } catch (e) { };
+		trace("textdata.leading : " + textdata.leading);
+
+		try { textdata.letterspacing = ti.tracking; } catch (e) { textdata.letterspacing = 0; };
+
+		try {
 			var justification = ti.justification;
-			if(justification == "Justification.CENTER") textdata.halign = "center";
-			else if(justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
-			else if(justification == "Justification.LEFT") textdata.halign = "left";
-			else if(justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
-			else if(justification == "Justification.RIGHT") textdata.halign = "right";
-			else if(justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
+			if (justification == "Justification.CENTER") textdata.halign = "center";
+			else if (justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
+			else if (justification == "Justification.LEFT") textdata.halign = "left";
+			else if (justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
+			else if (justification == "Justification.RIGHT") textdata.halign = "right";
+			else if (justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
 			else textdata.halign = "left";
 		}
-		catch(e){ textdata.halign = "left"; };
-		
-		trace("textdata.halign : "+textdata.halign);
-		
+		catch (e) { textdata.halign = "left"; };
+
+		trace("textdata.halign : " + textdata.halign);
+
 		output["textdata"] = textdata;
-		
+
 	}
 	
-	output.parent = parentItem;
+	//divide units for @x2
 	
+	if (output['textdata']) output.textdata.size = Math.round(output.textdata.size * 0.5 * FACTOR_FONT_SIZE);
+
+
+
+	output.parent = parentItem;
+
 	return output;
 }
 
@@ -330,14 +379,13 @@ function create_item(layer, name, type, parentItem, level)
 
 
 
-function get_type(layer, name, isroot, level)
-{
+function get_type(layer, name, isroot, level) {
 	var forced_type = get_forced_type(name);
-	if(forced_type != "") return forced_type;
-	
-	if(!isroot || has_prefix(name)){
+	if (forced_type != "") return forced_type;
+
+	if (!isroot || has_prefix(name)) {
 		var natural_type = get_natural_type(layer);
-		if(natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
+		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
 		else return "";
 	}
 	return "";
@@ -345,20 +393,22 @@ function get_type(layer, name, isroot, level)
 
 
 
-function main(settings)
-{
-	trace("main, settings.overwrite :"+settings.overwrite);	
-	if(settings.overwrite == undefined) settings.overwrite = false;
-	
+function main(settings) {
+	trace("main, settings.overwrite :" + settings.overwrite);
+
+
+	globalSettings = settings;
+	if (settings.overwrite == undefined) settings.overwrite = false;
+
 	exportPath = settings.destination;
 	overwrite = settings.overwrite;
-	
-	if(overwrite){
+
+	if (overwrite) {
 		var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
 		exportFolder.remove();
-		
+
 	}
-	
+
 	/* 
 	//trace("layers : "+layers);
 	//testrec(doc);
@@ -369,54 +419,54 @@ function main(settings)
 	showDialogOK();
 	return;
 	*/
-	
+
 	recursive_loop(doc, null, null, 0);
 	var l = listErrors;
 	//trace("listErrors : "+listErrors);
-	
-	
+
+
 
 	//generation des templates
-	
+
 	var tpl_id = tpl_ids[settings.indexTpl];
-	
-	
-	var config_str = loadFilePath("templates/"+tpl_id+"/config.json");
+
+
+	var config_str = loadFilePath("templates/" + tpl_id + "/config.json");
 	var config = jamJSON.parse(config_str, true);
 	var templates;
 	templates = generate_template(listItem, tpl_id, config);
 
 	//ecritures des templates
 
-	for(var i=0; i<templates.length; i++){
-		
+	for (var i = 0; i < templates.length; i++) {
+
 		var tpl = templates[i];
 		var path2 = EXPORT_FOLDER + "/" + tpl_id + "/";
 		createFile(exportPath, path2 + tpl.filename, tpl.content);
-		
+
 	}
-	
-	if(listErrors.length > 0){
+
+	if (listErrors.length > 0) {
 		showDialogError(listErrors);
 		createErrorFile(listErrors);
 	}
 	else showDialogOK();
-	
+
 }
 
 
 
 
- 
+
 var tpl_ids = get_tpl_ids();
 //var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
 var tpl_labels = tpl_ids;
 
-if(DEBUG_MODE && false){
+if (DEBUG_MODE && false) {
 	var settings = {
-		overwrite : false,
-		destination : activeDocument.path,
-		indexTpl : 1,
+		overwrite: false,
+		destination: activeDocument.path,
+		indexTpl: 1,
 	};
 	main(settings);
 }

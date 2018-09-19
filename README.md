@@ -37,6 +37,9 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 ## Todo
 
 
+- [x] html : ordre layers inversé ?
+- [ ] prefix image paramétrable (fenetre param start)
+- [ ] equaloffset => ajouter un type MC (haxe, html le traite comme un container) (a voir si on lie les 2 propriétés)
 - [ ] Warning d'erreur : ajouter btn close (critique sur CC 2017)
 - [ ] Handle JPG export (option format and quality)
 - [ ] container => prefixchildren

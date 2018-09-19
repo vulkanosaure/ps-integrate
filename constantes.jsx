@@ -63,3 +63,5 @@ var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";
 
 var DEBUG_MODE = true;
+
+var FACTOR_FONT_SIZE = 0.6;

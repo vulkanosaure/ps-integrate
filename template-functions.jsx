@@ -86,7 +86,6 @@ TPL_FUNCTIONS["html"] = {
 	
 	getLayoutData : function (item)
 	{
-		var base_folder_img = "images";
 		
 		var x = item.position[0];
 		var y = item.position[1];
@@ -119,11 +118,11 @@ TPL_FUNCTIONS["html"] = {
 		
 		// if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){
 		if(item.has_graphic){
-			var path = base_folder_img + "/" + item.path;
+			var path = item.path;
 			if(item.path != "") path += "/";
 			path += item.filename;
 			path += ".png";
-			propsModel["background-image"] = {value : path, prefix : "url('/", sufix : "')"};
+			propsModel["background-image"] = {value : path, prefix : "url('/assets/images/", sufix : "')"};
 			
 			propsModel["width"] = {sufix : "px", br : false};
 			propsModel["height"] = {sufix : "px"};

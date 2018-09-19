@@ -239,4 +239,56 @@ function TemporaryAlpha() {
       this.alpha.remove();  
    }  
 }  
-  
+
+
+
+
+
+function undoHistory()
+{
+	executeAction( charIDToTypeID('undo'), undefined, DialogModes.NO );  
+}
+
+
+
+function getBounds(layer, type)
+{
+	var lastActive = activeDocument.activeLayer;
+	var mustMerge = (type == TYPE_GFX && layer.typename == "LayerSet");
+	
+	var targetLayer = layer;
+	if(mustMerge){
+		var mfnewdLayer = layer.duplicate();
+		targetLayer = mfnewdLayer.merge();
+	}
+		
+	var bounds = targetLayer.bounds;
+	
+	
+	if(mustMerge) targetLayer.remove();
+	
+	// activeDocument.activeLayer = lastActive;
+	
+	return bounds;
+
+}
+
+
+ /* 
+function getBounds(layer, type) 
+{
+		var mfDoc = activeDocument;
+    var mflayer = activeDocument.activeLayer; // currently active layer
+    var mfnewdLayer = mfDoc.activeLayer.duplicate(); // Dublicates active layer or group (creating a temp layer)
+    mfDoc.activeLayer = mfnewdLayer; // sets the temp layer as the active layer
+    mfnewdLayer.merge(); // merges it, this leaves only visible layers
+
+    var mfmlayer = activeDocument.activeLayer; //Grab the currently selected layer
+    var bounds = mfmlayer.bounds;
+
+    mfmlayer.remove(); // delete the temp layer
+    mfDoc.activeLayer = mflayer; // gets back to the layer that was active at the begining
+	
+	return bounds;
+}
+   */

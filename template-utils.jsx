@@ -130,6 +130,11 @@ Array.prototype.indexOf = function(value)
 	return -1;
 }
 
+Array.prototype.reverse = function(tab)
+{
+	return tab;
+}
+
 
 
 

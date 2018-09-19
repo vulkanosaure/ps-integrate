@@ -180,7 +180,10 @@ TODO :
 	- expliquer les templates
 	
 	
-	
+#### Settings
+
+- In edit / preferences : set unit and rulers as pixels.
+
 
 #### Notes for HaXe
 - think of renaming font accordingly
