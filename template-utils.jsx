@@ -158,7 +158,15 @@ function propsToString(props, options)
 		if(options.quoteProperty == "simple") quotestr = "'";
 		else if(options.quoteProperty == "double") quotestr = '"';
 		var str = quotestr + i + quotestr + options.equal + props[i];
-		tab.push(str);
+		
+		//exception, width height, one line
+		if(i == 'height' && props['width']){
+			tab[tab.length - 1] += '; '+str;
+		}
+		else if(i == 'top' && props['left']){
+			tab[tab.length - 1] += '; '+str;
+		}
+		else tab.push(str);
 	}
 
 	var str;
@@ -210,7 +218,9 @@ function mapProps(model, props)
 				if(tab.round) value = Math.round(value);
 			}
 			
-			output[propname] = prefix + value + sufix;
+			var keyobj = propname;
+			if(tab.comment) keyobj = '//' + keyobj;
+			output[keyobj] = prefix + value + sufix;
 		}
 		
 	}

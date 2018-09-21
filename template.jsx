@@ -10,6 +10,7 @@
 	var configMain = config.main;
 	var configTextformat = config.textformat;
 	var configLayout = config.layout;
+	var configConfig = config.config;
 	
 	var baseIndent = configMain.base_indent;
 	var path_tpl = "templates/"+tpl_id+"/";
@@ -47,7 +48,7 @@
 		for(var i = 0; i < len; i++){
 				
 			var textdata = listTextFormat[i];
-			var data_str = TPL_FUNCTIONS[tpl_id].getTextFormatData(textdata);
+			var data_str = TPL_FUNCTIONS[tpl_id].getTextFormatData(textdata, configConfig);
 			
 			var textformat_id = getTextFormatID(textdata);
 			var data = {"textformat_id" : textformat_id, "textformat_data" : data_str};
@@ -91,6 +92,8 @@
 	{
 		var len = items.length;
 		var linebreaks;
+		var prevItem = null;
+		
 		if(type == "main"){
 			linebreaks = configMain.linebreaks;
 		}
@@ -151,7 +154,12 @@
 			}
 			else if(type == "layout"){
 				
-				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item);
+				if(items.length > 1)
+				
+				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item, prevItem);
+				if(data_str == undefined){
+					data_str = "{}";
+				}
 				
 				var layout_id = getLayoutID(item);
 				var data = {"layout_id" : layout_id, "layout_data" : data_str};
@@ -178,7 +186,7 @@
 			}
 			
 			if(iscontainer){
-
+				
 				rec(item.childrens, item, level + 1, type);
 			}
 			
@@ -194,7 +202,7 @@
 				}
 			}
 			
-			
+			prevItem = item;
 		}
 		
 	}
@@ -221,7 +229,7 @@
 		
 		
 		if(!_tffile && item.type == TYPE_TEXT){
-			data["textformat_data"] = TPL_FUNCTIONS[tpl_id].getTextFormatData(item.textdata);
+			data["textformat_data"] = TPL_FUNCTIONS[tpl_id].getTextFormatData(item.textdata, configConfig);
 		}
 		
 		if(!_layoutfile){

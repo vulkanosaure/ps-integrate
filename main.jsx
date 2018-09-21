@@ -37,6 +37,7 @@ var globalSettings;
 
 
 function testrec(container) {
+    
 	var layers = container.layers;	//+0
 
 	var len = layers.length;		//+4
@@ -103,7 +104,7 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 		if (type != "") {
 
-			var item = create_item(layer, name, type, parentItem, level);
+			var item = create_item(layer, name, type, parentItem, level, i);
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + item.width + ", height : " + item.height, level);
 
 			var errors = check_error_item(name, item);
@@ -163,7 +164,7 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 
 
-function create_item(layer, name, type, parentItem, level) {
+function create_item(layer, name, type, parentItem, level, index) {
 	var output = {};
 
 
@@ -174,8 +175,14 @@ function create_item(layer, name, type, parentItem, level) {
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
 	if (output[OPT_NAME] == "") {
-		output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
+		// output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
+		
+		if(parentItem) output[OPT_NAME] += parentItem.name;
+		else output[OPT_NAME] += type;
+		output[OPT_NAME] += '_' + index;
+		
 	}
+	
 	output[OPT_FILENAME] = output[OPT_NAME];
 
 	// var bounds = layer.bounds;
@@ -231,19 +238,6 @@ function create_item(layer, name, type, parentItem, level) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
 	}
-
-
-
-	//divide units for @x2
-
-	if (output[OPT_WIDTH]) output[OPT_WIDTH] = Math.round(output[OPT_WIDTH] * 0.5);
-	if (output[OPT_HEIGHT]) output[OPT_HEIGHT] = Math.round(output[OPT_HEIGHT] * 0.5);
-	if (output.position) {
-		if (output.position[0]) output.position[0] = Math.round(output.position[0] * 0.5);
-		if (output.position[1]) output.position[1] = Math.round(output.position[1] * 0.5);
-	}
-	
-
 
 
 
@@ -364,11 +358,7 @@ function create_item(layer, name, type, parentItem, level) {
 
 	}
 	
-	//divide units for @x2
 	
-	if (output['textdata']) output.textdata.size = Math.round(output.textdata.size * 0.5 * FACTOR_FONT_SIZE);
-
-
 
 	output.parent = parentItem;
 

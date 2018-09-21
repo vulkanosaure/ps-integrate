@@ -1,4 +1,4 @@
-﻿var PREFIX = "ps--";
+﻿ var PREFIX = "ps--";
 
 var PREFIX_LENGTH = PREFIX.length;
 
@@ -64,4 +64,3 @@ var EXPORT_FOLDER_TPL = "templates";
 
 var DEBUG_MODE = true;
 
-var FACTOR_FONT_SIZE = 0.6;

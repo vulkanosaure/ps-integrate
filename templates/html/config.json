@@ -42,6 +42,11 @@
 				"after" : 1
 			}
 		}
+	},
+	
+	
+	"config" : {
+		"font_size_multiplier" : 0.53
 	}
 
 }

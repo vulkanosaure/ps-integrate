@@ -9,7 +9,7 @@
 
 TPL_FUNCTIONS["haxe"] = {
 
-	getTextFormatData : function (textdata, path_tpl)
+	getTextFormatData : function (textdata)
 	{
 		var propsModel = {
 			'color' : {prefix : '0x'},
@@ -65,7 +65,7 @@ TPL_FUNCTIONS["haxe"] = {
 
 TPL_FUNCTIONS["html"] = {
 
-	getTextFormatData : function (textdata, path_tpl)
+	getTextFormatData : function (textdata, config)
 	{
 		var mletterspacing = 0.00114285 * textdata.size;
 		
@@ -73,10 +73,38 @@ TPL_FUNCTIONS["html"] = {
 			'color' : {prefix : '#'},
 			'font' : {name : 'font-family', quote : 'simple'},
 			'size' : {name : 'font-size', sufix : 'px'},
-			'leading' : {name : 'line-height', sufix : 'px'},
+			// 'leading' : {name : 'line-height', sufix : 'px'},
 			'letterspacing' : {name : 'letter-spacing', sufix : 'px', multiplier : mletterspacing, round:true},
 			'halign' : {name : 'text-align', quote : 'none'},
 		};
+		
+		
+		
+		//______________________________
+		//retina handling
+		
+		var retinaMultiplier = 0.5;
+		
+		var listPropertyRetina = [
+			"size",
+		];
+		
+		var len = listPropertyRetina.length;
+		for(var i=0; i<len; i++){
+			var prop = listPropertyRetina[i];
+			var propkey = prop.replace('-', '_');
+			var obj = propsModel[propkey];
+			
+			if(obj){
+				var value = obj.value;
+				if(!value || value.indexOf('%') == -1){
+					obj.multiplier = retinaMultiplier;
+					if(config && config.font_size_multiplier) obj.multiplier *= config.font_size_multiplier;
+					obj.round = true;
+				}
+			}
+		};
+		
 		
 		var data = mapProps(propsModel, textdata);
 		var str = propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'});
@@ -84,7 +112,7 @@ TPL_FUNCTIONS["html"] = {
 	},
 	
 	
-	getLayoutData : function (item)
+	getLayoutData : function (item, prevItem)
 	{
 		
 		var x = item.position[0];
@@ -94,27 +122,52 @@ TPL_FUNCTIONS["html"] = {
 		
 		var propsModel = {};
 		
+		
 		//temp
 		propsModel["position"] = { value: "absolute", quote: "none" };
 		
-		if(lx == "left" && x != 0) propsModel["margin_left"] = {name : "margin-left", sufix : "px"};
-		else if(lx == "right") propsModel["margin_right"] = {name : "margin-right", sufix : "px"};
+		if(lx == "left" && x != 0) propsModel["margin_left"] = {name : "left", sufix : "px"};
+		else if(lx == "right") propsModel["margin_right"] = {name : "right", sufix : "px"};
 		else if(lx == "center"){
 			propsModel["position"] = { value: "absolute", quote: "none" };
 			propsModel["center_h"] = { name: 'left', sufix: '%', multiplier: 1 };
-			propsModel["margin-left"] = { value: -Math.round(item.width * item.center_h * 0.01), sufix: 'px' };
+			propsModel["margin-left"] = { name : "left", value: -Math.round(item.width * item.center_h * 0.01), sufix: 'px'};
 		}
 		
-		if(ly == "top" && y != 0) propsModel["margin_top"] = {name : "margin-top", sufix : "px"};
-		else if(ly == "bottom") propsModel["margin_bottom"] = {name : "margin-bottom", sufix : "px"};
+		if(ly == "top" && y != 0) propsModel["margin_top"] = {name : "top", sufix : "px"};
+		else if(ly == "bottom") propsModel["margin_bottom"] = {name : "bottom", sufix : "px"};
 		else if(ly == "center"){
 			propsModel["position"] = { value: "absolute", quote: "none" };
 			propsModel["center_v"] = { name: 'top', sufix: '%', multiplier: 1 };
-			propsModel["margin-top"] = { value: -Math.round(item.height * item.center_v * 0.01), sufix: 'px' };
+			propsModel["margin-top"] = { name : "top", value: -Math.round(item.height * item.center_v * 0.01), sufix: 'px'};
 		}
+		
+		
+		//_______________________________
+		//margins left (relative)
+		
+		if(lx == "left" && x != 0){
+			if(prevItem){
+				var value = x - (prevItem.position[0] + prevItem[OPT_WIDTH]);
+				if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px', comment:true };
+			}
+		}
+		if(ly == "top" && y != 0){
+			if(prevItem){
+				var value = y - (prevItem.position[1] + prevItem[OPT_HEIGHT]);
+				if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px', comment:true };
+			}
+		}
+		
+		
+		
 		
 		if(lx != "left") propsModel["width"] = {sufix : "px"};
 		if(ly != "top") propsModel["height"] = {sufix : "px"};
+		
+		if([TYPE_TEXT].indexOf(item.type) != -1){
+			propsModel["width"] = {sufix : "px"};
+		}
 		
 		// if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){
 		if(item.has_graphic){
@@ -136,9 +189,45 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		
+		//______________________________
+		//retina handling
+		
+		var retinaMultiplier = 0.5;
+		
+		var listPropertyRetina = [
+			"width",
+			"height",
+			"margin-left",
+			"margin-right",
+			"margin-top",
+			"margin-bottom",
+			"margin_left2",
+			"margin_top2",
+		];
+		
+		var len = listPropertyRetina.length;
+		for(var i=0; i<len; i++){
+			var prop = listPropertyRetina[i];
+			var propkey = prop.replace('-', '_');
+			
+			if(propsModel[propkey]){
+				
+				var obj = propsModel[propkey];
+				var value = obj.value;
+				
+				if(!value || typeof value=='number' || value.indexOf('%') == -1){
+					obj.multiplier = retinaMultiplier;
+					obj.round = true;
+				}
+			}
+		};
+		
+		
+		
 		var data = mapProps(propsModel, item);
 		
 		var str = propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'});
+		
 		return str;
 	}
 
