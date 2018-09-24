@@ -280,10 +280,12 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (type != TYPE_TEXT) {
 
 		var path = get_value_option_safe(name, OPT_PATH);
+		
+		var startSlash = path.substr(0, 1) == '/';
 		path = removePathSlash(path);
 
 		output[OPT_PATH] = "";
-		if (parentItem != null && parentItem.path != "") {
+		if (!startSlash && parentItem != null && parentItem.path != "") {
 			output[OPT_PATH] += parentItem.path;
 			if (path != "") output[OPT_PATH] += "/";
 		}

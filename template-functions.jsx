@@ -143,6 +143,11 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		
+		if(propsModel["position"]) propsModel["position"].comment = true;
+		if(propsModel["margin_left"]) propsModel["margin_left"].comment = true;
+		if(propsModel["margin_top"]) propsModel["margin_top"].comment = true;
+		
+		
 		//_______________________________
 		//margins left (relative)
 		
@@ -167,6 +172,7 @@ TPL_FUNCTIONS["html"] = {
 		
 		if([TYPE_TEXT].indexOf(item.type) != -1){
 			propsModel["width"] = {sufix : "px"};
+			propsModel["height"] = {sufix : "px", comment:true};
 		}
 		
 		// if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){

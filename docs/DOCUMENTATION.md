@@ -28,6 +28,7 @@ The most important type, you should always set it first.
 The folder in which the layer will be exported.
 
 *If inside a container, this path is relative to the container's path. Default : empty*
+*You can set a path starting with '/' to make it absolute from the root images path
 
 #### filename
 The name of the file to be exported, don't include the file extension

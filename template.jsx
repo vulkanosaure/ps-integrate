@@ -157,15 +157,19 @@
 				if(items.length > 1)
 				
 				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item, prevItem);
+				
+				/* 
 				if(data_str == undefined){
 					data_str = "{}";
 				}
-				
-				var layout_id = getLayoutID(item);
-				var data = {"layout_id" : layout_id, "layout_data" : data_str};
-				var str = convertTemplate(path_tpl + "layout/layout.txt", data);
-				
-				tpl_add_block(str, indent);
+				 */
+				if(data_str != undefined){
+					var layout_id = getLayoutID(item);
+					var data = {"layout_id" : layout_id, "layout_data" : data_str};
+					var str = convertTemplate(path_tpl + "layout/layout.txt", data);
+					
+					tpl_add_block(str, indent);
+				}
 				
 			}
 			
