@@ -171,7 +171,7 @@ TPL_FUNCTIONS["html"] = {
 		if(ly != "top") propsModel["height"] = {sufix : "px"};
 		
 		if([TYPE_TEXT].indexOf(item.type) != -1){
-			propsModel["width"] = {sufix : "px"};
+			propsModel["width"] = {sufix : "px", comment:true};
 			propsModel["height"] = {sufix : "px", comment:true};
 		}
 		
@@ -187,6 +187,11 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["height"] = {sufix : "px"};
 		
 		}
+		else if(item.type == TYPE_CONTAINER){
+			//ajoute qd mm la width en comment
+			propsModel["width"] = {sufix : "px", comment:true};
+		}
+		
 		
 		//CONTAINER ROOT => dimensions 100% / 100%
 		if(item.parent == null && item.type == TYPE_CONTAINER){

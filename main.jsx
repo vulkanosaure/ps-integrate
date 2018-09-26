@@ -10,6 +10,7 @@
 #include "template.jsx";
 #include "template-functions.jsx";
 #include "lib/jamJSON.jsx";
+#include "lib/textItem.jsx";
 
 
 
@@ -318,7 +319,16 @@ function create_item(layer, name, type, parentItem, level, index) {
 	//font information (regroupées en un objet) pour type TXT
 	if (type == TYPE_TEXT) {
 		var ti = layer.textItem;
-
+		
+		// var activeLayer = activeDocument.activeLayer;
+		
+		/* 
+		var f = getFonts(layer);  
+		for(var s in f) {
+			$.writeln( f[s].font + " - " + f[s].color.rgb.hexValue + " - " + Number(f[s].size).toFixed(2) + " - [" + f[s].text + "] - " + Number(f[s].leading));  
+		}
+		*/
+		
 		var textdata = {};
 		trace("name : " + name + ", kind : " + layer.kind);
 		try {
@@ -331,6 +341,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 		textdata.font = ti.font;
 		textdata.size = Math.round(ti.size.value);
 		textdata.text = ti.contents.replace(/\r/g, "\\n");
+		//remove linebreak before and after
+		textdata.text = textdata.text.replace(/^\\n/g, "");
+		textdata.text = textdata.text.replace(/(\\n)+$/g, "");
+		
 		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
 
 
