@@ -155,6 +155,8 @@ A function that must return the string that will be displayed in ````layout_data
 - x / y
 - textformat
 - textformat_id
+- text_color (class color to be customized in config file or in the form "col_FFFFFF")
+- text_align (class name in the form "text_left")
 - layout
 - layout_id
 

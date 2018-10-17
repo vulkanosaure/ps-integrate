@@ -50,7 +50,7 @@
 			var textdata = listTextFormat[i];
 			var data_str = TPL_FUNCTIONS[tpl_id].getTextFormatData(textdata, configConfig);
 			
-			var textformat_id = getTextFormatID(textdata);
+			var textformat_id = getTextFormatID(textdata, configConfig);
 			var data = {"textformat_id" : textformat_id, "textformat_data" : data_str};
 			var str = convertTemplate(path_tpl + "textformat/textformat.txt", data);
 			
@@ -180,7 +180,7 @@
 			
 			if(type == "main" && textFormatFile && item.type == TYPE_TEXT){
 				
-				var textformat_id = getTextFormatID(item.textdata);
+				var textformat_id = getTextFormatID(item.textdata, configConfig);
 				//trace("listTextFormatID : "+typeof listTextFormatID);
 				
 				if(listTextFormatID.indexOf(textformat_id) == -1){
@@ -267,7 +267,11 @@
 		}
 		else if(item.type == TYPE_TEXT){
 			
-			data["textformat_id"] = getTextFormatID(item.textdata);
+			data["textformat_id"] = getTextFormatID(item.textdata, configConfig);
+			
+			data["text_color"] = getTextColorID(item.textdata, config.colors);
+			
+			data["text_align"] = "text_" + item.textdata.halign;
 			
 			//eventuellement une boucle sur textdata ici
 			data["text"] = item.textdata.text;

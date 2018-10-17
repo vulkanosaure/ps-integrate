@@ -71,23 +71,37 @@ function getLayoutID(item)
 }
 
 
-function getTextFormatID(textdata)
+function getTextFormatID(textdata, config)
 {
 	var output = "";
 	output += textdata.font;
 	output += "_";
-	output += textdata.color;
-	output += "_";
-	output += textdata.size;
+	// output += textdata.color;
+	// output += "_";
 	
-	output += textdata.halign.substr(0, 1) + "";
-	output += textdata.letterspacing + "";
-	if(textdata.leading != undefined) output += textdata.leading + "";
+	var size = textdata.size;
+	size *= 0.5;	//retina
+	size *= config.font_size_multiplier;
+	size = Math.round(size);
+	
+	output += size;
+	
+	// output += textdata.halign.substr(0, 1) + "";
+	// output += textdata.letterspacing + "";
+	// if(textdata.leading != undefined) output += textdata.leading + "";
 	
 	output = getVarname(output);
 	return output;
 }
 
+
+function getTextColorID(textdata, colors)
+{
+	var output = '';
+	if(colors[textdata.color]) output += colors[textdata.color];
+	else output += 'col_'+textdata.color;
+	return output;
+}
 
 
 function getVarname(str)
@@ -157,7 +171,18 @@ function propsToString(props, options)
 		var quotestr = "";
 		if(options.quoteProperty == "simple") quotestr = "'";
 		else if(options.quoteProperty == "double") quotestr = '"';
-		var str = quotestr + i + quotestr + options.equal + props[i];
+		
+		var obj = props[i];
+		var config = obj.config;
+		var str = '';
+		if(config.comment) str += '//';
+		
+		if(!config.raw){
+			str += quotestr + i + quotestr;
+			str += options.equal;
+		}
+		
+		str += obj.data;
 		
 		//exception, width height, one line
 		if(i == 'height' && props['width']){
@@ -199,7 +224,7 @@ function mapProps(model, props)
 			var propname = (tab != null && tab.name != undefined) ? tab.name : i;
 			
 			var prefix = (tab != null && tab.prefix != undefined) ? tab.prefix : "";
-			var sufix = (tab != null && tab.sufix != undefined) ? tab.sufix : "";4
+			var sufix = (tab != null && tab.sufix != undefined) ? tab.sufix : "";
 			
 			
 			if(tab != null){
@@ -219,8 +244,10 @@ function mapProps(model, props)
 			}
 			
 			var keyobj = propname;
-			if(tab.comment) keyobj = '//' + keyobj;
-			output[keyobj] = prefix + value + sufix;
+			output[keyobj] = {
+				data: prefix + value + sufix,
+				config:tab,
+			};
 		}
 		
 	}

@@ -70,12 +70,12 @@ TPL_FUNCTIONS["html"] = {
 		var mletterspacing = 0.00114285 * textdata.size;
 		
 		var propsModel = {
-			'color' : {prefix : '#'},
+			// 'color' : {prefix : '#'},
 			'font' : {name : 'font-family', quote : 'simple'},
 			'size' : {name : 'font-size', sufix : 'px'},
 			// 'leading' : {name : 'line-height', sufix : 'px'},
 			'letterspacing' : {name : 'letter-spacing', sufix : 'px', multiplier : mletterspacing, round:true},
-			'halign' : {name : 'text-align', quote : 'none'},
+			// 'halign' : {name : 'text-align', quote : 'none'},
 		};
 		
 		
@@ -180,8 +180,18 @@ TPL_FUNCTIONS["html"] = {
 			var path = item.path;
 			if(item.path != "") path += "/";
 			path += item.filename;
+			var path_noext = path;
 			path += ".png";
+			
 			propsModel["background-image"] = {value : path, prefix : "url('/assets/images/", sufix : "')"};
+			
+			//retina
+			var path = '/assets/images/' + path_noext;
+			var w = Math.round(item['width'] * 0.5);
+			var h = Math.round(item['height'] * 0.5);
+			
+			
+			propsModel["retinaBG"] = {value : "@include retinaBg('"+path+"', "+w+"px, "+h+"px)", raw:true, comment:true};
 			
 			propsModel["width"] = {sufix : "px", br : false};
 			propsModel["height"] = {sufix : "px"};
