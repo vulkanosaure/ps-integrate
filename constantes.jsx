@@ -53,11 +53,10 @@ OPTIONS_SHORCUTS2["centery"] = "layouty=center";
 OPTIONS_SHORCUTS2["center"] = "layoutx=center--layouty=center";
 
 //if found, add =1 behind
-var OPTIONS_SHORCUTS3 = [OPT_BGPARENT];
-var OPTIONS_SHORCUTS3 = [OPT_EQUALOFFSET];
+var OPTIONS_SHORCUTS3 = [OPT_BGPARENT, OPT_EQUALOFFSET];
 
 
-var EXPORT_FOLDER = "ps-integrate-export";
+var EXPORT_FOLDER = "export-ps-integrate";
 
 var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";

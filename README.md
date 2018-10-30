@@ -112,3 +112,17 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 - [ ] afficher un dialog pour les afficher hors debug
 
 
+
+_______________________________________
+- bgparent, dimensions wrong
+- association text color, font insensitive								OK
+- rename ps-integrate-export en export-ps-integrate				OK
+
+
+
+_______________________________________
+procédures à ne pas oublier
+
+- réordonner les calques
+- si effect : grouper et faire un gfx du groupe
+

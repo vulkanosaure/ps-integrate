@@ -74,7 +74,7 @@ function getLayoutID(item)
 function getTextFormatID(textdata, config)
 {
 	var output = "";
-	output += textdata.font;
+	output += textdata.font.toLowerCase();
 	output += "_";
 	// output += textdata.color;
 	// output += "_";
@@ -97,9 +97,17 @@ function getTextFormatID(textdata, config)
 
 function getTextColorID(textdata, colors)
 {
+	
 	var output = '';
-	if(colors[textdata.color]) output += colors[textdata.color];
-	else output += 'col_'+textdata.color;
+	
+	for(var k in colors){
+		if(k.toLowerCase() == textdata.color.toLowerCase()){
+			output += colors[k];
+			break;
+		}
+	}
+	
+	if(output == '') output = 'col_'+textdata.color;
 	return output;
 }
 

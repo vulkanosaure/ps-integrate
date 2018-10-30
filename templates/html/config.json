@@ -46,12 +46,13 @@
 	
 	
 	"config" : {
-		"font_size_multiplier" : 0.53
+		"font_size_multiplier" : 1.0
 	},
 	
 	
 	"colors" : {
-		"F4D64B" : "white"
+		"FFFfff" : "col_light",
+		"ebce45" : "col_tonic"
 	}
 
 }
