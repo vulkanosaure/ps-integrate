@@ -22,6 +22,41 @@ function closeAllLayerSets(ref) {
                     if (layer.typename == 'LayerSet') {closeGroup(layer); var layer = layers[i]; closeAllLayerSets(layer);};  
           }  
 }  
+
+
+function collapseLayerSet(layer){
+	
+	// app.activeDocument.activeLayer = layer;
+	var groupname = app.activeDocument.activeLayer.name // remember name of group  
+	// var groupname = layer.name // remember name of group  
+	var idungroupLayersEvent = stringIDToTypeID( "ungroupLayersEvent" ); // this part from  Script Listene -- ungroup group  
+	var desc14 = new ActionDescriptor();  
+	var idnull = charIDToTypeID( "null" );  
+	var ref13 = new ActionReference();  
+	var idLyr = charIDToTypeID( "Lyr " );  
+	var idOrdn = charIDToTypeID( "Ordn" );  
+	var idTrgt = charIDToTypeID( "Trgt" );  
+	ref13.putEnumerated( idLyr, idOrdn, idTrgt );  
+	desc14.putReference( idnull, ref13 );  
+	executeAction( idungroupLayersEvent, desc14, DialogModes.NO );  
+	var idMk = charIDToTypeID( "Mk  " ); // this part from  Script Listene --  group selected layers  
+	var desc15 = new ActionDescriptor();  
+	var idnull = charIDToTypeID( "null" );  
+	var ref14 = new ActionReference();  
+	var idlayerSection = stringIDToTypeID( "layerSection" );  
+	ref14.putClass( idlayerSection );  
+	desc15.putReference( idnull, ref14 );  
+	var idFrom = charIDToTypeID( "From" );  
+	var ref15 = new ActionReference();  
+	var idLyr = charIDToTypeID( "Lyr " );  
+	var idOrdn = charIDToTypeID( "Ordn" );  
+	var idTrgt = charIDToTypeID( "Trgt" );  
+	ref15.putEnumerated( idLyr, idOrdn, idTrgt );  
+	desc15.putReference( idFrom, ref15 );  
+	executeAction( idMk, desc15, DialogModes.NO );  
+	// app.activeDocument.activeLayer.name = groupname // recall group name  
+	// layer.name = groupname // recall group name  
+}
   
   
 function openGroup(layerSet) {  

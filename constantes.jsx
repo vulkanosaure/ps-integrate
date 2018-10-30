@@ -2,11 +2,12 @@
 
 var PREFIX_LENGTH = PREFIX.length;
 
-var TYPE_GFX = "gfx";
+var TYPE_GFX = "img";
 var TYPE_TEXT = "txt";
 var TYPE_BTN = "btn";
 var TYPE_BTNC = "btnc";
 var TYPE_CONTAINER = "cont";
+var TYPE_DIV = "div";
 
 var CONTAINERS_TYPE = [TYPE_CONTAINER, TYPE_BTNC];
 var EXPORTS_TYPE = [TYPE_GFX, TYPE_BTN];
@@ -27,6 +28,7 @@ var OPT_POS_Y = "y";
 var OPT_WIDTH = "width";
 var OPT_HEIGHT = "height";
 var OPT_EQUALOFFSET = "equaloffset";
+var OPT_DOEXPORT = "doexport";
 
 
 var OPTIONS_RULES = {};
@@ -39,12 +41,14 @@ OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
+OPTIONS_RULES[OPT_DOEXPORT] = ["!export", "1", "0"];
 
 //if only value found : add property=value
 var OPTIONS_SHORCUTS = {};
 OPTIONS_SHORCUTS[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_BTN, TYPE_BTNC, TYPE_CONTAINER];
 OPTIONS_SHORCUTS[OPT_LAYOUT_X] = ["left", "right"];
 OPTIONS_SHORCUTS[OPT_LAYOUT_Y] = ["top", "bottom"];
+OPTIONS_SHORCUTS[OPT_DOEXPORT] = ["!export"];
 
 //keywords with special meaning
 var OPTIONS_SHORCUTS2 = {};
@@ -54,6 +58,10 @@ OPTIONS_SHORCUTS2["center"] = "layoutx=center--layouty=center";
 
 //if found, add =1 behind
 var OPTIONS_SHORCUTS3 = [OPT_BGPARENT, OPT_EQUALOFFSET];
+
+//prefix
+var OPTIONS_SHORCUTS_PREFIX = {};
+OPTIONS_SHORCUTS_PREFIX[OPT_NAME] = "#";
 
 
 var EXPORT_FOLDER = "export-ps-integrate";

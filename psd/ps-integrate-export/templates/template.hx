@@ -25,7 +25,7 @@ cont_10.idLayout = "cont_10";
 LayoutManager.addItem(cont_10, {"margin-left" : 392, "margin-top" : 124});
 
 
-var gfx_12:VImage = new VImage("group/gfx-12");
+var gfx_12:VImage = new VImage("group/img-12");
 cont_10.addChild(gfx_12);
 gfx_12.idLayout = "gfx_12";
 LayoutManager.addItem(gfx_12, {"margin-left" : 426});

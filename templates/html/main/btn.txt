@@ -1,1 +1,1 @@
-<div class="{{layout_id}}">
+<a class="btn {{layout_id}}">

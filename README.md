@@ -105,7 +105,7 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 
 - [x] check que toutes les noms de propriétés existent
 - [x] check que toutes les values sont autorisés pour chaque propriétés (trouver un format global dans constantes.jsx)
-- [x] only text et gfx autorisé dans btnc
+- [x] only text et img autorisé dans btnc
 - [x] prop btnc only autorisé dans btnc
 - [ ] only one btnc = bg
 - [ ] don't include .extension in path
@@ -114,15 +114,23 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 
 
 _______________________________________
-- bgparent, dimensions wrong
 - association text color, font insensitive								OK
-- rename ps-integrate-export en export-ps-integrate				OK
-
+- rename ps-integrate-export en export-ps-integrate						OK
+- !export																OK
+- renommer "gfx" en "img"												OK
+- #element shorcut of name=element										OK
+- file prefix css, insérer son contenu avant chaque css					OK
+- rootClass																OK
+- if element root : size = 100% => remove								TOCHECK
+- ex sur : ps--img--#btn1, il ouvre le calque (et le laisse ouvert)
+	soit tout refermer
+	soit refermer les non recursifs
+- delete img before scanning
 
 
 _______________________________________
 procédures à ne pas oublier
 
 - réordonner les calques
-- si effect : grouper et faire un gfx du groupe
+- si effect : grouper et faire un img du groupe
 

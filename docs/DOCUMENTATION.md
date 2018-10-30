@@ -47,11 +47,11 @@ The name of the element, used template generation.
 - **0**
 Defines a graphic element to be passed to the parent. 
 This is mandatory for 1 child of an element of type 'btnc'
-*Only available for type gfx*
+*Only available for type img*
 
-#### gfxtype
+#### imgtype
 
-*Only available for type gfx*
+*Only available for type img*
 TODO
 
 #### layoutx
@@ -67,7 +67,7 @@ TODO
 #### equaloffset
 - **1**
 - **0**
-Forces all the gfx childrens of the container to be exported at the size of the container (handy for game sprites)
+Forces all the img childrens of the container to be exported at the size of the container (handy for game sprites)
 *Only available for type container*
 
 TODO : x, y, width, height
@@ -91,7 +91,7 @@ If the element is nested in a container, depending of the kind of layer (NORMAL,
 There are 5 types of element
 
 
-#### Graphic (gfx)
+#### Graphic (img)
 Will be exported directly.
 
 *If nested in a container, a layer of kind NORMAL will be considered as a graphic automatically*
@@ -109,7 +109,7 @@ A container is a group of other element, and will not be exported directly. It w
 A button is considered as a graphic, but will be treated accordingly by the template system.
 
 #### Button container (btnc)
-Simillar to a button, but it can contain children of element of type 'text' and 'gfx' only. 
+Simillar to a button, but it can contain children of element of type 'text' and 'img' only. 
 *See option 'btnc' for details*
 
 

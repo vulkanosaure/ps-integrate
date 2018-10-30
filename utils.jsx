@@ -15,7 +15,7 @@ function has_option(name, idoption)
 function get_value_option(name, idoption)
 {
 	//trace("get_value_option : "+name+", idoption : "+idoption);
-	var regexp = new RegExp("--" + idoption + "=(([\\w%/]+(-(?!-))?)+)");
+	var regexp = new RegExp("--" + idoption + "=(([\\w%/!]+(-(?!-))?)+)");
 	output = name.match(regexp);
 	//trace("output : "+output);
 	if(output == null) return "";
@@ -134,6 +134,16 @@ function handleShorcuts(name)
 		//case end
 		var regexp = new RegExp("--" + _prop + "$");
 		var replace = "--" + _prop + "=1" + "";
+		name = name.replace(regexp, replace);
+		
+	}
+	
+	
+	for(var k in OPTIONS_SHORCUTS_PREFIX){
+		
+		var prefix = OPTIONS_SHORCUTS_PREFIX[k];
+		var regexp = new RegExp("--" + prefix);
+		var replace = "--" + k + "=";
 		name = name.replace(regexp, replace);
 		
 	}

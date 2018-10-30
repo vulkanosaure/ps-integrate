@@ -165,10 +165,13 @@
 				 */
 				if(data_str != undefined){
 					var layout_id = getLayoutID(item);
-					var data = {"layout_id" : layout_id, "layout_data" : data_str};
-					var str = convertTemplate(path_tpl + "layout/layout.txt", data);
 					
-					tpl_add_block(str, indent);
+					if(parent){
+						var data = {"layout_id" : layout_id, "layout_data" : data_str};
+						var str = convertTemplate(path_tpl + "layout/layout.txt", data);
+						
+						tpl_add_block(str, indent);
+					}
 				}
 				
 			}
@@ -224,6 +227,7 @@
 		var varname = getVarname(item.name);
 		var parent_varname = (parent != null) ? getVarname(parent.name) : "container";
 		var layout_id = getLayoutID(item);
+		if(!parent) layout_id = configConfig.classname_root || "root";
 		
 		var data = {
 			"varname": varname,

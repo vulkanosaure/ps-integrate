@@ -74,7 +74,7 @@ le layout sera géré dans un fichier à part
 
 clairement il faut une template séparé pour chaque type
 	container
-	gfx
+	img
 	text
 	btn / btnc mélangé (pour l'instant)
 

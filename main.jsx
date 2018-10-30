@@ -119,7 +119,7 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 				else parentItem.childrens.push(item);
 			}
 
-			if (EXPORTS_TYPE.indexOf(type) != -1) {
+			if (EXPORTS_TYPE.indexOf(type) != -1 && item[OPT_DOEXPORT]) {
 
 				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
@@ -156,8 +156,14 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 
 		}
+		
+		// collapseLayerSet(layer);
+		
 
 	}
+	
+	
+	
 }
 
 
@@ -175,6 +181,8 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
+	
+	
 	if (output[OPT_NAME] == "") {
 		// output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
 		
@@ -190,9 +198,9 @@ function create_item(layer, name, type, parentItem, level, index) {
 	var bounds = getBounds(layer, type);
 	output.bounds = bounds;
 
-	if (parentItem != null) {
-
-
+	// if (parentItem != null) {
+	if (true) {
+		
 		var x1 = getUnitValue(bounds[0]);
 		var y1 = getUnitValue(bounds[1]);
 		var x2 = getUnitValue(bounds[2]);
@@ -208,12 +216,14 @@ function create_item(layer, name, type, parentItem, level, index) {
 		trace("output.width : " + output.width + ", output.height:  " + output.height);
 		trace("getUnitValue(bounds[2]) : " + getUnitValue(bounds[2]) + ", getUnitValue(bounds[0]:  " + getUnitValue(bounds[0]));
 	}
+	/* 
 	else {
 		output.position = [0, 0];
 		output.width = DOC_WIDTH;
 		output.height = DOC_HEIGHT;
 	}
-
+	 */
+	 
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
 
@@ -227,9 +237,18 @@ function create_item(layer, name, type, parentItem, level, index) {
 		val = getPercentValue(val) / 100;
 		output[OPT_HEIGHT] = Math.round(val * DOC_HEIGHT);
 	}
+	
+	if (has_option(name, OPT_DOEXPORT)) {
+		var val = get_value_option(name, OPT_DOEXPORT);
+		if(val == "!export") val = false;
+		else val = true;
+		output[OPT_DOEXPORT] = val;
+	}
+	else output[OPT_DOEXPORT] = true;
+	trace('OPT_DOEXPORT '+output[OPT_DOEXPORT]);
 
 
-	tracerec("item " + name + ", parentItem : " + ((parentItem) ? parentItem.name : "") + ", position : " + output.position, level);
+	tracerec("item " + name + ", parentItem : " + ((parentItem) ? parentItem.name : "") + ", position : " + output.position + ", exp : "+output.doexport, level);
 
 	//save pos absolute
 	output.position_abs = [output.position[0], output.position[1]];
@@ -479,7 +498,7 @@ if (DEBUG_MODE && false) {
 else showDialog(main, tpl_labels);
 
 /* 
-var proptest = "ps--gfx--center--bgparent"; 
+var proptest = "ps--img--center--bgparent"; 
 var proptest2 = "ps--centery";
 var proptest3 = "ps--center--bgparent--btnc";
 

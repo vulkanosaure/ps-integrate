@@ -175,7 +175,6 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["height"] = {sufix : "px", comment:true};
 		}
 		
-		// if(item.type == TYPE_GFX || item.type == TYPE_BTN || item.type == TYPE_BTNC){
 		if(item.has_graphic){
 			var path = item.path;
 			if(item.path != "") path += "/";
