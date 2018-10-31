@@ -127,6 +127,9 @@ _______________________________________
 	soit tout refermer
 	soit refermer les non recursifs
 
+- ne pas le faire parcourir les calques non nommés ps-- 				OK
+- bug de letterspacing (cobra zero / credits / title)
+- si layer text, renommer en img => pas d'export ? si finalement jcrois
 
 _______________________________________
 procédures à ne pas oublier

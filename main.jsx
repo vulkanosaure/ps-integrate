@@ -144,7 +144,8 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 		}
 
-		if (isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)) {
+		// if (isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)) {
+		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
 
 			//parentLayer = layer;
 			parentLayer = null;
