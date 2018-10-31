@@ -9,6 +9,7 @@
 #include "template-utils.jsx";
 #include "template.jsx";
 #include "template-functions.jsx";
+#include "file-utils.jsx";
 #include "lib/jamJSON.jsx";
 #include "lib/textItem.jsx";
 
@@ -156,9 +157,13 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 
 		}
-		
-		// collapseLayerSet(layer);
-		
+		/* 
+		//bug
+		if((type != "" && CONTAINERS_TYPE.indexOf(type) == -1)){
+			trace('collaaaapse '+name);
+			// collapseLayerSet(layer);
+		}
+		 */
 
 	}
 	
@@ -430,8 +435,9 @@ function main(settings) {
 
 	if (overwrite) {
 		var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
-		exportFolder.remove();
-
+		// exportFolder.remove();
+		deleteFolder(exportFolder);
+		// return;
 	}
 
 	/* 

@@ -121,11 +121,11 @@ _______________________________________
 - #element shorcut of name=element										OK
 - file prefix css, insérer son contenu avant chaque css					OK
 - rootClass																OK
+- delete img before scanning																OK
 - if element root : size = 100% => remove								TOCHECK
 - ex sur : ps--img--#btn1, il ouvre le calque (et le laisse ouvert)
 	soit tout refermer
 	soit refermer les non recursifs
-- delete img before scanning
 
 
 _______________________________________
