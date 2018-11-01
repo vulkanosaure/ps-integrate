@@ -290,13 +290,15 @@ function getBounds(layer, type)
 {
 	var lastActive = activeDocument.activeLayer;
 	var mustMerge = (type == TYPE_GFX && layer.typename == "LayerSet");
+	// mustMerge = true;
 	
 	var targetLayer = layer;
 	if(mustMerge){
 		var mfnewdLayer = layer.duplicate();
 		targetLayer = mfnewdLayer.merge();
 	}
-		
+	
+	if(type == TYPE_GFX || type==TYPE_BTN) rasterizeLayerStyle(targetLayer);
 	var bounds = targetLayer.bounds;
 	
 	
@@ -306,6 +308,67 @@ function getBounds(layer, type)
 	
 	return bounds;
 
+}
+
+
+
+function getFontSize(layer)
+{
+	activeDocument.activeLayer = layer;  
+	var size = layer.textItem.size;    
+			
+	var r = new ActionReference();      
+	r.putProperty(stringIDToTypeID("property"), stringIDToTypeID("textKey"));          
+	r.putEnumerated(stringIDToTypeID("layer"), stringIDToTypeID("ordinal"), stringIDToTypeID("targetEnum"));      
+		
+	var yy = 1;  
+	var yx = 0;  
+		
+	try {  
+			var transform = executeActionGet(r).getObjectValue(stringIDToTypeID("textKey")).getObjectValue(stringIDToTypeID("transform"));  
+			yy = transform.getDouble(stringIDToTypeID("yy"));      
+			yx = transform.getDouble(stringIDToTypeID("yx"));      
+			}  
+	catch(e) { }   
+		
+	var coeff = Math.sqrt(yy*yy + yx*yx);  
+	
+	var output = size *coeff;
+	return output;
+}
+
+
+
+function rasterizeLayerStyle(layer)
+{
+	activeDocument.activeLayer = layer;
+	var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
+
+    var desc5 = new ActionDescriptor();
+
+    var idnull = charIDToTypeID( "null" );
+
+        var ref4 = new ActionReference();
+
+        var idLyr = charIDToTypeID( "Lyr " );
+
+        var idOrdn = charIDToTypeID( "Ordn" );
+
+        var idTrgt = charIDToTypeID( "Trgt" );
+
+        ref4.putEnumerated( idLyr, idOrdn, idTrgt );
+
+    desc5.putReference( idnull, ref4 );
+
+    var idWhat = charIDToTypeID( "What" );
+
+    var idrasterizeItem = stringIDToTypeID( "rasterizeItem" );
+
+    var idlayerStyle = stringIDToTypeID( "layerStyle" );
+
+    desc5.putEnumerated( idWhat, idrasterizeItem, idlayerStyle );
+
+	executeAction( idrasterizeLayer, desc5, DialogModes.NO );
 }
 
 

@@ -53,7 +53,9 @@
 	
 	"colors" : {
 		"FFFfff" : "col_light",
-		"ebce45" : "col_tonic"
+		"ebce45" : "col_tonic",
+		"418fde" : "col_blue",
+		"a63939" : "col_red"
 	}
 
 }

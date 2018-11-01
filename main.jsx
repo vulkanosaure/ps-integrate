@@ -214,6 +214,8 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 		if (x1 < 0) x1 = 0;
 		if (y1 < 0) y1 = 0;
+		
+		trace(output[OPT_NAME]+" :: x, y : "+x1+", "+y1);
 
 		output.position = [x1, y1];
 		output.width = x2 - x1;
@@ -221,6 +223,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 		trace("output.width : " + output.width + ", output.height:  " + output.height);
 		trace("getUnitValue(bounds[2]) : " + getUnitValue(bounds[2]) + ", getUnitValue(bounds[0]:  " + getUnitValue(bounds[0]));
+		trace("getUnitValue(bounds[3]) : " + getUnitValue(bounds[3]) + ", getUnitValue(bounds[1]:  " + getUnitValue(bounds[1]));
 	}
 	/* 
 	else {
@@ -364,7 +367,8 @@ function create_item(layer, name, type, parentItem, level, index) {
 		}
 
 		textdata.font = ti.font;
-		textdata.size = Math.round(ti.size.value);
+		// textdata.size = Math.round(ti.size.value);
+		textdata.size = Math.round(getFontSize(layer));
 		textdata.text = ti.contents.replace(/\r/g, "\\n");
 		//remove linebreak before and after
 		textdata.text = textdata.text.replace(/^\\n/g, "");
@@ -375,10 +379,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 
 		tracerec("textItem : " + layer.textItem + ", " + textdata.text, level);
-
+		trace("textdata.size : " + textdata.size);
+		
 		try { textdata.leading = Math.round(getUnitValue(ti.leading)); } catch (e) { };
-		trace("textdata.leading : " + textdata.leading);
-
+		
 		try { textdata.letterspacing = ti.tracking; } catch (e) { textdata.letterspacing = 0; };
 
 		try {

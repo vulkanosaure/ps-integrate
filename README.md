@@ -129,11 +129,16 @@ _______________________________________
 
 - ne pas le faire parcourir les calques non nommés ps-- 				OK
 - bug de letterspacing (cobra zero / credits / title)
-- si layer text, renommer en img => pas d'export ? si finalement jcrois
 
+=> algo chercher l'offset min sur tous les enfants, l'ajouter au parent, le rentrancher à tous les enfants
+	attention, voir ce que ça risque de casser, bien tester apres
+	ex : cobra zero / chapter start / zone title
+	ex : cobra zero / modal_history / btn up/down/close
+	
 _______________________________________
 procédures à ne pas oublier
 
 - réordonner les calques
 - si effect : grouper et faire un img du groupe
+- si fx sur quelque : rasterize calque
 
