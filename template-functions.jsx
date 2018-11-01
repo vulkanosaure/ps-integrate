@@ -112,7 +112,7 @@ TPL_FUNCTIONS["html"] = {
 	},
 	
 	
-	getLayoutData : function (item, prevItem)
+	getLayoutData : function (item, parent, prevItem, prevStaticItem)
 	{
 		
 		var x = item.position[0];
@@ -121,49 +121,69 @@ TPL_FUNCTIONS["html"] = {
 		var ly = item[OPT_LAYOUT_Y];
 		
 		var propsModel = {};
+		var name = item[OPT_NAME];
 		
 		
 		//temp
-		propsModel["position"] = { value: "absolute", quote: "none" };
 		
-		if(lx == "left" && x != 0) propsModel["margin_left"] = {name : "left", sufix : "px"};
-		else if(lx == "right") propsModel["margin_right"] = {name : "right", sufix : "px"};
-		else if(lx == "center"){
+		//____________________________________________________________
+		//position absolute
+		
+		if(item[OPT_POSITION] == "absolute"){
+		
 			propsModel["position"] = { value: "absolute", quote: "none" };
-			propsModel["center_h"] = { name: 'left', sufix: '%', multiplier: 1 };
-			propsModel["margin-left"] = { name : "left", value: -Math.round(item.width * item.center_h * 0.01), sufix: 'px'};
+			
+			if(lx == "left") propsModel["margin_left"] = {name : "left", sufix : "px", br : false};
+			else if(lx == "right") propsModel["margin_right"] = {name : "right", sufix : "px", br : false};
+			
+			if(ly == "top") propsModel["margin_top"] = {name : "top", sufix : "px"};
+			else if(ly == "bottom") propsModel["margin_bottom"] = {name : "bottom", sufix : "px"};
+			
+			/* 
+			if(propsModel["position"]) propsModel["position"].comment = true;
+			if(propsModel["margin_left"]) propsModel["margin_left"].comment = true;
+			if(propsModel["margin_top"]) propsModel["margin_top"].comment = true;
+			 */
 		}
-		
-		if(ly == "top" && y != 0) propsModel["margin_top"] = {name : "top", sufix : "px"};
-		else if(ly == "bottom") propsModel["margin_bottom"] = {name : "bottom", sufix : "px"};
-		else if(ly == "center"){
-			propsModel["position"] = { value: "absolute", quote: "none" };
-			propsModel["center_v"] = { name: 'top', sufix: '%', multiplier: 1 };
-			propsModel["margin-top"] = { name : "top", value: -Math.round(item.height * item.center_v * 0.01), sufix: 'px'};
-		}
-		
-		
-		if(propsModel["position"]) propsModel["position"].comment = true;
-		if(propsModel["margin_left"]) propsModel["margin_left"].comment = true;
-		if(propsModel["margin_top"]) propsModel["margin_top"].comment = true;
-		
 		
 		//_______________________________
 		//margins left (relative)
 		
-		if(lx == "left" && x != 0){
-			if(prevItem){
-				var value = x - (prevItem.position[0] + prevItem[OPT_WIDTH]);
-				if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px', comment:true };
+		else{
+			
+			var direction = parent ? parent[OPT_DIRECTION] : 'col';
+			
+			if(item[OPT_NAME] == 'icon_log'){
+				trace('');
+			}
+			
+			if(direction == "row"){
+				
+				//relative to prev child
+				var prevPosition = prevStaticItem ? prevStaticItem.position[0] : 0;
+				var prevDim = prevStaticItem ? prevStaticItem[OPT_WIDTH] : 0;
+				var value = x - (prevPosition + prevDim);
+				if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
+				
+				//define other one as abs
+				var value2 = y;
+				if(value2 != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+				
+			}
+			else if(direction == "col"){
+				
+				//define other one as abs
+				var value2 = x;
+				if(value2 != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
+				
+				//relative to prev child
+				var prevPosition = prevStaticItem ? prevStaticItem.position[1] : 0;
+				var prevDim = prevStaticItem ? prevStaticItem[OPT_HEIGHT] : 0;
+				var value = y - (prevPosition + prevDim);
+				if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+				
 			}
 		}
-		if(ly == "top" && y != 0){
-			if(prevItem){
-				var value = y - (prevItem.position[1] + prevItem[OPT_HEIGHT]);
-				if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px', comment:true };
-			}
-		}
-		
 		
 		
 		
@@ -176,6 +196,10 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		if(item.has_graphic){
+			
+			propsModel["width"] = {sufix : "px", br : false};
+			propsModel["height"] = {sufix : "px"};
+			
 			var path = item.path;
 			if(item.path != "") path += "/";
 			path += item.filename;
@@ -192,9 +216,6 @@ TPL_FUNCTIONS["html"] = {
 			
 			propsModel["retinaBG"] = {value : "@include retinaBg('"+path+"', "+w+"px, "+h+"px)", raw:true, comment:true};
 			
-			propsModel["width"] = {sufix : "px", br : false};
-			propsModel["height"] = {sufix : "px"};
-		
 		}
 		else if(item.type == TYPE_CONTAINER){
 			//ajoute qd mm la width en comment
@@ -202,11 +223,6 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		
-		//CONTAINER ROOT => dimensions 100% / 100%
-		if(item.parent == null && item.type == TYPE_CONTAINER){
-			propsModel["width"] = {value : '100%'};
-			propsModel["height"] = {value : '100%'};
-		}
 		
 		
 		//______________________________

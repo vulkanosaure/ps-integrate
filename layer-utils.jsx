@@ -289,8 +289,9 @@ function undoHistory()
 function getBounds(layer, type)
 {
 	var lastActive = activeDocument.activeLayer;
-	var mustMerge = (type == TYPE_GFX && layer.typename == "LayerSet");
-	// mustMerge = true;
+	// var mustMerge = (type == TYPE_GFX && layer.typename == "LayerSet");
+	var mustMerge = (layer.typename == "LayerSet");
+	// mustMerge = true;do
 	
 	var targetLayer = layer;
 	if(mustMerge){
@@ -300,7 +301,6 @@ function getBounds(layer, type)
 	
 	if(type == TYPE_GFX || type==TYPE_BTN) rasterizeLayerStyle(targetLayer);
 	var bounds = targetLayer.bounds;
-	
 	
 	if(mustMerge) targetLayer.remove();
 	
@@ -343,31 +343,18 @@ function rasterizeLayerStyle(layer)
 {
 	activeDocument.activeLayer = layer;
 	var idrasterizeLayer = stringIDToTypeID( "rasterizeLayer" );
-
     var desc5 = new ActionDescriptor();
-
     var idnull = charIDToTypeID( "null" );
-
         var ref4 = new ActionReference();
-
         var idLyr = charIDToTypeID( "Lyr " );
-
         var idOrdn = charIDToTypeID( "Ordn" );
-
         var idTrgt = charIDToTypeID( "Trgt" );
-
         ref4.putEnumerated( idLyr, idOrdn, idTrgt );
-
     desc5.putReference( idnull, ref4 );
-
     var idWhat = charIDToTypeID( "What" );
-
     var idrasterizeItem = stringIDToTypeID( "rasterizeItem" );
-
     var idlayerStyle = stringIDToTypeID( "layerStyle" );
-
     desc5.putEnumerated( idWhat, idrasterizeItem, idlayerStyle );
-
 	executeAction( idrasterizeLayer, desc5, DialogModes.NO );
 }
 

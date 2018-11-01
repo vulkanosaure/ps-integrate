@@ -49,20 +49,37 @@ Defines a graphic element to be passed to the parent.
 This is mandatory for 1 child of an element of type 'btnc'
 *Only available for type img*
 
+#### doexport
+- **1**
+- **0**
+Defines a graphic element to be passed to the parent. 
+This is mandatory for 1 child of an element of type 'btnc'
+*Only available for type img*
+
 #### imgtype
 
 *Only available for type img*
+choose which image format to export (PNG, JPG)
 TODO
+
+#### position
+- **static** (default)
+- **abs**
+
+#### direction
+- **col** (default)
+- **row**
+Defines the flow directions of the container (only for type container)
 
 #### layoutx
 - **left** (default) : the template system will position the element in pixel from the left
 - **right** : the template system will position the element in pixel from the right
-- **center** : the template system will position the element in % value
+*When setting this option, position is automaticaly set to abs*
 
 #### layouty
 - **top** (default) : the template system will position the element in pixel from the top
 - **bottom** : the template system will position the element in pixel from the bottom
-- **center** : the template system will position the element in % value
+*When setting this option, position is automaticaly set to abs*
 
 #### equaloffset
 - **1**
@@ -70,8 +87,20 @@ TODO
 Forces all the img childrens of the container to be exported at the size of the container (handy for game sprites)
 *Only available for type container*
 
-TODO : x, y, width, height
-servait à forcer la position / dimension d'un container. width/height possible à 100% only
+
+
+## Shortcuts
+
+- **abs**
+set position = absolute
+- **bg**
+set bgparent = 1
+- **#item**
+set name = item
+- **!export**
+set doexport = 0
+- **special values (can be set without props)**
+left, right, top, bottom, row, col, cont, img, btn, btnc, txt
 
 
 
@@ -85,6 +114,7 @@ Photoshop has a classification of **3 kinds** of layers :
 - NORMAL
 - LAYERSET
 - TEXT
+
 
 If the element is nested in a container, depending of the kind of layer (NORMAL, LAYERSET, TEXT), the type will sometime be set by default
 
@@ -205,7 +235,7 @@ To improove performances, disable layer thumbnail in the layer option pannel.
 
 
 
-#### Useful shortcuts
+#### Useful keyboard shortcuts
 
 - Ctrl + G 			:	group layers (or layersets)
 - Ctrl + Shift + G	: 	ungroup

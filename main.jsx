@@ -266,9 +266,29 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (parentItem) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
+		trace('minus parent w - '+parentItem.position_abs[0]+' : '+output.position[0]);
+		trace('minus parent h - '+parentItem.position_abs[1]+' : '+output.position[1]);
+		trace('parent : '+parentItem[OPT_NAME]);
 	}
-
-
+	
+	
+	
+	//position
+	if (has_option(name, OPT_POSITION)) {
+		output[OPT_POSITION] = get_value_option(name, OPT_POSITION);
+	}
+	else output[OPT_POSITION] = "static";
+	
+	
+	//direction
+	if (has_option(name, OPT_DIRECTION)) {
+		output[OPT_DIRECTION] = get_value_option(name, OPT_DIRECTION);
+	}
+	//default value (only if container)
+	else if(CONTAINERS_TYPE.indexOf(type) != -1){
+		output[OPT_DIRECTION] = "col";
+	}
+	
 
 
 	//layout
@@ -284,8 +304,11 @@ function create_item(layer, name, type, parentItem, level, index) {
 		}
 
 		output[OPT_LAYOUT_X] = layout;
+		output[OPT_POSITION] = "absolute";
 	}
 	else output[OPT_LAYOUT_X] = "left";
+	
+	
 
 	output.margin_top = output.position[1];
 	if (has_option(name, OPT_LAYOUT_Y)) {
@@ -299,6 +322,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 		}
 
 		output[OPT_LAYOUT_Y] = layout;
+		output[OPT_POSITION] = "absolute";
 	}
 	else output[OPT_LAYOUT_Y] = "top";
 
@@ -342,7 +366,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 	}
 
 
-
+          
 
 	//font information (regroupées en un objet) pour type TXT
 	if (type == TYPE_TEXT) {

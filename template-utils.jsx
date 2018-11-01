@@ -196,7 +196,7 @@ function propsToString(props, options)
 		if(i == 'height' && props['width']){
 			tab[tab.length - 1] += '; '+str;
 		}
-		else if(i == 'top' && props['left']){
+		else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
 			tab[tab.length - 1] += '; '+str;
 		}
 		else tab.push(str);

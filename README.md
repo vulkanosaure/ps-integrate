@@ -108,8 +108,7 @@ Everything is explained [in the documentation](docs/DOCUMENTATION.md)
 - [x] only text et img autorisé dans btnc
 - [x] prop btnc only autorisé dans btnc
 - [ ] only one btnc = bg
-- [ ] don't include .extension in path
-- [ ] afficher un dialog pour les afficher hors debug
+- [x] afficher un dialog pour les afficher hors debug
 
 
 
@@ -121,19 +120,57 @@ _______________________________________
 - #element shorcut of name=element										OK
 - file prefix css, insérer son contenu avant chaque css					OK
 - rootClass																OK
-- delete img before scanning																OK
+- delete img before scanning											OK
+- ne pas le faire parcourir les calques non nommés ps-- 				OK
 - if element root : size = 100% => remove								TOCHECK
+
 - ex sur : ps--img--#btn1, il ouvre le calque (et le laisse ouvert)
 	soit tout refermer
 	soit refermer les non recursifs
 
-- ne pas le faire parcourir les calques non nommés ps-- 				OK
 - bug de letterspacing (cobra zero / credits / title)
 
-=> algo chercher l'offset min sur tous les enfants, l'ajouter au parent, le rentrancher à tous les enfants
+=> algo chercher l'offset min sur tous les enfants, l'ajouter au		OK
 	attention, voir ce que ça risque de casser, bien tester apres
 	ex : cobra zero / chapter start / zone title
 	ex : cobra zero / modal_history / btn up/down/close
+	=> pas la peine, ct un problem de bounds sur layerset
+	
+if 0, ne pas mettre left / top => enlever ce truc						OK
+ordre des width / height, top, right... bizarre ?						OK
+	
+layoutx / layouty, moyen pour préciser ce qu'on veut 					OK
+	is absolute ?
+		left / right, top / bottom ?
+	else
+		is horizontal or vertical ?
+	default : !absolute / vertical
+	
+	
+	
+ne pas tout grouper ds un container
+	a l'interieur d'un calque, on est au root du html
+	on peut set des aditionnal classes container_center
+	ptet juste coté génération template, incrémenter de 1 avant de lancer la boucle rec
+	
+	l'ennuie, c'est que, ds les cas ou j'ai tout ds un mm groupe
+	c'est pratique de pas avoir à créer un layer supplementaire, BALLEK
+	
+	
+position relative :														OK
+	prevItem, doit etre un static (prevStaticItem)
+
+ajouter un display:flex, si row
+
+multiline : 
+	if set : uncomment width, (mais la met qd mm au cas ou)
+	
+margin left/top, sur une mm ligne ?
+	
+ERRORS :
+	- direction only for type container									OK
+	multiline, only for text
+	
 	
 _______________________________________
 procédures à ne pas oublier

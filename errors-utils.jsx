@@ -64,6 +64,10 @@ function check_error_item(name, item)
 		}
 	}
 	
+	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
+		output.push(getErrorObject("Only containers can set options '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
+	}
+	
 	return output;
 }
 
@@ -90,8 +94,16 @@ function getItemStructureStr(item)
 		item = item.parent;
 		if(secu == 20) return;
 	}
-	tab.reverse();
-	var str = tab.join(" / ");
+	// tab.reverse();
+	// var str = tab.join(" / ");
+	
+	var str = '';
+	var len = tab.length;
+	for (var i = len - 1; i >= 0; i--) {
+		var value = tab[i];
+		str += value + ' / ';
+	}
+	
 	return str;
 }
 

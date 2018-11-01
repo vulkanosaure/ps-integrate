@@ -93,6 +93,7 @@
 		var len = items.length;
 		var linebreaks;
 		var prevItem = null;
+		var prevStaticItem = null;
 		
 		if(type == "main"){
 			linebreaks = configMain.linebreaks;
@@ -154,9 +155,9 @@
 			}
 			else if(type == "layout"){
 				
-				if(items.length > 1)
+				// if(items.length > 1)
 				
-				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item, prevItem);
+				var data_str = TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem);
 				
 				/* 
 				if(data_str == undefined){
@@ -210,6 +211,8 @@
 			}
 			
 			prevItem = item;
+			if(item[OPT_POSITION] == 'static') prevStaticItem = item;
+			
 		}
 		
 	}
@@ -241,7 +244,7 @@
 		}
 		
 		if(!_layoutfile){
-			data["layout_data"] = TPL_FUNCTIONS[tpl_id].getLayoutData(item);
+			data["layout_data"] = TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent);
 		}
 		
 		var ignore = ["childrens", "layoutx", "layouty", "parent", "position", "position_abs"];
