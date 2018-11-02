@@ -192,13 +192,17 @@ function propsToString(props, options)
 		
 		str += obj.data;
 		
-		//exception, width height, one line
+		//exception, no line break
 		if(i == 'height' && props['width']){
 			tab[tab.length - 1] += '; '+str;
 		}
 		else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
 			tab[tab.length - 1] += '; '+str;
 		}
+		else if((i == 'margin-top' && props['margin-left'])){
+			tab[tab.length - 1] += '; '+str;
+		}
+		
 		else tab.push(str);
 	}
 

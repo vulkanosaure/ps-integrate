@@ -124,7 +124,11 @@ TPL_FUNCTIONS["html"] = {
 		var name = item[OPT_NAME];
 		
 		
-		//temp
+		if(item[OPT_DIRECTION] == 'row'){
+			propsModel["display"] = { value: "flex", quote: "none" };
+			
+		}
+		
 		
 		//____________________________________________________________
 		//position absolute

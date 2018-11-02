@@ -132,7 +132,9 @@
 					tpl_br(nbline, indent, 1.5);
 				}
 				
-				tpl_add_block(str, indent);
+				//allow separator for
+				if(type=='main' && level <= 0) tpl_add_block(str, indent);
+				else if(type=='layout' && level <= 1) tpl_add_block(str, indent);
 				
 				nbline = (level == 0) ? 3 : linebreaks.after;
 				tpl_br(nbline, indent, 1);

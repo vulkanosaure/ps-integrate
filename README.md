@@ -160,12 +160,12 @@ ne pas tout grouper ds un container
 position relative :														OK
 	prevItem, doit etre un static (prevStaticItem)
 
-ajouter un display:flex, si row
+ajouter un display:flex, si row											OK
 
 multiline : 
 	if set : uncomment width, (mais la met qd mm au cas ou)
 	
-margin left/top, sur une mm ligne ?
+margin left/top, sur une mm ligne ?										OK
 	
 ERRORS :
 	- direction only for type container									OK

@@ -15,7 +15,7 @@
 			"std" : 0,
 			"before" : 1,
 			"after" : 0,
-			"before_closetag" : 1
+			"before_closetag" : 0
 		}
 	},
 

@@ -94,13 +94,12 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 			}
 
 		}
-
-
-
+		
+		
+		
 		var isRoot = (parentItem == null);
 		var type = get_type(layer, name, isRoot, level);
 
-		//var parentlayername = (parentLayer) ? parentLayer.name : "";
 		var parentitemname = (parentItem) ? parentItem.name : "";
 
 
