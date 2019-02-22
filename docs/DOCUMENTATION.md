@@ -71,14 +71,22 @@ TODO
 - **row**
 Defines the flow directions of the container (only for type container)
 
+#### alignitems
+- **start**
+- **center**
+- **end**
+Similar to the *align-items* property for a flex container
+
 #### layoutx
 - **left** (default) : the template system will position the element in pixel from the left
 - **right** : the template system will position the element in pixel from the right
+- **center** : the item will be centered (PSD position will be ignored), depending on the position, for absolute : % and translate will be used, for static : margin auto
 *When setting this option, position is automaticaly set to abs*
 
 #### layouty
 - **top** (default) : the template system will position the element in pixel from the top
 - **bottom** : the template system will position the element in pixel from the bottom
+- **center** : the item will be centered (PSD position will be ignored), depending on the position, for absolute : % and translate will be used, for static : margin auto
 *When setting this option, position is automaticaly set to abs*
 
 #### equaloffset
@@ -101,7 +109,8 @@ set name = item
 set doexport = 0
 - **special values (can be set without props)**
 left, right, top, bottom, row, col, cont, img, btn, btnc, txt
-
+- **centerx, centery, center** 
+layoutx=center, layouty=center or both
 
 
 ## Element types

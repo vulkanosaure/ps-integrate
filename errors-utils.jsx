@@ -67,6 +67,11 @@ function check_error_item(name, item)
 	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
 		output.push(getErrorObject("Only containers can set options '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
 	}
+	if(item[OPT_ALIGN_ITEMS] && CONTAINERS_TYPE.indexOf(item.type) == -1){
+		output.push(getErrorObject("Only containers can set options '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
+	}
+	
+	
 	
 	return output;
 }

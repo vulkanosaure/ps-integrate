@@ -27,6 +27,7 @@ var OPT_DIRECTION = "dir";
 
 var OPT_LAYOUT_X = "layoutx";
 var OPT_LAYOUT_Y = "layouty";
+var OPT_ALIGN_ITEMS = "alignitems";
 var OPT_POS_X = "x";
 var OPT_POS_Y = "y";
 var OPT_WIDTH = "width";
@@ -48,6 +49,7 @@ OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
 OPTIONS_RULES[OPT_LAYOUT_X] = ["left", "center", "right"];
 OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
+OPTIONS_RULES[OPT_ALIGN_ITEMS] = ["start", "center", "end"];
 
 OPTIONS_RULES[OPT_DOEXPORT] = ["!export", "1", "0"];
 
@@ -62,12 +64,12 @@ OPTIONS_SHORCUTS[OPT_DOEXPORT] = ["!export"];
 
 //keywords with special meaning
 var OPTIONS_SHORCUTS2 = {};
-/* 
+
 //deprecated
 OPTIONS_SHORCUTS2["centerx"] = "layoutx=center";
 OPTIONS_SHORCUTS2["centery"] = "layouty=center";
 OPTIONS_SHORCUTS2["center"] = "layoutx=center--layouty=center";
-*/
+
 
 OPTIONS_SHORCUTS2["bg"] = OPT_BGPARENT + "=1";
 OPTIONS_SHORCUTS2["abs"] = OPT_POSITION + "=absolute";

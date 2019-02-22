@@ -288,6 +288,14 @@ function create_item(layer, name, type, parentItem, level, index) {
 		output[OPT_DIRECTION] = "col";
 	}
 	
+	
+	//align-items
+	if (has_option(name, OPT_ALIGN_ITEMS)) {
+		output[OPT_ALIGN_ITEMS] = get_value_option(name, OPT_ALIGN_ITEMS);
+	}
+	
+	
+	
 
 
 	//layout
@@ -296,14 +304,17 @@ function create_item(layer, name, type, parentItem, level, index) {
 		var layout = get_value_option(name, OPT_LAYOUT_X);
 
 		var parentsize = parentItem ? parentItem.width : DOC_WIDTH;
-		if (layout == "right") output.margin_right = parentsize - (output.position[0] + output.width);
+		if (layout == "right"){
+			output.margin_right = parentsize - (output.position[0] + output.width);
+			output[OPT_POSITION] = "absolute";
+		}
 		else if (layout == "center") {
 			output.center_h = Math.round(output.position[0] / (parentsize - output.width) * 100);
 			if (isNaN(output.center_h)) output.center_h = 0.5;
 		}
 
 		output[OPT_LAYOUT_X] = layout;
-		output[OPT_POSITION] = "absolute";
+		
 	}
 	else output[OPT_LAYOUT_X] = "left";
 	
@@ -314,14 +325,17 @@ function create_item(layer, name, type, parentItem, level, index) {
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
 
 		var parentsize = parentItem ? parentItem.height : DOC_HEIGHT;
-		if (layout == "bottom") output.margin_bottom = parentsize - (output.position[1] + output.height);
+		if (layout == "bottom"){
+			output.margin_bottom = parentsize - (output.position[1] + output.height);
+			output[OPT_POSITION] = "absolute";
+		}
 		else if (layout == "center") {
 			output.center_v = Math.round(output.position[1] / (parentsize - output.height) * 100);
 			if (isNaN(output.center_v)) output.center_v = 0.5;
 		}
 
 		output[OPT_LAYOUT_Y] = layout;
-		output[OPT_POSITION] = "absolute";
+		
 	}
 	else output[OPT_LAYOUT_Y] = "top";
 

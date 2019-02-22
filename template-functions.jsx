@@ -12,7 +12,7 @@ TPL_FUNCTIONS["haxe"] = {
 	getTextFormatData : function (textdata)
 	{
 		var propsModel = {
-			'color' : {prefix : '0x'},
+			'color' : {prefix : '0x'},  
 			'font' : {quote : 'simple'},
 			'size' : {},
 			'leading' : {},
@@ -45,6 +45,7 @@ TPL_FUNCTIONS["haxe"] = {
 		
 		if(lx !="left") layout_data["width"] = item.width;
 		if(ly != "top") layout_data["height"] = item.height;
+		
 	
 		var layout_data_str = propsToString(layout_data, {multiline : false, separator : ","});
 		return layout_data_str;
@@ -123,9 +124,13 @@ TPL_FUNCTIONS["html"] = {
 		var propsModel = {};
 		var name = item[OPT_NAME];
 		
-		
-		if(item[OPT_DIRECTION] == 'row'){
+		if(item[OPT_DIRECTION] == 'row' || item[OPT_ALIGN_ITEMS]){
+			
+			var valuedir = item[OPT_DIRECTION] == 'row' ? 'row' : 'column';
+			
 			propsModel["display"] = { value: "flex", quote: "none" };
+			propsModel["direction"] = { name: "flex-direction", value: valuedir, quote: "none" };
+			propsModel["align_items"] = { name: 'align-items', value: item[OPT_ALIGN_ITEMS], quote: "none" };
 			
 		}
 		
@@ -140,8 +145,27 @@ TPL_FUNCTIONS["html"] = {
 			if(lx == "left") propsModel["margin_left"] = {name : "left", sufix : "px", br : false};
 			else if(lx == "right") propsModel["margin_right"] = {name : "right", sufix : "px", br : false};
 			
+			
+			//transform: translateX(-50%);
+			
 			if(ly == "top") propsModel["margin_top"] = {name : "top", sufix : "px"};
 			else if(ly == "bottom") propsModel["margin_bottom"] = {name : "bottom", sufix : "px"};
+			
+			
+			if(lx == "center" && ly=="center"){
+				propsModel["margin_left_p"] = {name : "left", sufix : "%", value:50, br : false};
+				propsModel["margin_top_p"] = {name : "top", sufix : "%", value:50, br : false};
+				propsModel["translate"] = {name : "transform", sufix : "", value:'translate(-50%, -50%)', br : true};
+			}
+			else if(lx=="center"){
+				propsModel["margin_left_p"] = {name : "left", sufix : "%", value:50, br : false};
+				propsModel["translate"] = {name : "transform", sufix : "", value:'translateX(-50%)', br : true};
+			}
+			else if(ly=="center"){
+				propsModel["margin_top_p"] = {name : "top", sufix : "%", value:50, br : false};
+				propsModel["translate"] = {name : "transform", sufix : "", value:'translateY(-50%)', br : true};
+			}
+			
 			
 			/* 
 			if(propsModel["position"]) propsModel["position"].comment = true;
@@ -157,34 +181,43 @@ TPL_FUNCTIONS["html"] = {
 			
 			var direction = parent ? parent[OPT_DIRECTION] : 'col';
 			
-			if(item[OPT_NAME] == 'icon_log'){
-				trace('');
-			}
-			
 			if(direction == "row"){
 				
 				//relative to prev child
 				var prevPosition = prevStaticItem ? prevStaticItem.position[0] : 0;
 				var prevDim = prevStaticItem ? prevStaticItem[OPT_WIDTH] : 0;
 				var value = x - (prevPosition + prevDim);
-				if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
-				
-				//define other one as abs
 				var value2 = y;
-				if(value2 != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+				
+				if(lx == "center"){
+					propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
+				}
+				else{
+					if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
+					//define other one as abs
+					if(value2 != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+				}
 				
 			}
 			else if(direction == "col"){
 				
 				//define other one as abs
 				var value2 = x;
-				if(value2 != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
 				
 				//relative to prev child
 				var prevPosition = prevStaticItem ? prevStaticItem.position[1] : 0;
 				var prevDim = prevStaticItem ? prevStaticItem[OPT_HEIGHT] : 0;
 				var value = y - (prevPosition + prevDim);
-				if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+				
+				if(lx == "center"){
+					propsModel["margin_global"] = { name: 'margin', value: value, sufix:'px auto 0 auto' };
+				}
+				else{
+					
+					var alignParent = (parent && parent[OPT_ALIGN_ITEMS]);
+					if(value2 != 0 && !alignParent) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
+					if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+				}
 				
 			}
 		}
@@ -243,6 +276,7 @@ TPL_FUNCTIONS["html"] = {
 			"margin-bottom",
 			"margin_left2",
 			"margin_top2",
+			"margin_global",
 		];
 		
 		var len = listPropertyRetina.length;

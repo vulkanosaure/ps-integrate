@@ -122,16 +122,8 @@ _______________________________________
 - rootClass																OK
 - delete img before scanning											OK
 - ne pas le faire parcourir les calques non nommés ps-- 				OK
-- if element root : size = 100% => remove								TOCHECK
-
-- ex sur : ps--img--#btn1, il ouvre le calque (et le laisse ouvert)
-	soit tout refermer
-	soit refermer les non recursifs
-
-- bug de letterspacing (cobra zero / credits / title)
 
 => algo chercher l'offset min sur tous les enfants, l'ajouter au		OK
-	attention, voir ce que ça risque de casser, bien tester apres
 	ex : cobra zero / chapter start / zone title
 	ex : cobra zero / modal_history / btn up/down/close
 	=> pas la peine, ct un problem de bounds sur layerset
@@ -147,35 +139,70 @@ layoutx / layouty, moyen pour préciser ce qu'on veut 					OK
 	default : !absolute / vertical
 	
 	
-	
-ne pas tout grouper ds un container
-	a l'interieur d'un calque, on est au root du html
-	on peut set des aditionnal classes container_center
-	ptet juste coté génération template, incrémenter de 1 avant de lancer la boucle rec
-	
-	l'ennuie, c'est que, ds les cas ou j'ai tout ds un mm groupe
-	c'est pratique de pas avoir à créer un layer supplementaire, BALLEK
-	
-	
 position relative :														OK
 	prevItem, doit etre un static (prevStaticItem)
 
 ajouter un display:flex, si row											OK
-
-multiline : 
-	if set : uncomment width, (mais la met qd mm au cas ou)
 	
 margin left/top, sur une mm ligne ?										OK
+	
+	
+	
+ne pas tout grouper ds un container
+	a l'interieur d'un calque, on est au root du html
+	on peut set des aditionnal classes (container_center)
+	ptet juste coté génération template, incrémenter de 1 avant de lancer la boucle rec
+		ou config.json ?
+	
+	l'ennuie, c'est que, ds les cas ou j'ai tout ds un mm groupe
+	c'est pratique de pas avoir à créer un layer supplementaire, BALLEK
+
+multiline : 
+	if set : uncomment width, (mais la met qd mm au cas ou)				très peu utile
+	
+- ex sur : ps--img--#btn1, il ouvre le calque (et le laisse ouvert)
+	soit tout refermer
+	soit refermer les non recursifs
+
+- bug de letterspacing (cobra zero / credits / title)
+
+- size font mauvaise pour classname font
+	21 => 80, 16 => 60, 37 => 140
 	
 ERRORS :
 	- direction only for type container									OK
 	multiline, only for text
 	
+évaluation des margins d'un text en fonction de sa taille
+	textPaddingX = fontSize / 20
+	textPaddingY = fontSize / 5
+	RETRANCHER
+	le faire au moment de la generation template
+		(absolute et static)
+
+centrage																OK
+	centrer enfants d'un container : align-items:center/start/end
+	centrer un item indivisuel :
+		si position static :
+			margin: x auto 0 auto;
+			voir si marche pour direction row
+		si position absolute :
+			left : 100%, translate
+		
+	align-items : center, start, end
+	layoutx: center
+	layouty: center
+	shortcut : centerx, centery
 	
+	
+
+
+
 _______________________________________
 procédures à ne pas oublier
 
 - réordonner les calques
-- si effect : grouper et faire un img du groupe
-- si fx sur quelque : rasterize calque
+- si effect : grouper et faire un img du groupe (sur ?)
+- si fx sur quelque : rasterize calque (sur ?)
+- PSD 50mo max (nettoyer, merger, puis diviser si nécéssaire)
 
