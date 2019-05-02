@@ -1,97 +1,113 @@
-﻿#include "constantes.jsx";
-#include "debug.jsx";
-#include "utils.jsx";
-#include "layers.jsx";
-#include "export.jsx";
-#include "dialog.jsx";
-#include "layer-utils.jsx";
-#include "errors-utils.jsx";
-#include "template-utils.jsx";
-#include "template.jsx";
-#include "template-functions.jsx";
-#include "file-utils.jsx";
-#include "lib/jamJSON.jsx";
-#include "lib/textItem.jsx";
+const file_debug = require('./debug.js');
+var trace = file_debug.trace;
+var tracerec = file_debug.tracerec;
+
+const file_platform_layer_logic = require('./platform_layer_logic.js');
+var getLayersArray = file_platform_layer_logic.getLayersArray;
+var isLayerVisible = file_platform_layer_logic.isLayerVisible;
+var isLayerContainer = file_platform_layer_logic.isLayerContainer;
+var getLayerName = file_platform_layer_logic.getLayerName;
+
+const file_utils = require('./utils.js');
+var has_prefix = file_utils.has_prefix;
+var has_option = file_utils.has_option;
+var get_value_option = file_utils.get_value_option;
+var get_value_option_safe = file_utils.get_value_option_safe;
+var get_forced_type = file_utils.get_forced_type;
+var get_type = file_utils.get_type;
+var removePathSlash = file_utils.removePathSlash;
+var getPercentValue = file_utils.getPercentValue;
+var handleShorcuts = file_utils.handleShorcuts;
+
+const file_errors_utils = require('./errors_utils.js');
+var check_error_layername = file_errors_utils.check_error_layername;
+var check_error_item = file_errors_utils.check_error_item;
+
+const file_constantes = require('./constantes.js');
+var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
+var EXPORTS_TYPE = file_constantes.EXPORTS_TYPE;
+var BTNS_TYPE = file_constantes.BTNS_TYPE;
+var OPT_TYPE = file_constantes.OPT_TYPE;
+var OPT_PATH = file_constantes.OPT_PATH;
+var OPT_FILENAME = file_constantes.OPT_FILENAME;
+var OPT_NAME = file_constantes.OPT_NAME;
+var OPT_BGPARENT = file_constantes.OPT_BGPARENT;
+var OPT_GFX_TYPE = file_constantes.OPT_GFX_TYPE;
+var OPT_POSITION = file_constantes.OPT_POSITION;
+var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
+var OPT_LAYOUT_X = file_constantes.OPT_LAYOUT_X;
+var OPT_LAYOUT_Y = file_constantes.OPT_LAYOUT_Y;
+var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
+var OPT_POS_X = file_constantes.OPT_POS_X;
+var OPT_POS_Y = file_constantes.OPT_POS_Y;
+var OPT_WIDTH = file_constantes.OPT_WIDTH;
+var OPT_HEIGHT = file_constantes.OPT_HEIGHT;
+var OPT_EQUALOFFSET = file_constantes.OPT_EQUALOFFSET;
+var OPT_DOEXPORT = file_constantes.OPT_DOEXPORT;
+var TYPE_GFX = file_constantes.TYPE_GFX;
+var TYPE_TEXT = file_constantes.TYPE_TEXT;
+var TYPE_BTN = file_constantes.TYPE_BTN;
+var TYPE_BTNC = file_constantes.TYPE_BTNC;
+var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
+var TYPE_DIV = file_constantes.TYPE_DIV;
+var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
+var EXPORT_FOLDER_IMG = file_constantes.EXPORT_FOLDER_IMG;
+
+const file_platform_layer_utils = require('./platform_layer_utils.js');
+var getFontSize = file_platform_layer_utils.getFontSize;
+var getBounds = file_platform_layer_utils.getBounds;
+
+const file_platform_export = require('./platform_export.js');
+var fileExist = file_platform_export.fileExist;
+var saveLayer = file_platform_export.saveLayer;
 
 
 
-for (var i = 0; i < 5; i++) trace(".");
-trace("===========================");
-
-
-var doc = app.activeDocument;
-trace("doc : " + doc);
-
-var DOC_WIDTH = getUnitValue(doc.width);
-var DOC_HEIGHT = getUnitValue(doc.height);
-
-trace("doc width/height : " + DOC_WIDTH + " / " + DOC_HEIGHT);
-
-/*
-//var exportPath = activeDocument.path;
-var exportPath = Folder.userData;
-trace("exportPath : "+exportPath);
-*/
-var overwrite;
-var listErrors = [];
-var listItem = [];
-var globalSettings;
-
-
-function testrec(container) {
-    
-	var layers = container.layers;	//+0
-
-	var len = layers.length;		//+4
-
-	for (var i = 0; i < len; i++) {
-		var layer = layers[i];		//+26
-
-		var isContainer = (layer.typename == "LayerSet");		//+0
-		if (layer.visible && isContainer) {
-			testrec(layer);
-		}
-
-	}
-}
 
 
 
 
 
+async function recursive_loop(container, parentItem, parentLayer, level, params) {
+	tracerec("recursive_loop", level);
+	
 
-function recursive_loop(container, parentItem, parentLayer, level) {
-	//tracerec("recursive_loop", level);
-
-	var layers = container.layers;
+	var layers = getLayersArray(container);
 	var len = layers.length;
+	// trace('layers : '+layers);
+	
+	trace('2');
 
 	for (var _i = 0; _i < len; _i++) {
 
 		var i;
-		if (globalSettings.indexTpl == 0) i = _i;
+		if (params.settings.indexTpl == 0) i = _i;
 		else i = len - 1 - _i;
-
-
+		
+		tracerec('_____________________________________ i : '+i, level);
+		
 		var layer = layers[i];
 
-		var enable = (layer.visible);
+		var enable = isLayerVisible(layer);
 		if (!enable) continue;
 
-		var isContainer = (layer.typename == "LayerSet");
-		var name = layer.name;
+		var isContainer = isLayerContainer(layer);
+		var name = getLayerName(layer);
+		tracerec('name : '+name, level);
 
 
 		if (has_prefix(name)) {
-
+			
 			//shortcuts
 			name = handleShorcuts(name);
-
+			trace('name shortcut : '+name);
+			
 			var errors = check_error_layername(name, parentItem);
 			if (errors.length > 0) {
 				trace("errors : " + errors);
-				listErrors = listErrors.concat(errors);
+				params.listErrors = params.listErrors.concat(errors);
 			}
+			else trace('no error');
 
 		}
 		
@@ -101,7 +117,9 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 		var type = get_type(layer, name, isRoot, level);
 
 		var parentitemname = (parentItem) ? parentItem.name : "";
-
+		
+		tracerec('type : '+type+', parentitemname : '+parentitemname, level);
+		trace('level : '+level);
 
 		if (type != "") {
 
@@ -109,61 +127,57 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + item.width + ", height : " + item.height, level);
 
 			var errors = check_error_item(name, item);
+			trace('errors.length : '+errors.length);
 			if (errors.length > 0) {
 				trace("errors : " + errors);
-				listErrors = listErrors.concat(errors);
+				params.listErrors = params.listErrors.concat(errors);
 			}
 
 			if (!item["disable"]) {
-				if (isRoot) listItem.push(item);
+				if (isRoot) params.listItem.push(item);
 				else parentItem.childrens.push(item);
 			}
 
 			if (EXPORTS_TYPE.indexOf(type) != -1 && item[OPT_DOEXPORT]) {
-
+				
+				trace('todo export');
 				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if (item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
 				path += ".png";
 				//tracerec("path : "+path, level);
+				
 
-				if (overwrite || !fileExist(path, exportPath)) {
+				if (params.overwrite || !fileExist(path, params.exportPath)) {
 
 					var bounds = null;
 					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
 						bounds = parentItem.bounds;
 					}
 
-					saveLayer(layer, path, exportPath, false, bounds);
+					await saveLayer(layer, path, params.exportPath, false, bounds);
 					trace("saveLayer " + path);
 				}
 
 			}
 
 		}
+		
+		trace('isContainer : '+isContainer);
 
-		// if (isContainer && (type == "" || CONTAINERS_TYPE.indexOf(type) != -1)) {
 		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
-
-			//parentLayer = layer;
-			parentLayer = null;
+			
+			parentLayer = null;	//never used
 			tracerec("reccc type : " + type, level);
 
 			var newParentItem = parentItem;
 			if (CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
 
-			recursive_loop(layer, newParentItem, parentLayer, level + 1);
-
-
+			await recursive_loop(layer, newParentItem, parentLayer, level + 1, params);
+			
 		}
-		/* 
-		//bug
-		if((type != "" && CONTAINERS_TYPE.indexOf(type) == -1)){
-			trace('collaaaapse '+name);
-			// collapseLayerSet(layer);
-		}
-		 */
+		
 
 	}
 	
@@ -177,13 +191,14 @@ function recursive_loop(container, parentItem, parentLayer, level) {
 
 
 function create_item(layer, name, type, parentItem, level, index) {
+	
+	trace("create_item");
 	var output = {};
 
 
 	if (CONTAINERS_TYPE.indexOf(type) != -1) output.childrens = [];
-
 	output[OPT_TYPE] = type;
-
+	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
 	
@@ -197,19 +212,21 @@ function create_item(layer, name, type, parentItem, level, index) {
 		
 	}
 	
+	
 	output[OPT_FILENAME] = output[OPT_NAME];
 
 	// var bounds = layer.bounds;
 	var bounds = getBounds(layer, type);
 	output.bounds = bounds;
+	trace('bounds : '+output.bounds);
 
 	// if (parentItem != null) {
 	if (true) {
 		
-		var x1 = getUnitValue(bounds[0]);
-		var y1 = getUnitValue(bounds[1]);
-		var x2 = getUnitValue(bounds[2]);
-		var y2 = getUnitValue(bounds[3]);
+		var x1 = bounds[0];
+		var y1 = bounds[1];
+		var x2 = bounds[2];
+		var y2 = bounds[3];
 
 		if (x1 < 0) x1 = 0;
 		if (y1 < 0) y1 = 0;
@@ -221,9 +238,11 @@ function create_item(layer, name, type, parentItem, level, index) {
 		output.height = y2 - y1;
 
 		trace("output.width : " + output.width + ", output.height:  " + output.height);
-		trace("getUnitValue(bounds[2]) : " + getUnitValue(bounds[2]) + ", getUnitValue(bounds[0]:  " + getUnitValue(bounds[0]));
-		trace("getUnitValue(bounds[3]) : " + getUnitValue(bounds[3]) + ", getUnitValue(bounds[1]:  " + getUnitValue(bounds[1]));
+		trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
+		trace("bounds[3] : " + bounds[3] + ", bounds[1]:  " + bounds[1]);
 	}
+	
+	
 	/* 
 	else {
 		output.position = [0, 0];
@@ -234,6 +253,8 @@ function create_item(layer, name, type, parentItem, level, index) {
 	 
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
+	
+	
 
 	if (has_option(name, OPT_WIDTH)) {
 		var val = get_value_option(name, OPT_WIDTH);
@@ -344,11 +365,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 
 	if (type != TYPE_TEXT) {
-
 		var path = get_value_option_safe(name, OPT_PATH);
-		
 		var startSlash = path.substr(0, 1) == '/';
 		path = removePathSlash(path);
+		
 
 		output[OPT_PATH] = "";
 		if (!startSlash && parentItem != null && parentItem.path != "") {
@@ -357,10 +377,12 @@ function create_item(layer, name, type, parentItem, level, index) {
 		}
 		output[OPT_PATH] += path;
 	}
-
+	
 	if (type == TYPE_CONTAINER) {
 		output[OPT_EQUALOFFSET] = get_value_option_safe(name, OPT_EQUALOFFSET);
 	}
+	
+	
 
 	if (type == TYPE_GFX) {
 
@@ -383,63 +405,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 	//font information (regroupées en un objet) pour type TXT
 	if (type == TYPE_TEXT) {
-		var ti = layer.textItem;
 		
-		// var activeLayer = activeDocument.activeLayer;
-		
-		/* 
-		var f = getFonts(layer);  
-		for(var s in f) {
-			$.writeln( f[s].font + " - " + f[s].color.rgb.hexValue + " - " + Number(f[s].size).toFixed(2) + " - [" + f[s].text + "] - " + Number(f[s].leading));  
-		}
-		*/
-		
-		var textdata = {};
-		trace("name : " + name + ", kind : " + layer.kind);
-		try {
-			textdata.color = ti.color.rgb.hexValue;
-		}
-		catch (e) {
-			textdata.color = 0x888888;
-		}
-
-		textdata.font = ti.font;
-		// textdata.size = Math.round(ti.size.value);
-		textdata.size = Math.round(getFontSize(layer));
-		textdata.text = ti.contents.replace(/\r/g, "\\n");
-		//remove linebreak before and after
-		textdata.text = textdata.text.replace(/^\\n/g, "");
-		textdata.text = textdata.text.replace(/(\\n)+$/g, "");
-		
-		//textdata.uppercase = (ti.capitalization == "TextCase.ALLCAPS");
-
-
-
-		tracerec("textItem : " + layer.textItem + ", " + textdata.text, level);
-		trace("textdata.size : " + textdata.size);
-		
-		try { textdata.leading = Math.round(getUnitValue(ti.leading)); } catch (e) { };
-		
-		try { textdata.letterspacing = ti.tracking; } catch (e) { textdata.letterspacing = 0; };
-
-		try {
-			var justification = ti.justification;
-			if (justification == "Justification.CENTER") textdata.halign = "center";
-			else if (justification == "Justification.CENTERJUSTIFIED") textdata.halign = "center";
-			else if (justification == "Justification.LEFT") textdata.halign = "left";
-			else if (justification == "Justification.LEFTJUSTIFIED") textdata.halign = "left";
-			else if (justification == "Justification.RIGHT") textdata.halign = "right";
-			else if (justification == "Justification.RIGHTJUSTIFIED") textdata.halign = "right";
-			else textdata.halign = "left";
-		}
-		catch (e) { textdata.halign = "left"; };
-
-		trace("textdata.halign : " + textdata.halign);
-
-		output["textdata"] = textdata;
+		output["textdata"] = getTextData(layer);
 
 	}
-	
 	
 
 	output.parent = parentItem;
@@ -450,112 +419,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 
 
-
-function get_type(layer, name, isroot, level) {
-	var forced_type = get_forced_type(name);
-	if (forced_type != "") return forced_type;
-
-	if (!isroot || has_prefix(name)) {
-		var natural_type = get_natural_type(layer);
-		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
-		else return "";
-	}
-	return "";
+module.exports = {
+	recursive_loop,
 }
-
-
-
-function main(settings) {
-	trace("main, settings.overwrite :" + settings.overwrite);
-
-
-	globalSettings = settings;
-	if (settings.overwrite == undefined) settings.overwrite = false;
-
-	exportPath = settings.destination;
-	overwrite = settings.overwrite;
-
-	if (overwrite) {
-		var exportFolder = new Folder(exportPath + "/" + EXPORT_FOLDER);
-		// exportFolder.remove();
-		deleteFolder(exportFolder);
-		// return;
-	}
-
-	/* 
-	//trace("layers : "+layers);
-	//testrec(doc);
-	traverseLayersAMFlat(doc, function(doc, layer){
-		trace("layer.name : "+layer.name);
-	});
-	trace("layers.len : "+layers.length);
-	showDialogOK();
-	return;
-	*/
-
-	recursive_loop(doc, null, null, 0);
-	var l = listErrors;
-	//trace("listErrors : "+listErrors);
-
-
-
-	//generation des templates
-
-	var tpl_id = tpl_ids[settings.indexTpl];
-
-
-	var config_str = loadFilePath("templates/" + tpl_id + "/config.json");
-	var config = jamJSON.parse(config_str, true);
-	var templates;
-	templates = generate_template(listItem, tpl_id, config);
-
-	//ecritures des templates
-
-	for (var i = 0; i < templates.length; i++) {
-
-		var tpl = templates[i];
-		var path2 = EXPORT_FOLDER + "/" + tpl_id + "/";
-		createFile(exportPath, path2 + tpl.filename, tpl.content);
-
-	}
-
-	if (listErrors.length > 0) {
-		showDialogError(listErrors);
-		createErrorFile(listErrors);
-	}
-	else showDialogOK();
-
-}
-
-
-
-
-
-var tpl_ids = get_tpl_ids();
-//var tpl_labels = ["HTML / CSS", "OpenFL - Starling"];
-var tpl_labels = tpl_ids;
-
-if (DEBUG_MODE && false) {
-	var settings = {
-		overwrite: false,
-		destination: activeDocument.path,
-		indexTpl: 1,
-	};
-	main(settings);
-}
-else showDialog(main, tpl_labels);
-
-/* 
-var proptest = "ps--img--center--bgparent"; 
-var proptest2 = "ps--centery";
-var proptest3 = "ps--center--bgparent--btnc";
-
-trace("shorcut 1 : "+handleShorcuts(proptest));
-trace("shorcut 2 : "+handleShorcuts(proptest2));
-trace("shorcut 3 : "+handleShorcuts(proptest3));
-
-trace("activeDocument.path : "+activeDocument.path);
-//main({destination : activeDocument.path, indexTpl : 1, overwrite:false});
- */
-
 

@@ -47,13 +47,13 @@
 	
 	"config" : {
 		"font_size_multiplier" : 1.0,
-		"classname_root" : "center_container"
+		"classname_root" : "container_center"
 	},
 	
 	
 	"colors" : {
 		"FFFfff" : "col_light",
-		"ebce45" : "col_tonic",
+		"fed913" : "col_tonic",
 		"418fde" : "col_blue",
 		"c21c37" : "col_red"
 	}

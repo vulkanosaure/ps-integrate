@@ -1,0 +1,23 @@
+manipulation layers																OK
+	how rename			double click name
+	how navigate		simple click icon (except root : double click)
+	
+	
+hello world																		OK
+
+debug
+	test fast						OK
+	trace							OK
+	breakpoints						
+	repeat last action (keyboard shortcut)		OK
+
+refactoring PS
+	reparer les chgt de dossier							OK
+	separation generic / platform dependant				OK
+	
+	
+	
+start
+	copy paste all 
+	fix include
+	improvise

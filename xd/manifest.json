@@ -1,0 +1,22 @@
+{
+  "id": "b63b00b6",
+  "name": "XD integrate",
+  "version": "0.0.1",
+  "description": "Export your XD artboard as HTML / CSS / Assets file in a smart and customizable way",
+  "summary": "Export your XD artboard as HTML / CSS / Assets file in a smart and customizable way",
+  "languages": ["en"],
+  "author": "Vincent Huss",
+  "helpUrl": "",
+  "host": {
+    "app": "XD",
+    "minVersion": "18.1"
+  },
+  "uiEntryPoints": [
+    {
+      "type": "menu",
+      "label": "Export",
+			"commandId": "export",
+			"shortcut": { "mac": "Cmd+Shift+Q", "win": "Ctrl+Shift+Q" }
+    }
+  ]
+}

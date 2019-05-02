@@ -66,7 +66,7 @@ TODO
 - **static** (default)
 - **abs**
 
-#### direction
+#### dir
 - **col** (default)
 - **row**
 Defines the flow directions of the container (only for type container)

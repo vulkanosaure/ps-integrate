@@ -305,8 +305,13 @@ function getBounds(layer, type)
 	if(mustMerge) targetLayer.remove();
 	
 	// activeDocument.activeLayer = lastActive;
-	
-	return bounds;
+    var length = bounds.length;
+    var output = [];
+    for(var i=0; i<length; i++){
+        output[i] = getUnitValue(bounds[i]);
+    }
+    
+	return output;
 
 }
 
@@ -325,12 +330,12 @@ function getFontSize(layer)
 	var yx = 0;  
 		
 	try {  
-			var transform = executeActionGet(r).getObjectValue(stringIDToTypeID("textKey")).getObjectValue(stringIDToTypeID("transform"));  
-			yy = transform.getDouble(stringIDToTypeID("yy"));      
-			yx = transform.getDouble(stringIDToTypeID("yx"));      
-			}  
+        var transform = executeActionGet(r).getObjectValue(stringIDToTypeID("textKey")).getObjectValue(stringIDToTypeID("transform"));  
+        yy = transform.getDouble(stringIDToTypeID("yy"));      
+        yx = transform.getDouble(stringIDToTypeID("yx"));      
+    }
 	catch(e) { }   
-		
+	
 	var coeff = Math.sqrt(yy*yy + yx*yx);  
 	
 	var output = size *coeff;
@@ -359,21 +364,6 @@ function rasterizeLayerStyle(layer)
 }
 
 
- /* 
-function getBounds(layer, type) 
-{
-		var mfDoc = activeDocument;
-    var mflayer = activeDocument.activeLayer; // currently active layer
-    var mfnewdLayer = mfDoc.activeLayer.duplicate(); // Dublicates active layer or group (creating a temp layer)
-    mfDoc.activeLayer = mfnewdLayer; // sets the temp layer as the active layer
-    mfnewdLayer.merge(); // merges it, this leaves only visible layers
 
-    var mfmlayer = activeDocument.activeLayer; //Grab the currently selected layer
-    var bounds = mfmlayer.bounds;
 
-    mfmlayer.remove(); // delete the temp layer
-    mfDoc.activeLayer = mflayer; // gets back to the layer that was active at the begining
-	
-	return bounds;
-}
-   */
+

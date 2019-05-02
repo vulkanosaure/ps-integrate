@@ -6,7 +6,10 @@
 		activeDocument.mergeVisibleLayers();
 	}
 	if (!bounds) activeDocument.trim(TrimType.TRANSPARENT, true, true, true, true);
-	else activeDocument.crop(bounds);
+	else{
+		for(var i=0; i<4; i++) bounds[i] = new UnitValue(bounds[i], 'px');
+		activeDocument.crop(bounds);
+	}
 
 	//create folder if needed
 	createFolderStructure(basepath, path);
@@ -69,7 +72,7 @@ function fileExist(path, basepath) {
 function get_tpl_ids(path, basepath) {
 	var output = [];
 	var scriptFileDirectory = new File($.fileName).parent;
-	var folder = new Folder(scriptFileDirectory + "/templates");
+	var folder = new Folder(scriptFileDirectory + "/../templates");
 	trace("len : " + folder.length);
 	var files = folder.getFiles();
 	var len = files.length;
@@ -136,3 +139,76 @@ function createFile(basepath, path, content) {
 	file.close();
 
 }
+
+
+function deleteFolder(folderItem) {
+	var theFiles = folderItem.getFiles();
+	for(var c = 0; c < theFiles.length; c++){
+			if (theFiles[c] instanceof Folder) {
+				deleteFolder(theFiles[c]);
+			}
+			else{
+				theFiles[c].remove();
+			}
+	}
+	
+	folderItem.remove();
+}
+
+
+
+
+
+function loadFilePath(path)
+{
+	var scriptFileDirectory = new File($.fileName).parent;
+	var file = new File(scriptFileDirectory + "/" + path);
+	var content = loadResource(file);
+	return content;
+}
+
+
+var cache_filepath = {};
+function loadFilePath_cache(path)
+{
+	var pathkey = path.replace(/\//g, "");
+	var pathkey = path.replace(/\./g, "");
+	
+	var output;
+	if(cache_filepath[pathkey] != undefined){
+		output = cache_filepath[pathkey];
+	}
+	else{
+		output = loadFilePath(path);
+		cache_filepath[pathkey] = output;
+	}
+	return output;
+}
+
+
+
+function loadResource(file)
+{
+	var rsrcString;
+	if (! file.exists) {
+		alert("Resource file '" + file.name + "' for the export dialog is missing! Please, download the rest of the files that come with this script.", "Error", true);
+		return false;
+	}
+	try {
+		file.open("r");
+		if (file.error) throw file.error;
+		rsrcString = file.read();
+		if (file.error) throw file.error;
+		if (! file.close()) {
+			throw file.error;
+		}
+	}
+	catch (error) {
+		alert("Failed to read the resource file '" + file.name + "'!\n\nReason: " + error + "\n\nPlease, check it's available for reading and redownload it in case it became corrupted.", "Error", true);
+		return false;
+	}
+
+	return rsrcString;
+}
+
+

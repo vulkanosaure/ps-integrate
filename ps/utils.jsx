@@ -35,17 +35,20 @@ function get_forced_type(name)
 	return get_value_option(name, "type");
 }
 
-function get_natural_type(layer)
-{
-	if(layer.typename == "LayerSet") return TYPE_CONTAINER;
-	else{
-		var kind = layer.kind;
-		if(kind == LayerKind.NORMAL) return TYPE_GFX;
-		else if(kind == LayerKind.TEXT) return TYPE_TEXT;
-		else return TYPE_CONTAINER;
-		//else throw new Error("whats that "+kind+", name : "+layer.name);
+//maybe, normalize the type
+
+function get_type(layer, name, isroot, level) {
+	var forced_type = get_forced_type(name);
+	if (forced_type != "") return forced_type;
+
+	if (!isroot || has_prefix(name)) {
+		var natural_type = get_natural_type(layer);
+		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
+		else return "";
 	}
+	return "";
 }
+
 
 
 function removePathSlash(path)
@@ -55,22 +58,9 @@ function removePathSlash(path)
 	return path;
 }
 
-function getLayerId(doc, layer) { 
-	
-	doc.activeLayer = layer;
-	
-    var ref = new ActionReference();   
-    ref.putProperty( charIDToTypeID("Prpr") , charIDToTypeID( "LyrI" ));   
-    ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") );  
-    return executeActionGet(ref).getInteger( stringIDToTypeID( "layerID" ) );  
-}  
 
 
 
-function getUnitValue(unitvalue)
-{
-	return unitvalue.value;
-}
 
 
 function getPercentValue(value)
@@ -151,4 +141,5 @@ function handleShorcuts(name)
 	return name;
 	
 }
+
 

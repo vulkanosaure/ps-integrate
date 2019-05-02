@@ -13,7 +13,7 @@
 	var configConfig = config.config;
 	
 	var baseIndent = configMain.base_indent;
-	var path_tpl = "templates/"+tpl_id+"/";
+	var path_tpl = "../templates/"+tpl_id+"/";
 	
 	var textFormatFile= (configTextformat.file != undefined);
 	var layoutFile= (configLayout.file != undefined);

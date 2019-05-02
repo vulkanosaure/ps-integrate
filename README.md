@@ -195,7 +195,9 @@ centrage																OK
 	shortcut : centerx, centery
 	
 	
-
+if multiple name similar : 
+	not repeat them in css ?
+	not sure it's a good idea...
 
 
 _______________________________________
