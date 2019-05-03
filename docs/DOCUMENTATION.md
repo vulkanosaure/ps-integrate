@@ -58,9 +58,10 @@ This is mandatory for 1 child of an element of type 'btnc'
 
 #### imgtype
 
-*Only available for type img*
-choose which image format to export (PNG, JPG)
-TODO
+*Only available for type Adobe XD*
+- **png**
+- **svg**
+*TODO : add JPEG*
 
 #### position
 - **static** (default)
@@ -103,7 +104,7 @@ Forces all the img childrens of the container to be exported at the size of the 
 set position = absolute
 - **bg**
 set bgparent = 1
-- **#item**
+- **#item (or *item for XD)**
 set name = item
 - **!export**
 set doexport = 0
@@ -111,6 +112,8 @@ set doexport = 0
 left, right, top, bottom, row, col, cont, img, btn, btnc, txt
 - **centerx, centery, center** 
 layoutx=center, layouty=center or both
+- **svg (XD only)** 
+set type = img, imgtype = svg
 
 
 ## Element types

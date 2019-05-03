@@ -9,6 +9,7 @@ var OPTIONS_SHORCUTS_PREFIX = file_constantes.OPTIONS_SHORCUTS_PREFIX;
 
 const file_debug = require('./debug.js');
 var trace = file_debug.trace;
+var tracerec = file_debug.tracerec;
 
 const file_platform_layer_logic = require('./platform_layer_logic.js');
 var get_natural_type = file_platform_layer_logic.get_natural_type;
@@ -56,10 +57,12 @@ function get_forced_type(name)
 
 function get_type(layer, name, isroot, level) {
 	var forced_type = get_forced_type(name);
+	// tracerec('forced_type : '+forced_type, level);
 	if (forced_type != "") return forced_type;
 
 	if (!isroot || has_prefix(name)) {
 		var natural_type = get_natural_type(layer);
+		// tracerec('natural_type : '+natural_type, level);
 		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
 		else return "";
 	}
@@ -86,6 +89,7 @@ function handleShorcuts(name)
 {
 	//for some specific registered case : if value only, convert into prop=value
 	
+	
 	for(var k in OPTIONS_SHORCUTS){
 		var tabprop = OPTIONS_SHORCUTS[k];
 		var len = tabprop.length;
@@ -106,6 +110,7 @@ function handleShorcuts(name)
 		
 		
 	}
+	
 	
 	//specific keyboard with property association
 	
@@ -144,11 +149,13 @@ function handleShorcuts(name)
 	for(var k in OPTIONS_SHORCUTS_PREFIX){
 		
 		var prefix = OPTIONS_SHORCUTS_PREFIX[k];
-		var regexp = new RegExp("--" + prefix);
 		var replace = "--" + k + "=";
-		name = name.replace(regexp, replace);
+		name = name.replace("--" + prefix, replace);
 		
 	}
+	//fix
+	name = name.replace("=*", "=");
+	
 	
 	return name;
 	

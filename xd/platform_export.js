@@ -6,39 +6,49 @@ var trace = file_debug.trace;
 
 
 
-async function saveLayer(layer, path, basepath, shouldMerge, bounds) {
+async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, config) {
 	
 	let folder = await createFolderStructure(basepath, path);
 	
-	trace('path : '+path);
+	trace('saveLayer imgtype : '+imgtype);
+	if(!imgtype) imgtype = 'png';
+	
 	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png
 	let tab = path.split('/');
 	let filename = tab[tab.length-1];
+	let filename2 = filename + '@x2';
 	
-	tab = filename.split('.');
-	var ext = tab[tab.length - 1];
-	tab.pop();
-	var filename2 = tab.join('.') + '@x2' + '.' + ext;
+	var ext = imgtype;
+	filename += '.' + ext;
+	filename2 += '.' + ext;
 	
-	/* 
-	trace("filename : "+filename);
-	trace("filename2 : "+filename2);
-	 */
 	const file = await folder.createFile(filename);
 	const file2 = await folder.createFile(filename2);
+	
+	let type;
+	if(imgtype == 'png') type = application.RenditionType.PNG;
+	else if(imgtype == 'svg') type = application.RenditionType.SVG;
+	else throw new Error('wrong imgtype '+imgtype);
 	
 	let settings = [{
 			node: layer,
 			outputFile: file,
-			type: application.RenditionType.PNG,
-			scale: 1
-	},
-	{
+			type: type,
+			scale: 1,
+			minify: true,
+			embedImages: true,
+	}];
+	
+	if(config.retina && imgtype!='svg'){
+		settings.push({
 			node: layer,
 			outputFile: file2,
-			type: application.RenditionType.PNG,
-			scale: 2
-	}];
+			type: type,
+			scale: 2,
+			minify: true,
+			embedImages: true,
+		});
+	}
 	
 	await application.createRenditions(settings);
 }
@@ -71,7 +81,7 @@ async function get_tpl_ids(path, basepath) {
 	
 	// var folder = new Folder(scriptFileDirectory + "/templates");
 	var folder = await scriptFileDirectory.getEntry('templates');
-	trace('folder : '+folder);
+	// trace('folder : '+folder);
 	var files = await folder.getEntries();
 	
 	// trace("len : " + files.length);
@@ -88,30 +98,25 @@ async function get_tpl_ids(path, basepath) {
 
 async function createFolderStructure(basepath, path) {
 	
-	trace('createFolderStructure('+basepath+', '+path+')');
+	// trace('createFolderStructure('+basepath+', '+path+')');
 	
 	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png
 	
 	var tab = path.split("/");
 	var len = tab.length - 1;
 	var cumul = "";
-	// trace('len : '+len);
 	
 	var f = basepath;
 
 	for (let i = 0; i < len; i++) {
 		var folder = tab[i];
 		cumul += folder + "/";
-		// trace('cumul : '+cumul);
 		try{
 			f = await f.createFolder(folder);
 		}
 		catch(err){
-			// trace('err : '+err);
 			f = await f.getEntry(folder);
 		}
-		// trace('f : '+f);
-		
 	}
 	return f;
 }
@@ -121,43 +126,22 @@ async function createFolderStructure(basepath, path) {
 
 
 function dupLayers(layer) {
-	/* 
-	var desc143 = new ActionDescriptor();
-	var ref73 = new ActionReference();
-	ref73.putClass(charIDToTypeID('Dcmn'));
-	desc143.putReference(charIDToTypeID('null'), ref73);
-	desc143.putString(charIDToTypeID('Nm  '), layer.name);
-	var ref74 = new ActionReference();
-	ref74.putEnumerated(charIDToTypeID('Lyr '), charIDToTypeID('Ordn'), charIDToTypeID('Trgt'));
-	desc143.putReference(charIDToTypeID('Usng'), ref74);
-	executeAction(charIDToTypeID('Mk  '), desc143, DialogModes.NO);
-	 */
+	
 };
 
 function SavePNG(saveFile) {
-	/* 
-	var pngOpts = new ExportOptionsSaveForWeb;
-	pngOpts.format = SaveDocumentType.PNG
-	pngOpts.PNG8 = false;
-	pngOpts.transparency = true;
-	pngOpts.interlaced = false;
-	pngOpts.quality = 100;
-	activeDocument.exportDocument(new File(saveFile), ExportType.SAVEFORWEB, pngOpts);
-	 */
+	
 }
 
 
-function createFile(basepath, path, content) {
-	//trace("createFile("+basepath+", "+path+", "+content+")");
-	/* 
-	createFolderStructure(basepath, path);
-
-	var file = new File(basepath + "/" + path);
-	file.encoding = "UTF8";
-	file.open("w", "TEXT", "????");
-	file.writeln(content);
-	file.close();
- */
+async function createFile(folderBaseObj, path, filename, content) {
+	
+	let folder = await createFolderStructure(folderBaseObj, path);
+	// trace('folder : '+folder);
+	// trace('filename : '+filename);
+	let file = await folder.createFile(filename);
+	file.write(content);
+	
 }
 
 
@@ -189,19 +173,17 @@ async function deleteFolderRec(folder)
 
 
 
-function loadFilePath(path)
+async function loadFilePath(folderObj, path)
 {
-	/* 
-	var scriptFileDirectory = new File($.fileName).parent;
-	var file = new File(scriptFileDirectory + "/" + path);
-	var content = loadResource(file);
+	// trace("loadFilePath("+path+")");
+	let file = await folderObj.getEntry(path);
+	let content = await file.read();
 	return content;
-	 */
 }
 
 
 var cache_filepath = {};
-function loadFilePath_cache(path)
+async function loadFilePath_cache(folderObj, path)
 {
 	var pathkey = path.replace(/\//g, "");
 	var pathkey = path.replace(/\./g, "");
@@ -211,7 +193,7 @@ function loadFilePath_cache(path)
 		output = cache_filepath[pathkey];
 	}
 	else{
-		output = loadFilePath(path);
+		output = await loadFilePath(folderObj, path);
 		cache_filepath[pathkey] = output;
 	}
 	return output;
@@ -221,28 +203,7 @@ function loadFilePath_cache(path)
 
 function loadResource(file)
 {
-	/* 
-	var rsrcString;
-	if (! file.exists) {
-		alert("Resource file '" + file.name + "' for the export dialog is missing! Please, download the rest of the files that come with this script.", "Error", true);
-		return false;
-	}
-	try {
-		file.open("r");
-		if (file.error) throw file.error;
-		rsrcString = file.read();
-		if (file.error) throw file.error;
-		if (! file.close()) {
-			throw file.error;
-		}
-	}
-	catch (error) {
-		alert("Failed to read the resource file '" + file.name + "'!\n\nReason: " + error + "\n\nPlease, check it's available for reading and redownload it in case it became corrupted.", "Error", true);
-		return false;
-	}
-
-	return rsrcString;
-	 */
+	
 }
 
 
@@ -256,5 +217,8 @@ module.exports = {
 	deleteFolder,
 	saveLayer,
 	fileExist,
+	loadFilePath,
+	loadFilePath_cache,
+	createFile,
 	
 }

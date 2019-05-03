@@ -17,7 +17,79 @@ refactoring PS
 	
 	
 	
-start
-	copy paste all 
-	fix include
-	improvise
+TODO
+	make export work									OK
+	create simple but complete artboard
+	fill it, test it
+	
+	
+____________________________________________________
+PRIORITE
+
+test réel
+finaliser gestion shape
+bgparent pour shape (ex button)
+sass
+
+	
+____________________________
+Bitmap vs SVG												OK
+multiplication by 2											OK
+	doit etre paramétrable
+	
+si on déclare une --shape manuellement						OK
+	et que la réelle shape est imbriquée
+	ça n'ira pas
+	
+	
+generation shape
+
+sass
+	incremental naming convention ?
+	use the "&" directly
+	optional sass css generation (condition)
+	variable colors / (along with .col-color classes)
+
+	
+text.styleRange
+
+img vs background-image
+
+class reusability
+	ex : buttons
+	find a way to tell him, use this class, (and don't generate one)
+	
+class composition
+
+root / container_center...
+	todo selection : test loop and call rec sur tous
+	si config.classroot null, pas d'écrasement des classes root
+	
+
+invert order,
+	when is it interesting ?
+	only for z-index
+	
+margin measurement		(PAS TRES GRAVE)
+	toujours 9px trop petit
+	par rapport au bord initial seulement
+	
+gestion des textes, multiline ou pas
+	en fonction, set width ou pas
+	
+	
+	
+SceneNode
+	GraphicNode
+		Artboard
+		Rectangle
+		Ellipse
+		Line
+		Path
+		BooleanGroup
+		Text
+	Group
+	SymbolInstance
+	RepeatGrid
+	LinkedGraphic
+	RootNode

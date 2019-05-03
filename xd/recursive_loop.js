@@ -1,14 +1,18 @@
+var imp = {};
 const file_debug = require('./debug.js');
+imp = {...imp, ...file_debug};
 var trace = file_debug.trace;
 var tracerec = file_debug.tracerec;
 
 const file_platform_layer_logic = require('./platform_layer_logic.js');
+imp = {...imp, ...file_platform_layer_logic};
 var getLayersArray = file_platform_layer_logic.getLayersArray;
 var isLayerVisible = file_platform_layer_logic.isLayerVisible;
 var isLayerContainer = file_platform_layer_logic.isLayerContainer;
 var getLayerName = file_platform_layer_logic.getLayerName;
 
 const file_utils = require('./utils.js');
+imp = {...imp, ...file_utils};
 var has_prefix = file_utils.has_prefix;
 var has_option = file_utils.has_option;
 var get_value_option = file_utils.get_value_option;
@@ -20,10 +24,12 @@ var getPercentValue = file_utils.getPercentValue;
 var handleShorcuts = file_utils.handleShorcuts;
 
 const file_errors_utils = require('./errors_utils.js');
+imp = {...imp, ...file_errors_utils};
 var check_error_layername = file_errors_utils.check_error_layername;
 var check_error_item = file_errors_utils.check_error_item;
 
 const file_constantes = require('./constantes.js');
+imp = {...imp, ...file_constantes};
 var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
 var EXPORTS_TYPE = file_constantes.EXPORTS_TYPE;
 var BTNS_TYPE = file_constantes.BTNS_TYPE;
@@ -49,19 +55,21 @@ var TYPE_TEXT = file_constantes.TYPE_TEXT;
 var TYPE_BTN = file_constantes.TYPE_BTN;
 var TYPE_BTNC = file_constantes.TYPE_BTNC;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
-var TYPE_DIV = file_constantes.TYPE_DIV;
 var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
 var EXPORT_FOLDER_IMG = file_constantes.EXPORT_FOLDER_IMG;
+var DEBUG_MODE = file_constantes.DEBUG_MODE;
 
 const file_platform_layer_utils = require('./platform_layer_utils.js');
+imp = {...imp, ...file_platform_layer_utils};
 var getFontSize = file_platform_layer_utils.getFontSize;
 var getBounds = file_platform_layer_utils.getBounds;
 
 const file_platform_export = require('./platform_export.js');
+imp = {...imp, ...file_platform_export};
 var fileExist = file_platform_export.fileExist;
 var saveLayer = file_platform_export.saveLayer;
 
-
+trace('imp : '+imp.ENABLE_EXPORT); 
 
 
 
@@ -76,15 +84,17 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 	var len = layers.length;
 	// trace('layers : '+layers);
 	
-	trace('2');
 
 	for (var _i = 0; _i < len; _i++) {
 
 		var i;
+		/* 
 		if (params.settings.indexTpl == 0) i = _i;
 		else i = len - 1 - _i;
+		 */
+		i = _i;
 		
-		tracerec('_____________________________________ i : '+i, level);
+		tracerec('_____________________________________ _i : '+_i, level);
 		
 		var layer = layers[i];
 
@@ -100,15 +110,11 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 			
 			//shortcuts
 			name = handleShorcuts(name);
-			trace('name shortcut : '+name);
 			
 			var errors = check_error_layername(name, parentItem);
 			if (errors.length > 0) {
-				trace("errors : " + errors);
 				params.listErrors = params.listErrors.concat(errors);
 			}
-			else trace('no error');
-
 		}
 		
 		
@@ -119,17 +125,16 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
 		tracerec('type : '+type+', parentitemname : '+parentitemname, level);
-		trace('level : '+level);
 
 		if (type != "") {
 
 			var item = create_item(layer, name, type, parentItem, level, i);
-			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + item.width + ", height : " + item.height, level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
 
 			var errors = check_error_item(name, item);
-			trace('errors.length : '+errors.length);
+			tracerec('errors.length : '+errors.length, level);
 			if (errors.length > 0) {
-				trace("errors : " + errors);
+				tracerec("errors : " + errors, level);
 				params.listErrors = params.listErrors.concat(errors);
 			}
 
@@ -140,31 +145,29 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 			if (EXPORTS_TYPE.indexOf(type) != -1 && item[OPT_DOEXPORT]) {
 				
-				trace('todo export');
 				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if (item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
-				path += ".png";
 				//tracerec("path : "+path, level);
 				
-
-				if (params.overwrite || !fileExist(path, params.exportPath)) {
+				
+				if ((params.overwrite || !fileExist(path, params.exportPath)) && imp.ENABLE_EXPORT) {
 
 					var bounds = null;
 					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
 						bounds = parentItem.bounds;
 					}
 
-					await saveLayer(layer, path, params.exportPath, false, bounds);
-					trace("saveLayer " + path);
+					let imgtype = item[imp.OPT_IMGTYPE];
+					await saveLayer(layer, path, params.exportPath, false, bounds, imgtype, params.config);
 				}
 
 			}
 
 		}
 		
-		trace('isContainer : '+isContainer);
+		// tracerec('isContainer : '+isContainer, level);
 
 		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
 			
@@ -178,7 +181,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 			
 		}
 		
-
+		
 	}
 	
 	
@@ -192,7 +195,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 function create_item(layer, name, type, parentItem, level, index) {
 	
-	trace("create_item");
+	// trace("create_item");
 	var output = {};
 
 
@@ -218,7 +221,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 	// var bounds = layer.bounds;
 	var bounds = getBounds(layer, type);
 	output.bounds = bounds;
-	trace('bounds : '+output.bounds);
+	// tracerec('bounds : '+output.bounds, level);
 
 	// if (parentItem != null) {
 	if (true) {
@@ -227,30 +230,27 @@ function create_item(layer, name, type, parentItem, level, index) {
 		var y1 = bounds[1];
 		var x2 = bounds[2];
 		var y2 = bounds[3];
+		
+		x1 = Math.round(x1);
+		x2 = Math.round(x2);
+		y1 = Math.round(y1);
+		y2 = Math.round(y2);
 
 		if (x1 < 0) x1 = 0;
 		if (y1 < 0) y1 = 0;
 		
-		trace(output[OPT_NAME]+" :: x, y : "+x1+", "+y1);
+		tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
 
 		output.position = [x1, y1];
 		output.width = x2 - x1;
 		output.height = y2 - y1;
-
+		/* 
 		trace("output.width : " + output.width + ", output.height:  " + output.height);
 		trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
 		trace("bounds[3] : " + bounds[3] + ", bounds[1]:  " + bounds[1]);
+		 */
 	}
 	
-	
-	/* 
-	else {
-		output.position = [0, 0];
-		output.width = DOC_WIDTH;
-		output.height = DOC_HEIGHT;
-	}
-	 */
-	 
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
 	
@@ -259,12 +259,12 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (has_option(name, OPT_WIDTH)) {
 		var val = get_value_option(name, OPT_WIDTH);
 		val = getPercentValue(val) / 100;
-		output[OPT_WIDTH] = Math.round(val * DOC_WIDTH);
+		output[OPT_WIDTH] = Math.round(val * imp.DOC_WIDTH);
 	}
 	if (has_option(name, OPT_HEIGHT)) {
 		var val = get_value_option(name, OPT_HEIGHT);
 		val = getPercentValue(val) / 100;
-		output[OPT_HEIGHT] = Math.round(val * DOC_HEIGHT);
+		output[OPT_HEIGHT] = Math.round(val * imp.DOC_HEIGHT);
 	}
 	
 	if (has_option(name, OPT_DOEXPORT)) {
@@ -274,7 +274,14 @@ function create_item(layer, name, type, parentItem, level, index) {
 		output[OPT_DOEXPORT] = val;
 	}
 	else output[OPT_DOEXPORT] = true;
-	trace('OPT_DOEXPORT '+output[OPT_DOEXPORT]);
+	
+	
+	if (has_option(name, imp.OPT_IMGTYPE)) {
+		var val = get_value_option(name, imp.OPT_IMGTYPE);
+		output[imp.OPT_IMGTYPE] = val;
+	}
+	
+	
 
 
 	tracerec("item " + name + ", parentItem : " + ((parentItem) ? parentItem.name : "") + ", position : " + output.position + ", exp : "+output.doexport, level);
@@ -286,9 +293,9 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (parentItem) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
-		trace('minus parent w - '+parentItem.position_abs[0]+' : '+output.position[0]);
-		trace('minus parent h - '+parentItem.position_abs[1]+' : '+output.position[1]);
-		trace('parent : '+parentItem[OPT_NAME]);
+		// trace('minus parent w - '+parentItem.position_abs[0]+' : '+output.position[0]);
+		// trace('minus parent h - '+parentItem.position_abs[1]+' : '+output.position[1]);
+		// trace('parent : '+parentItem[OPT_NAME]);
 	}
 	
 	
@@ -324,7 +331,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (has_option(name, OPT_LAYOUT_X)) {
 		var layout = get_value_option(name, OPT_LAYOUT_X);
 
-		var parentsize = parentItem ? parentItem.width : DOC_WIDTH;
+		var parentsize = parentItem ? parentItem.width : imp.DOC_WIDTH;
 		if (layout == "right"){
 			output.margin_right = parentsize - (output.position[0] + output.width);
 			output[OPT_POSITION] = "absolute";
@@ -345,7 +352,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (has_option(name, OPT_LAYOUT_Y)) {
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
 
-		var parentsize = parentItem ? parentItem.height : DOC_HEIGHT;
+		var parentsize = parentItem ? parentItem.height : imp.DOC_HEIGHT;
 		if (layout == "bottom"){
 			output.margin_bottom = parentsize - (output.position[1] + output.height);
 			output[OPT_POSITION] = "absolute";
@@ -406,9 +413,19 @@ function create_item(layer, name, type, parentItem, level, index) {
 	//font information (regroupées en un objet) pour type TXT
 	if (type == TYPE_TEXT) {
 		
-		output["textdata"] = getTextData(layer);
-
+		output["textdata"] = imp.getTextData(layer);
 	}
+	
+	if (type == imp.TYPE_SHAPE) {
+		
+		output["shapedata"] = imp.getShapeData(layer, output.width, output.height);
+		
+		trace('SHAPEDATA');
+		for(var k in output["shapedata"]){
+			trace('- '+k+' : '+output["shapedata"][k]);
+		}
+	}
+	
 	
 
 	output.parent = parentItem;
@@ -421,5 +438,6 @@ function create_item(layer, name, type, parentItem, level, index) {
 
 module.exports = {
 	recursive_loop,
+	create_item,
 }
 

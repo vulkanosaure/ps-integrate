@@ -306,10 +306,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 			output["disable"] = true;
 		}
 	}
-
-
-          
-
+	
+	
+  
+	
 	//font information (regroupées en un objet) pour type TXT
 	if (type == TYPE_TEXT) {
 		

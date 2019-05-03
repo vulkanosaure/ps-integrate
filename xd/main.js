@@ -1,7 +1,13 @@
+var imp = {};
+
 const file_platform_export = require('./platform_export.js');
 var get_tpl_ids = file_platform_export.get_tpl_ids;
 var getPluginFolder = file_platform_export.getPluginFolder;
 var deleteFolder = file_platform_export.deleteFolder;
+imp = {...imp, ...file_platform_export};
+imp = {...imp, ...require('./dialog.js')};
+
+
 
 const file_debug = require('./debug.js');
 var trace = file_debug.trace;
@@ -12,34 +18,47 @@ var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
 const file_recursive_loop = require('./recursive_loop.js');
 var recursive_loop = file_recursive_loop.recursive_loop;
 
+imp = {...imp, ...require('./generate_template.js')};
+imp = {...imp, ...require('./errors_utils.js')};
+imp = {...imp, ...file_constantes};
+imp = {...imp, ...file_recursive_loop};
+
+
+const fs = require("uxp").storage.localFileSystem;
+
+
 
 
 
 
 //_______________________________________
-/* 
-var DOC_WIDTH = getUnitValue(doc.width);
-var DOC_HEIGHT = getUnitValue(doc.height);
-*/
 
 var overwrite;
 var listErrors = [];
 var listItem = [];
 var globalSettings;
 var exportPath;
-
+var tpl_ids;
 
 
 async function exportFunction(selection, documentRoot)
 {
-	var tpl_ids = await get_tpl_ids();
+	tpl_ids = await get_tpl_ids();
 	trace('tpl_ids : '+tpl_ids);
 	trace('selection : '+selection.items[0]);
 	
 	let rootNode;
 	if(selection.items && selection.items.length > 0 && false) rootNode = selection.items[0];
 	else rootNode = documentRoot.children.at(0);
-	trace('rootNode: '+rootNode);
+	// trace('rootNode: '+rootNode);
+	
+	//ps-path=home-test
+	trace('name root : '+rootNode.name);
+	
+	let bounds = documentRoot.globalBounds;
+	imp.DOC_WIDTH = bounds.width;
+	imp.DOC_HEIGHT = bounds.height;
+	
 	
 	var settings = {
 		overwrite: true,
@@ -48,15 +67,16 @@ async function exportFunction(selection, documentRoot)
 	};
 	
 	trace('settings.destination : '+settings.destination);
-	main(settings, rootNode);
+	await main(settings, rootNode, documentRoot);
 	
 	
 }
 
-async function main(settings, rootNode)
+
+
+async function main(settings, rootNode, documentRoot)
 {
 	trace("main, settings.overwrite :" + settings.overwrite);
-	
 	
 	globalSettings = settings;
 	if (settings.overwrite == undefined) settings.overwrite = false;
@@ -70,13 +90,69 @@ async function main(settings, rootNode)
 	}
 	
 	
-	await recursive_loop(rootNode, null, null, 0, {
+	
+	//get config file
+	
+	var tpl_id = tpl_ids[settings.indexTpl];
+	console.log('tpl_id : '+tpl_id);
+	
+	let folderPlugin = await fs.getPluginFolder();
+	var config_str = await imp.loadFilePath(folderPlugin, "templates/" + tpl_id + "/config.json");
+	config_str = config_str.substr(1);
+	var config = JSON.parse(config_str);
+	
+	
+	//todo : parse name of documentRoot to extract a few global property
+	//ex : path
+	
+	
+	//layer browsing and exports
+	
+	let params = {
 		settings : globalSettings,
 		listErrors : listErrors,
 		listItem : listItem,
 		overwrite : overwrite,
 		exportPath : exportPath,
-	});
+		config : config,
+	};
+	
+	
+	
+	await recursive_loop(rootNode, null, null, 0, params);
+	
+	
+	
+	
+	//generation des templates
+
+	
+	if (params.listErrors.length > 0) {
+		trace('errors');
+		imp.showDialogError(params.listErrors);
+		await imp.createErrorFile(exportPath, params.listErrors);
+		
+	}
+	else{
+		
+		
+		var templates = await imp.generate_template(listItem, tpl_id, config);
+		
+
+		//ecritures des templates
+
+		for (var i = 0; i < templates.length; i++) {
+
+			var tpl = templates[i];
+			var path2 = EXPORT_FOLDER + "/" + tpl_id + "/";
+			await imp.createFile(exportPath, path2, tpl.filename, tpl.content);
+
+		}
+		
+		imp.showDialogOK();
+	}
+	
+	
 }
 
 

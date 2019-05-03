@@ -1,0 +1,4 @@
+var {{varname}}:VText = new VText(StylesText.{{textformat_id}});
+{{varname}}.textWidth = {{width}};
+{{varname}}.text = "{{text}}";
+{{varname}}.init();

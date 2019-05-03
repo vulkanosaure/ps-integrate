@@ -1,3 +1,5 @@
+var imp = {};
+
 const file_debug = require('./debug.js');
 var trace = file_debug.trace;
 
@@ -9,7 +11,6 @@ var TYPE_TEXT = file_constantes.TYPE_TEXT;
 var TYPE_BTN = file_constantes.TYPE_BTN;
 var TYPE_BTNC = file_constantes.TYPE_BTNC;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
-var TYPE_DIV = file_constantes.TYPE_DIV;
 var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
 var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
 
@@ -20,11 +21,13 @@ var OPT_GFX_TYPE = file_constantes.OPT_GFX_TYPE;
 var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
 var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
 
+imp = {...imp, ...require('./platform_export.js')};
+
 
 
 function check_error_layername(name, parentItem)
 {
-	// trace('check_error_layername');
+	trace('check_error_layername('+name+')');
 	var output = [];
 	
 	var len = PREFIX.length;
@@ -41,13 +44,6 @@ function check_error_layername(name, parentItem)
 			
 		}
 	}
-	
-	//test, toremove
-	props[OPT_PATH] = '';
-	props[OPT_FILENAME] = '';
-	props[OPT_BGPARENT] = '';
-	props[OPT_GFX_TYPE] = '';
-	// trace("props : "+props);
 	
 	
 	for(var k in props){
@@ -146,7 +142,7 @@ function getItemStructureStr(item)
 }
 
 
-function createErrorFile(listErrors)
+async function createErrorFile(exportPath, listErrors)
 {
 	var path2 = EXPORT_FOLDER + "/";
 	
@@ -155,14 +151,15 @@ function createErrorFile(listErrors)
 	var len = listErrors.length;
 	for(var i = 0; i<len; i++){
 		
+		//linebreak don't work
 		var obj = listErrors[i];
-		var str = "";
+		var str = "";	
 		str += "Msg : "+obj.msg+"\n";
 		str += "Path : "+obj.path+"\n";
 		str += "Layer name : "+obj.name+"\n";
 		content += str + "\n";
 	}
-	createFile(exportPath, path2 + "errors.log", content);
+	await imp.createFile(exportPath, path2, "errors.log", content);
 	
 }
 
