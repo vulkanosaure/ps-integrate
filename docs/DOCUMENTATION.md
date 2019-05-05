@@ -112,8 +112,8 @@ set doexport = 0
 left, right, top, bottom, row, col, cont, img, btn, btnc, txt
 - **centerx, centery, center** 
 layoutx=center, layouty=center or both
-- **svg (XD only)** 
-set type = img, imgtype = svg
+- **svg/png (XD only)** 
+set type = img, imgtype = svg/png
 
 
 ## Element types

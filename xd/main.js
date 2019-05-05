@@ -93,7 +93,8 @@ async function main(settings, rootNode, documentRoot)
 	
 	//get config file
 	
-	var tpl_id = tpl_ids[settings.indexTpl];
+	// var tpl_id = tpl_ids[settings.indexTpl];
+	var tpl_id = 'html';
 	console.log('tpl_id : '+tpl_id);
 	
 	let folderPlugin = await fs.getPluginFolder();

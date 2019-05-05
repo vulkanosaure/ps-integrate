@@ -10,6 +10,15 @@ var TYPE_TEXT = file_constantes.TYPE_TEXT;
 imp = {...imp, ...file_constantes};
 
 
+function get_natural_imgtype(layer)
+{
+	var kind = layer.constructor.name;
+	if(kind == 'Path') return 'svg';
+	else return 'png';
+}
+
+
+
 function get_natural_type(layer)
 {
 	var kind = layer.constructor.name;
@@ -24,7 +33,7 @@ function get_natural_type(layer)
 		if(kind == '') return TYPE_GFX;
 		else if(kind == 'Rectangle' && fillkind == 'ImageFill') return TYPE_GFX;
 		else if(['Rectangle', 'Ellipse', 'Line'].indexOf(kind) > -1) return imp.TYPE_SHAPE;
-		else if(kind == 'Path') return TYPE_GFX;		//todo : vector
+		else if(kind == 'Path') return TYPE_GFX;
 		else if(kind == 'Text') return TYPE_TEXT;
 		else return TYPE_CONTAINER;
 		
@@ -91,11 +100,11 @@ function getTextData(layer)
 {
 	var ti = layer;
 	var textdata = {};
-	textdata.color = ti.fill.toHex();
+	textdata.color = getColorData(ti.fill);
 	textdata.font = ti.fontFamily;
 	textdata.size = ti.fontSize;
 	textdata.text = ti.text;
-
+	
 	//remove linebreak before and after
 	textdata.text = textdata.text.replace(/\r/g, "\\n");
 	textdata.text = textdata.text.replace(/^\\n/g, "");
@@ -106,8 +115,10 @@ function getTextData(layer)
 	textdata.leading = ti.lineSpacing;
 	textdata.letterspacing = ti.charSpacing;
 	//new xd
-	textdata.fontStyle = ti.fontStyle;
+	textdata.bold = isTextBold(ti.fontStyle);
+	textdata.italic = isTextItalic(ti.fontStyle);
 	textdata.underline = ti.underline;
+	
 	
 	if(ti.textAlign == 'ALIGN_LEFT') textdata.halign = 'left';
 	else if(ti.textAlign == 'ALIGN_CENTER') textdata.halign = 'center';
@@ -121,7 +132,8 @@ function getTextData(layer)
 		let obj = {};
 		obj.length = range.length;
 		obj.font = range.fontFamily;
-		obj.fontStyle = range.fontStyle;
+		obj.bold = isTextBold(range.fontStyle);
+		obj.italic = isTextItalic(range.fontStyle);
 		obj.color = range.fill.toHex();
 		obj.letterspacing = range.charSpacing;
 		obj.underline = range.underline;
@@ -129,6 +141,25 @@ function getTextData(layer)
 	}
 	
 	return textdata;
+}
+
+
+
+
+//Regular
+//Bold
+//Bold Italic
+//Italic
+
+function isTextItalic(fontStyle)
+{
+	fontStyle = fontStyle.toLowerCase();
+	return (fontStyle.indexOf('italic') > -1);
+}
+function isTextBold(fontStyle)
+{
+	fontStyle = fontStyle.toLowerCase();
+	return (fontStyle.indexOf('bold') > -1);
 }
 
 
@@ -143,6 +174,64 @@ function isBorderRadiusEqual(r)
 {
 	return (r.topLeft==r.bottomLeft && r.bottomLeft==r.bottomRight && r.bottomRight==r.topRight && r.topRight==r.topLeft);
 }
+
+
+
+function getShadowData(layer)
+{
+	let output;
+	if(layer.shadow && layer.shadow.visible){
+		let s = layer.shadow;
+		return {
+			x: layer.shadow.x,
+			y: layer.shadow.y,
+			blur: layer.shadow.blur,
+			colorHex: layer.shadow.color.toHex(),
+			color: getColorData(s.color),
+		};
+	}
+	
+	return output;
+}
+
+
+
+function getColorData(colorObj)
+{
+	let c = colorObj;
+	return {
+		r: c.r,
+		g: c.g,
+		b: c.b,
+		a: c.a,
+		rgba: "rgba(" + c.r + "," + c.g + "," + c.b + "," + c.a / 255 + ")",
+		hex: c.toHex(),
+	}
+}
+
+function getGradientColorData(colorObj)
+{
+	let c = colorObj;
+	
+	let dir;
+	if(c.endX > c.startX && c.endY == c.startY) dir = 'right';
+	else if(c.endX < c.startX && c.endY == c.startY) dir = 'left';
+	if(c.endY > c.startY && c.endX == c.startX) dir = 'bottom';
+	else if(c.endY < c.startY && c.endX == c.startX) dir = 'top';
+	//todo : 4 diagonales
+	
+	
+	return {
+		colorStops: c.colorStops.map(item => {
+			return {
+				stop: item.stop, 
+				color: getColorData(item.color),
+			}
+		}),
+		dir: dir,
+	};
+}
+
 
 
 
@@ -167,29 +256,34 @@ function getShapeData(layer, width, height)
 	borderWidth
 	borderColor
 	radius
-	radiusTopLeft, ...
+	radius_topLeft, ...
 	bgColor
 	bgGradient
 	
-	//todo shadow
-	//todo bgGradient
 	//todo line, (only consider non diagonal, shape sinon)
+	
+	//todo shadow (not here, global)
 	//todo ellipse (only consider circle, sinon shape)
-	//attention, diagonal vs line
+	//todo bgGradient
 	*/
 	var output = {};
 	
 	layerkind = layer.constructor.name;
-	let fillkind = layer.fill ? layer.fill.constructor.name : '';
-	if(fillkind == 'Color' && layer.fillEnabled) output.bgColor = layer.fill.toHex();
+	if(layer.fillEnabled){
+		let fillkind = layer.fill ? layer.fill.constructor.name : '';
+		if(fillkind == 'Color') output.bgColor = getColorData(layer.fill);
+		if(fillkind == 'LinearGradientFill') output.bgGradient = getGradientColorData(layer.fill);
+	}
+	
+	
 	else output.bgColor = '';
 	if(layer.strokeEnabled){
 		output.borderWidth = layer.strokeWidth;
-		output.borderColor = layer.stroke.toHex();
+		output.borderColor = getColorData(layer.stroke);
 	}
 	else{
-		output.borderWidth = '';
-		output.borderColor = '';
+		output.borderWidth = null;
+		output.borderColor = null;
 	}
 	
 	if(layerkind == 'Rectangle'){
@@ -210,6 +304,7 @@ function getShapeData(layer, width, height)
 	}
 	else if(layerkind == 'Line'){
 		//Line: .start : !Point .end : !Point
+		if(output.borderWidth) output.borderWidth *= 0.5;
 	}
 	
 	return output;
@@ -218,12 +313,13 @@ function getShapeData(layer, width, height)
 
 module.exports = {
 	getTextData,
+	getShadowData,
 	getShapeData,
 	getLayerName,
 	getLayersArray,
 	isLayerVisible,
 	isLayerContainer,
 	get_natural_type,
+	get_natural_imgtype,
 	getLayerId,
-	
 };

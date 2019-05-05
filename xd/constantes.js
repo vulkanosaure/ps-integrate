@@ -71,6 +71,7 @@ var OPTIONS_SHORCUTS2 = {};
 OPTIONS_SHORCUTS2["centerx"] = OPT_LAYOUT_X + "=center";
 OPTIONS_SHORCUTS2["centery"] = OPT_LAYOUT_Y + "=center";
 OPTIONS_SHORCUTS2["center"] = OPT_LAYOUT_X+"=center--"+OPT_LAYOUT_Y+"=center";
+OPTIONS_SHORCUTS2["png"] = OPT_TYPE + "=img--"+OPT_IMGTYPE+"=png";
 OPTIONS_SHORCUTS2["svg"] = OPT_TYPE + "=img--"+OPT_IMGTYPE+"=svg";
 
 

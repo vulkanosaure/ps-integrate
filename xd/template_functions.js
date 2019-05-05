@@ -3,7 +3,8 @@ var TPL_FUNCTIONS = {};
 var imp = {};
 imp = {...imp, ...require('./constantes.js')};
 imp = {...imp, ...require('./template_utils.js')};
-
+const file_debug = require('./debug.js');
+var trace = file_debug.trace;
 
 
 
@@ -24,9 +25,10 @@ TPL_FUNCTIONS["html"] = {
 			'size' : {name : 'font-size', sufix : 'px'},
 			// 'leading' : {name : 'line-height', sufix : 'px'},
 			'letterspacing' : {name : 'letter-spacing', sufix : 'px', multiplier : mletterspacing, round:true},
-			// 'halign' : {name : 'text-align', quote : 'none'},
 		};
 		
+		if(textdata.bold) propsModel['bold'] = { name:'font-weight', value:'bold'};
+		if(textdata.italic) propsModel['italic'] = { name:'font-style', value:'italic'};
 		
 		
 		//______________________________
@@ -64,7 +66,7 @@ TPL_FUNCTIONS["html"] = {
 	},
 	
 	
-	getLayoutData : function (item, parent, prevItem, prevStaticItem, config)
+	getLayoutData : function (item, parent, prevItem, prevStaticItem, config, configLayout)
 	{
 		
 		var x = item.position[0];
@@ -179,8 +181,19 @@ TPL_FUNCTIONS["html"] = {
 		if(ly != "top") propsModel["height"] = {sufix : "px"};
 		
 		if([imp.TYPE_TEXT].indexOf(item.type) != -1){
+			
+			let tdata = item.textdata;
+			
 			propsModel["width"] = {sufix : "px", comment:true};
 			propsModel["height"] = {sufix : "px", comment:true};
+			
+			propsModel["halign"] = {name : 'text-align', value : tdata.halign, quote : 'none'};
+			
+			// trace('tdata.color : '+tdata.color);
+			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
+			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};
+			
+			
 		}
 		
 		if(item.has_graphic){
@@ -216,6 +229,52 @@ TPL_FUNCTIONS["html"] = {
 			//ajoute qd mm la width en comment
 			propsModel["width"] = {sufix : "px", comment:true};
 		}
+		
+		//no else, can be cumulative
+		if(item.shapedata){
+			
+			let s = item.shapedata;
+			
+			propsModel["width"] = {sufix : "px", br: false};
+			propsModel["height"] = {sufix : "px"};
+			
+			if(s.bgColor){
+				let value = imp.getColorProperty(s.bgColor, config.sass_variable.colors);
+				propsModel["bgColor"] = {name : "background-color", value: value};
+			}
+			else if(s.bgGradient){
+				//linear-gradient(to left, $color-purple, $color-purple-gradient);
+				
+				let value = getGradientColorStr(s.bgGradient, config.sass_variable.colors);
+				propsModel["bgGradient"] = {name : "background", value: value};
+				//default => to bottom
+				
+			}
+			
+			
+			if(s.borderWidth){	
+				let borderValue = s.borderWidth + 'px solid '+imp.getColorProperty(s.borderColor, config.sass_variable.colors);
+				propsModel["border"] = {name : "border", value:borderValue};
+			}
+			if(s.radius_topLeft) propsModel["radius_topLeft"] = {name : "border-top-left-radius", value:s.radius_topLeft, sufix:"px"};
+			if(s.radius_topRight) propsModel["radius_topRight"] = {name : "border-top-right-radius", value:s.radius_topRight, sufix:"px"};
+			if(s.radius_bottomRight) propsModel["radius_bottomRight"] = {name : "border-bottom-right-radius", value:s.radius_bottomRight, sufix:"px"};
+			if(s.radius_bottomLeft) propsModel["radius_bottomLeft"] = {name : "border-bottom-left-radius", value:s.radius_bottomLeft, sufix:"px"};
+			
+			if(s.radius) propsModel["radius"] = {name : "border-radius", value:s.radius, sufix:"px"};
+			
+		}
+		
+		
+		if(item.shadow){
+			
+			let s = item.shadow;
+			let c  = s.color;
+			let value = s.x + "px " + s.y + "px " + s.blur + "px 0px " + c.rgba;
+			propsModel['shadow'] = {name: 'box-shadow', value: value};
+		}
+		
+		
 		
 		
 		
@@ -261,11 +320,39 @@ TPL_FUNCTIONS["html"] = {
 		
 		var data = imp.mapProps(propsModel, item);
 		
-		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'});
+		var closeTag = !configLayout.file.sass_indent;
+		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag);
 		
 		return str;
 	}
 
+}
+
+
+function getGradientColorStr(obj, colors)
+{
+	let output = '';
+	let dir = "to " + obj.dir;
+	let col1 = "";
+	let col2 = "";
+	let tab = [];
+	tab.push(dir);
+	let nbColor = obj.colorStops.length;
+	
+	for(var i in obj.colorStops){
+		let item = obj.colorStops[i];
+		let col = imp.getColorProperty(item.color, colors);
+		
+		if(nbColor > 2){
+			col += ' ';
+			col += Math.round(item.stop * 100) + '%';
+		}
+		tab.push(col);
+	}
+	
+	output = "linear-gradient(" + tab.join(', ') + ")";
+	
+	return output;
 }
 
 

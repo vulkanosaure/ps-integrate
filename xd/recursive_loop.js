@@ -102,8 +102,10 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 		if (!enable) continue;
 
 		var isContainer = isLayerContainer(layer);
-		var name = getLayerName(layer);
+		var name = getLayerName(layer,);
 		tracerec('name : '+name, level);
+		
+		
 
 
 		if (has_prefix(name)) {
@@ -204,6 +206,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
+	output[OPT_NAME] = imp.decodeNameParentRef(output[OPT_NAME], parentItem);
 	
 	
 	if (output[OPT_NAME] == "") {
@@ -211,7 +214,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 		
 		if(parentItem) output[OPT_NAME] += parentItem.name;
 		else output[OPT_NAME] += type;
-		output[OPT_NAME] += '_' + index;
+		output[OPT_NAME] += '-' + index;
 		
 	}
 	
@@ -280,6 +283,15 @@ function create_item(layer, name, type, parentItem, level, index) {
 		var val = get_value_option(name, imp.OPT_IMGTYPE);
 		output[imp.OPT_IMGTYPE] = val;
 	}
+	else if(type == imp.TYPE_GFX){
+		output[imp.OPT_IMGTYPE] = imp.get_natural_imgtype(layer);
+	}
+	
+	
+	
+	
+	let shadow = imp.getShadowData(layer);
+	if(shadow) output.shadow = shadow;
 	
 	
 
@@ -390,18 +402,22 @@ function create_item(layer, name, type, parentItem, level, index) {
 	}
 	
 	
-
+	
+	if([TYPE_GFX, imp.TYPE_SHAPE].indexOf(type) > -1){
+		output[OPT_BGPARENT] = get_value_option_safe(name, OPT_BGPARENT);
+		output[OPT_BGPARENT] = (output[OPT_BGPARENT] == "1");
+	}
+	
+	
 	if (type == TYPE_GFX) {
 
 		output[OPT_GFX_TYPE] = get_value_option_safe(name, OPT_GFX_TYPE);
 		if (output[OPT_GFX_TYPE] == "") output[OPT_GFX_TYPE] = "layout";	//layout/data
-
-		output[OPT_BGPARENT] = get_value_option_safe(name, OPT_BGPARENT);
-		output[OPT_BGPARENT] = (output[OPT_BGPARENT] == "1");
-
+		
 		if (output[OPT_BGPARENT]) {
 			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
+			if(output[imp.OPT_IMGTYPE]) parentItem[imp.OPT_IMGTYPE] = output[imp.OPT_IMGTYPE];
 			parentItem.has_graphic = true;
 			output["disable"] = true;
 		}
@@ -414,16 +430,21 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (type == TYPE_TEXT) {
 		
 		output["textdata"] = imp.getTextData(layer);
+		//if layoutx set (ex centerx), override align
+		if (has_option(name, OPT_LAYOUT_X)) {
+			output["textdata"].halign = output[OPT_LAYOUT_X];
+		}
 	}
 	
 	if (type == imp.TYPE_SHAPE) {
 		
 		output["shapedata"] = imp.getShapeData(layer, output.width, output.height);
 		
-		trace('SHAPEDATA');
-		for(var k in output["shapedata"]){
-			trace('- '+k+' : '+output["shapedata"][k]);
+		if (output[OPT_BGPARENT]) {
+			parentItem.shapedata = output.shapedata;
+			output["disable"] = true;
 		}
+		
 	}
 	
 	

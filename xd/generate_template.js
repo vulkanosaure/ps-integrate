@@ -7,6 +7,7 @@ var tracerec = file_debug.tracerec;
 imp = {...imp, ...require('./template_utils.js')};
 imp = {...imp, ...require('./template_functions.js')};
 imp = {...imp, ...require('./constantes.js')};
+imp = {...imp, ...require('./utils.js')};
 
 
 // var generate_template = function(items, tpl_id, config)
@@ -29,8 +30,6 @@ async function generate_template(items, tpl_id, config)
 	
 	var textFormatFile= (configTextformat.file != undefined);
 	var layoutFile= (configLayout.file != undefined);
-	
-	var bIndentation = configMain.indent;
 	
 	var closeTags = configMain.close_tags;
 	var closeTagsConfig = configMain.close_tags_config;
@@ -129,23 +128,24 @@ async function generate_template(items, tpl_id, config)
 			var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
 			
 			var indent = baseIndent;
-			if(type == "main" && bIndentation){
-				indent += level;
-			}
+			if(type == "main" && configMain.indent) indent += level;
+			if(type == "layout" && configLayout.file.sass_indent) indent += level;
+			
 			
 			
 			//separator
 			
-			if(imp.CONTAINERS_TYPE.indexOf(item.type) != -1  || level == 0){
+			// if(imp.CONTAINERS_TYPE.indexOf(item.type) != -1  || level == 0){
+			if(level == 0){
 				
-				var tplname = level == 0 ? item.name.toUpperCase() : item.name;
+				var tplname = level == 0 ? item.name : item.name;
 				var templateprefix = (level == 0) ? "-big" : "-small";
 				var str = await imp.convertTemplate(path_tpl + type + "/separator"+templateprefix+".txt", {name: tplname});
 				
 				var nbline;
 				
 				if(imp.get_tpl_content() != ""){
-					nbline = (level == 0) ? 5 : linebreaks.before;
+					nbline = (level == 0) ? 2 : linebreaks.before;
 					imp.tpl_br(nbline, indent, 1.5);
 				}
 				
@@ -154,7 +154,8 @@ async function generate_template(items, tpl_id, config)
 				if(type=='main' && level <= 0) imp.tpl_add_block(str, indent);
 				else if(type=='layout' && level <= 1) imp.tpl_add_block(str, indent);
 				
-				nbline = (level == 0) ? 3 : linebreaks.after;
+				//linebreak after comment
+				nbline = (level == 0) ? 1 : linebreaks.after;
 				imp.tpl_br(nbline, indent, 1);
 			}
 			
@@ -178,12 +179,21 @@ async function generate_template(items, tpl_id, config)
 			else if(type == "layout"){
 				
 				// if(items.length > 1)
-				var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig);
+				
+				var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
 				
 				if(data_str != undefined){
-					var layout_id = imp.getLayoutID(item);
 					
-					var data = {"layout_id" : layout_id, "layout_data" : data_str};
+					var layout_id = imp.getLayoutID(item);
+					var selector = layout_id;
+					
+					if(configLayout.file.sass_indent){
+						selector = imp.encodeNameParentRef(selector, parent);
+					}
+					if(selector.charAt(0) != '&') selector = '.' + selector;
+					
+					
+					var data = {"selector" : selector, "layout_data" : data_str};
 					var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
 					
 					imp.tpl_add_block(str, indent);
@@ -192,7 +202,10 @@ async function generate_template(items, tpl_id, config)
 			}
 			
 			//line breaks
-			imp.tpl_br(linebreaks.std, indent, 2);
+			let nblinebreak = linebreaks.std;
+			if(type == "layout" && configLayout.file.sass_indent && !iscontainer) nblinebreak = 0;
+			
+			if(nblinebreak > 0) imp.tpl_br(nblinebreak, indent, 2);
 			
 			
 			if(type == "main" && textFormatFile && item.type == imp.TYPE_TEXT){
@@ -222,6 +235,10 @@ async function generate_template(items, tpl_id, config)
 					imp.tpl_add_line(str, indent);
 				}
 			}
+			if(type == "layout" && configLayout.file.sass_indent){
+				var str = "}";
+				imp.tpl_add_line(str, indent);
+			}
 			
 			prevItem = item;
 			if(item[imp.OPT_POSITION] == 'static') prevStaticItem = item;
@@ -240,6 +257,7 @@ async function generate_template(items, tpl_id, config)
 	{
 		//instanciation + integration
 		
+		
 		var varname = imp.getVarname(item.name);
 		var parent_varname = (parent != null) ? imp.getVarname(parent.name) : "container";
 		var layout_id = imp.getLayoutID(item);
@@ -251,14 +269,12 @@ async function generate_template(items, tpl_id, config)
 			"layout_id" : layout_id,
 		};
 		
+		var classes = [];
+		classes.push(layout_id);
+		
 		
 		if(!_tffile && item.type == imp.TYPE_TEXT){
 			data["textformat_data"] = imp.TPL_FUNCTIONS[tpl_id].getTextFormatData(item.textdata, configConfig);
-		}
-		
-		//not used
-		if(!_layoutfile){
-			data["layout_data"] = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent);
 		}
 		
 		var ignore = ["childrens", "layoutx", "layouty", "parent", "position", "position_abs"];
@@ -278,21 +294,29 @@ async function generate_template(items, tpl_id, config)
 		
 		if(item.type == imp.TYPE_CONTAINER){
 			
+			data["classes"] = classes.join(' ');
 			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
 			str += str2;
 		}
 		else if(item.type == imp.TYPE_GFX){
 			
+			data["classes"] = classes.join(' ');
 			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
 			str += str2;
 		}
 		else if(item.type == imp.TYPE_TEXT){
-			
+			/* 
 			data["textformat_id"] = imp.getTextFormatID(item.textdata, configConfig);
-			
 			data["text_color"] = imp.getTextColorID(item.textdata, config.colors);
-			
 			data["text_align"] = "text_" + item.textdata.halign;
+			 */
+			let textformat_id = imp.getTextFormatID(item.textdata, configConfig);
+			let text_color = imp.getTextColorID(item.textdata, config.colors);
+			let text_align = "text_" + item.textdata.halign;
+			classes.push(textformat_id);
+			// classes.push(text_color);
+			// classes.push(text_align);
+			data["classes"] = classes.join(' ');
 			
 			//eventuellement une boucle sur textdata ici
 			data["text"] = item.textdata.text;
@@ -303,15 +327,19 @@ async function generate_template(items, tpl_id, config)
 		}
 		else if(item.type == imp.TYPE_SHAPE){
 			
+			data["classes"] = classes.join(' ');
 			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
 			str += str2;
 		}
 		
 		else if(imp.BTNS_TYPE.indexOf(item.type) != -1){
 			
+			data["classes"] = classes.join(' ');
 			var str3 = await imp.convertTemplate(path_tpl + "main/"+TYPE_BTN+".txt", data);
 			str += str3;
 		}
+		
+		
 		
 		
 		

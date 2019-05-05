@@ -84,23 +84,26 @@ function getLayoutID(item)
 
 function getTextFormatID(textdata, config)
 {
-	var output = "";
-	output += textdata.font.toLowerCase();
-	output += "_";
+	var tab = [];
+	tab.push(textdata.font.toLowerCase());
 	// output += textdata.color;
-	// output += "_";
 	
 	var size = textdata.size;
 	if(config.retina) size *= 0.5;	//retina
 	size *= config.font_size_multiplier;
 	size = Math.round(size);
-	
-	output += size;
+	tab.push(size);
 	
 	// output += textdata.halign.substr(0, 1) + "";
 	// output += textdata.letterspacing + "";
 	// if(textdata.leading != undefined) output += textdata.leading + "";
 	
+	let suffixStyle = '';
+	if(textdata.bold) suffixStyle += 'b';
+	if(textdata.italic) suffixStyle += 'i';
+	if(suffixStyle) tab.push(suffixStyle);
+	
+	var output = tab.join('-');
 	output = getVarname(output);
 	return output;
 }
@@ -125,7 +128,7 @@ function getTextColorID(textdata, colors)
 
 function getVarname(str)
 {
-	str = str.replace(/-/g, "_");
+	// str = str.replace(/-/g, "_");
 	//remove all chars not good for variable names
 	return str;
 }
@@ -175,7 +178,7 @@ Array.prototype.reverse = function(tab)
 //____________________________________________________________
 //for template-functions
 
-function propsToString(props, options)
+function propsToString(props, options, closeTag=true)
 {
 	if(options.multiline == undefined) options.multiline = false;
 	if(options.quoteProperty == undefined) options.quoteProperty = "double";	//none-simple-double
@@ -224,9 +227,8 @@ function propsToString(props, options)
 	
 	if(options.multiline){
 		if(tab.length > 0) output += options.separator;
-		output += "\n";
 	}
-	output += "}";
+	if(closeTag) output += "\n}";
 	return output;
 }
 
@@ -279,6 +281,49 @@ function mapProps(model, props)
 
 
 
+function getColorProperty(obj, variables)
+{
+	let value = '';
+	if(obj.a == 255) value = obj.hex;
+	else value = obj.rgba;
+	
+	value = checkSassVariable(value, variables, 'color');
+	return value;
+}
+
+
+function checkSassVariable(value, variables, type)
+{
+	let caseSensitive;
+	if(type == 'color') caseSensitive = false;
+	else caseSensitive = true;
+	
+	let colorHandler = (type == 'color');
+	if(colorHandler){
+		if(value.length == 4)	value = value + value.substr(1);
+	}
+	
+	let valueLC = value.toLowerCase();
+	
+	for(var k in variables){
+		let v = variables[k];
+		let hit = false;
+		
+		if(!caseSensitive && valueLC == v.toLowerCase()) hit = true;
+		else if(caseSensitive && value == v) hit = true;
+		
+		if(hit){
+			value = '$' + k;
+			break;
+		}
+	}
+	
+	return value;
+}
+
+
+
+
 module.exports = {
 	mapProps,
 	propsToString,
@@ -293,4 +338,5 @@ module.exports = {
 	getTextFormatID,
 	getTextColorID,
 	getVarname,
+	getColorProperty,
 };

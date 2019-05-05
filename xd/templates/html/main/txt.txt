@@ -1,1 +1,1 @@
-<p class="{{layout_id}} {{textformat_id}} {{text_color}} {{text_align}}">{{text_br}}
+<p class="{{classes}}">{{text_br}}

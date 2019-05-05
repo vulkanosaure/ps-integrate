@@ -42,14 +42,48 @@ si on déclare une --shape manuellement						OK
 	ça n'ira pas
 	
 	
-generation shape
+generation shape											OK
+	TODO line
+		soit : prendre left, top, selon sens
+		soit / 2
 
-sass
+sass														OK
 	incremental naming convention ?
 	use the "&" directly
 	optional sass css generation (condition)
-	variable colors / (along with .col-color classes)
+	
+font-weight													OK
 
+text-align 													OK
+
+color replace												OK
+	background-color			OK
+	gradientColor				OK
+	borderColor					OK
+	shadow?						pas important
+	color (refactoring)			OK
+
+si centerx on text											OK
+	=> override text-align
+
+test bgparent on btn shape									todo
+	transform SVG in PNG									OK
+	tester avec shape										OK
+	problem margin content									COMPLETE, stand by
+
+	
+globalisation des propriétés
+	color
+	text-align
+	bold ?
+	(génériser le concept)
+	trouver l'ancetre commun pour lequel tout les element ont cette meme propriété
+
+	
+margin vs padding
+	si content avec bgparent
+	la margin de l'enfant s'applique sur le parent, qui n'est donc plus bien positionné
+	et l'enfant et aligné avec le parent...
 	
 text.styleRange
 
@@ -58,8 +92,15 @@ img vs background-image
 class reusability
 	ex : buttons
 	find a way to tell him, use this class, (and don't generate one)
+	au sein d'une meme page
+	au sein plus global
+
 	
 class composition
+	before, always gives classname, could get markup only (when nbchild <= 2 && diff markup)
+	
+	
+
 
 root / container_center...
 	todo selection : test loop and call rec sur tous
@@ -76,6 +117,22 @@ margin measurement		(PAS TRES GRAVE)
 	
 gestion des textes, multiline ou pas
 	en fonction, set width ou pas
+	
+	
+override markup
+	OPT_TAG = 'tag'
+	shorcut prefix <a-- 
+	
+	
+
+____________________________
+BUG
+
+software, export SVG bug si shadow déclaré, 
+	avec x, y > 0
+	et si case disabled
+	ajoute une margin
+	chercher sur google
 	
 	
 	

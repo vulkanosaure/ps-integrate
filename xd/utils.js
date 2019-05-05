@@ -33,7 +33,7 @@ function has_option(name, idoption)
 function get_value_option(name, idoption)
 {
 	//trace("get_value_option : "+name+", idoption : "+idoption);
-	var regexp = new RegExp("--" + idoption + "=(([\\w%/!]+(-(?!-))?)+)");
+	var regexp = new RegExp("--" + idoption + "=(([\\w%/!&]+(-(?!-))?)+)");
 	var output = name.match(regexp);
 	//trace("output : "+output);
 	if(output == null) return "";
@@ -163,6 +163,27 @@ function handleShorcuts(name)
 
 
 
+function decodeNameParentRef(name, parentItem)
+{
+	let parentName = parentItem ? parentItem.name : '';
+	if(name.charAt(0) == "&") name = parentName + name.substr(1);
+	return name;
+}
+
+function encodeNameParentRef(name, parentItem)
+{
+	if(!parentItem) return name;
+	let parentName = parentItem.name;
+	var lenParent = parentName.length;
+	if(name.substr(0, lenParent) == parentName){
+		name = "&" + name.substr(lenParent);
+	}
+	return name;
+}
+
+
+
+
 module.exports = {
 	has_prefix,
 	has_option,
@@ -173,4 +194,6 @@ module.exports = {
 	removePathSlash,
 	getPercentValue,
 	handleShorcuts,
+	decodeNameParentRef,
+	encodeNameParentRef,
 };
