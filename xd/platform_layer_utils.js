@@ -1,3 +1,6 @@
+const file_debug = require('./debug.js');
+var trace = file_debug.trace;
+
 //For code readability  
 function cTID(s){return charIDToTypeID(s)}  
 function sTID(s){return stringIDToTypeID(s)}  
@@ -290,8 +293,17 @@ function undoHistory()
 function getBounds(layer, type)
 {
 	//{x:number, y:number, width:number, height:number}
-	let b = layer.globalBounds;
-	return [b.x, b.y, b.x + b.width, b.y + b.height];
+	// let b = layer.localBounds;
+    let b = layer.globalBounds;
+    trace('b.width : '+b.width);
+	return [b.x, b.y, b.x + b.width, b.y + b.height, b.width, b.height];
+}
+
+
+
+function getLayerWidth(layer)
+{
+    
 }
 
 

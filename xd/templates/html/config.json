@@ -50,7 +50,7 @@
 		"font_size_multiplier" : 1.0,
 		"classname_root" : null,
 		"retina" : false,
-		"prefix_images" : "/img/test/",
+		"prefix_images" : "/img/",
 		
 		
 		"sass_variable" : {

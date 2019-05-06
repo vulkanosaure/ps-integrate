@@ -62,9 +62,12 @@ color replace												OK
 	borderColor					OK
 	shadow?						pas important
 	color (refactoring)			OK
-
-si centerx on text											OK
-	=> override text-align
+	
+selection																							OK
+	si config.classroot null, pas d'écrasement des classes root
+	prendre l'artboard parent de la selection en cours (ou artboard lui meme)
+	si rien selectionné, message d'erreur
+	
 
 test bgparent on btn shape									todo
 	transform SVG in PNG									OK
@@ -79,42 +82,66 @@ globalisation des propriétés
 	(génériser le concept)
 	trouver l'ancetre commun pour lequel tout les element ont cette meme propriété
 
+si centerx on text											TODO
+	=> override text-align		OK
+	add width:100%
+	si centery => line-height => parent height(px, not 100%)
+	enlever la margin auto qui sert a rien ? (display inline)
+
 	
 margin vs padding
 	si content avec bgparent
 	la margin de l'enfant s'applique sur le parent, qui n'est donc plus bien positionné
 	et l'enfant et aligné avec le parent...
+	PAS forcement bgparent, mais dimensionné
+	test : container dimensioné, positionement static child
+	
+	
+if flex defined
+	check if order correct, else send ERROR
+	x, y check selon direction
+	
+justify-content	
+	maybe reformat alignitems into
+	cross-align (align-items)
+	axis-align (justify-content)
+	idem with self 
+		cross-self => align-self
+		axis-self => margin auto
+	
+	
+
+position abs
+	if parent not abs or relative, turn into relative
+	
 	
 text.styleRange
 
 img vs background-image
+
+
+naming auto : class-index
+	si un seul enfant avec le tag en question
+	& > tag
+	et on enleve la classe
+	attention, peut causer des bugs si ya des subchildren qui utilisent "&"
+
 
 class reusability
 	ex : buttons
 	find a way to tell him, use this class, (and don't generate one)
 	au sein d'une meme page
 	au sein plus global
-
 	
 class composition
 	before, always gives classname, could get markup only (when nbchild <= 2 && diff markup)
-	
-	
-
-
-root / container_center...
-	todo selection : test loop and call rec sur tous
-	si config.classroot null, pas d'écrasement des classes root
+	thematic separation : position, rendering, ... ?
 	
 
 invert order,
 	when is it interesting ?
 	only for z-index
-	
-margin measurement		(PAS TRES GRAVE)
-	toujours 9px trop petit
-	par rapport au bord initial seulement
-	
+
 gestion des textes, multiline ou pas
 	en fonction, set width ou pas
 	
@@ -123,7 +150,34 @@ override markup
 	OPT_TAG = 'tag'
 	shorcut prefix <a-- 
 	
+
+casser le nesting css par endroit
+	attention a l'algo &,
+	qui se base sur les parents, mais la parent displaylist != parent sass
 	
+	
+file appened instead overriden sometime
+	check options
+	
+j'ai été obligé de rendre tous les sibblings du root invisible
+	améliorer le process de filtering
+	
+une width est set en dur
+	a 4 endroits
+	alors qu'on aurait voulu le définir via ses margins
+	
+	
+opacity global sur Rectangle
+	voir tous les types impactés (shape only jpense)
+	pas de prise en compte générale
+	juste fusionner ds background-color
+	
+	
+____________________________
+DEBUG PS
+
+
+
 
 ____________________________
 BUG

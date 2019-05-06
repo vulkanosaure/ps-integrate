@@ -6,7 +6,7 @@ var getPluginFolder = file_platform_export.getPluginFolder;
 var deleteFolder = file_platform_export.deleteFolder;
 imp = {...imp, ...file_platform_export};
 imp = {...imp, ...require('./dialog.js')};
-
+imp = {...imp, ...require('./platform_layer_logic.js')};
 
 
 const file_debug = require('./debug.js');
@@ -48,12 +48,21 @@ async function exportFunction(selection, documentRoot)
 	trace('selection : '+selection.items[0]);
 	
 	let rootNode;
-	if(selection.items && selection.items.length > 0 && false) rootNode = selection.items[0];
-	else rootNode = documentRoot.children.at(0);
-	// trace('rootNode: '+rootNode);
+	if(selection.items && selection.items.length > 0){
+		rootNode = imp.getArtboardByLayer(selection.items[0]);
+	}
+	else{
+		throw new Error('please select an element');
+		//error msg ?
+		// rootNode = documentRoot.children.at(0);
+	}
+	
+	
+	trace('rootNode: '+rootNode);
 	
 	//ps-path=home-test
 	trace('name root : '+rootNode.name);
+	// throw new Error('name root : '+rootNode.name);
 	
 	let bounds = documentRoot.globalBounds;
 	imp.DOC_WIDTH = bounds.width;

@@ -214,12 +214,23 @@ function getGradientColorData(colorObj)
 	let c = colorObj;
 	
 	let dir;
-	if(c.endX > c.startX && c.endY == c.startY) dir = 'right';
-	else if(c.endX < c.startX && c.endY == c.startY) dir = 'left';
-	if(c.endY > c.startY && c.endX == c.startX) dir = 'bottom';
-	else if(c.endY < c.startY && c.endX == c.startX) dir = 'top';
+	let deltaX = c.endX - c.startX;
+	let deltaY = c.endY - c.startY;
+	let absDeltaX = Math.abs(deltaX);
+	let absDeltaY = Math.abs(deltaY);
+	
+	if(deltaX > 0.5 && absDeltaY < 0.5) dir = 'right';
+	else if(deltaX < 0.5 && absDeltaY < 0.5) dir = 'right';
+	
+	if(deltaY > 0.5 && absDeltaX < 0.5) dir = 'bottom';
+	else if(deltaY < 0.5 && absDeltaX < 0.5) dir = 'top';
+	
 	//todo : 4 diagonales
 	
+	if(!dir){
+		trace('c : '+c.endX+', '+c.startX+', '+c.endY+', '+c.startY);
+		throw new Error('dir undefined');
+	}
 	
 	return {
 		colorStops: c.colorStops.map(item => {
@@ -311,6 +322,23 @@ function getShapeData(layer, width, height)
 }
 
 
+function getArtboardByLayer(layer)
+{
+	let count = 0;
+	while(true){
+		if(!layer) break;
+		// trace('layer : '+layer);
+		// trace('layer.constructor.name : '+layer.constructor.name);
+		if(layer.constructor.name == 'Artboard') break;
+		layer = layer.parent;
+		count++;
+		if(count > 999) return;
+	}
+	return layer;
+}
+
+
+
 module.exports = {
 	getTextData,
 	getShadowData,
@@ -322,4 +350,5 @@ module.exports = {
 	get_natural_type,
 	get_natural_imgtype,
 	getLayerId,
+	getArtboardByLayer,
 };

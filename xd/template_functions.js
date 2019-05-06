@@ -68,6 +68,7 @@ TPL_FUNCTIONS["html"] = {
 	
 	getLayoutData : function (item, parent, prevItem, prevStaticItem, config, configLayout)
 	{
+		trace('item.position : '+item.position);
 		
 		var x = item.position[0];
 		var y = item.position[1];
@@ -80,6 +81,7 @@ TPL_FUNCTIONS["html"] = {
 		if(item[imp.OPT_DIRECTION] == 'row' || item[imp.OPT_ALIGN_ITEMS]){
 			
 			var valuedir = item[imp.OPT_DIRECTION] == 'row' ? 'row' : 'column';
+			item.isFlex = true;
 			
 			propsModel["display"] = { value: "flex", quote: "none" };
 			propsModel["direction"] = { name: "flex-direction", value: valuedir, quote: "none" };
@@ -146,9 +148,23 @@ TPL_FUNCTIONS["html"] = {
 					propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
 				}
 				else{
+					
+					if(value == -263){
+						trace('x : '+x);
+						trace('prevPosition : '+prevPosition);
+						trace('prevDim : '+prevDim);
+						throw new Error('ok -263');
+						
+					}
+					
 					if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
-					//define other one as abs
-					if(value2 != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+					
+					//define other one as abs (unless cross axis alignement set)
+					let parentCrossAlign = (parent && parent[imp.OPT_ALIGN_ITEMS]);
+					if(!parentCrossAlign && value2 != 0){
+						propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+					}
+					
 				}
 				
 			}
@@ -161,6 +177,13 @@ TPL_FUNCTIONS["html"] = {
 				var prevPosition = prevStaticItem ? prevStaticItem.position[1] : 0;
 				var prevDim = prevStaticItem ? prevStaticItem[imp.OPT_HEIGHT] : 0;
 				var value = y - (prevPosition + prevDim);
+				
+				if(value == -265){
+					trace('y : '+y);
+					trace('prevPosition : '+prevPosition);
+					trace('prevDim : '+prevDim);
+					throw new Error('-265 ok');
+				}
 				
 				if(lx == "center"){
 					propsModel["margin_global"] = { name: 'margin', value: value, sufix:'px auto 0 auto' };
@@ -274,6 +297,16 @@ TPL_FUNCTIONS["html"] = {
 			propsModel['shadow'] = {name: 'box-shadow', value: value};
 		}
 		
+		
+		if(parent && parent.isFlex){
+			
+			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? 'width' : 'height';
+			if(propsModel[testdim] && !propsModel[testdim].comment){
+				let value = '0 0 auto';
+				propsModel['flex_shorhand'] = {name: 'flex', value: value};
+			}
+			
+		}
 		
 		
 		

@@ -225,28 +225,32 @@ function create_item(layer, name, type, parentItem, level, index) {
 	var bounds = getBounds(layer, type);
 	output.bounds = bounds;
 	// tracerec('bounds : '+output.bounds, level);
+	
 
 	// if (parentItem != null) {
 	if (true) {
 		
-		var x1 = bounds[0];
-		var y1 = bounds[1];
-		var x2 = bounds[2];
-		var y2 = bounds[3];
+		var x1 = Math.round(bounds[0]);
+		var y1 = Math.round(bounds[1]);
+		var x2 = Math.round(bounds[2]);
+		var y2 = Math.round(bounds[3]);
 		
-		x1 = Math.round(x1);
-		x2 = Math.round(x2);
-		y1 = Math.round(y1);
-		y2 = Math.round(y2);
-
+		// tracerec('x1 : '+x1, level);
+		/* 
 		if (x1 < 0) x1 = 0;
 		if (y1 < 0) y1 = 0;
-		
-		tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
+		 */
+		// tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
 
 		output.position = [x1, y1];
+		/* 
 		output.width = x2 - x1;
 		output.height = y2 - y1;
+		 */
+		//to test
+		output.width = Math.round(bounds[4]);
+		output.height = Math.round(bounds[5]);
+		
 		/* 
 		trace("output.width : " + output.width + ", output.height:  " + output.height);
 		trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
@@ -305,12 +309,18 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (parentItem) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
+		tracerec('x after sub : '+output.position[0], level);
 		// trace('minus parent w - '+parentItem.position_abs[0]+' : '+output.position[0]);
 		// trace('minus parent h - '+parentItem.position_abs[1]+' : '+output.position[1]);
 		// trace('parent : '+parentItem[OPT_NAME]);
 	}
 	
-	
+	/* 
+	if(output[OPT_NAME] == 'zone-dropdown'){
+		
+		throw new Error('item');
+	}
+	 */
 	
 	//position
 	if (has_option(name, OPT_POSITION)) {

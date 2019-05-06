@@ -97,6 +97,7 @@ function getTextFormatID(textdata, config)
 	// output += textdata.halign.substr(0, 1) + "";
 	// output += textdata.letterspacing + "";
 	// if(textdata.leading != undefined) output += textdata.leading + "";
+	tab.push(textdata.letterspacing);
 	
 	let suffixStyle = '';
 	if(textdata.bold) suffixStyle += 'b';
