@@ -85,7 +85,10 @@ function getLayoutID(item)
 function getTextFormatID(textdata, config)
 {
 	var tab = [];
-	tab.push(textdata.font.toLowerCase());
+	
+	let fontname = textdata.font.toLowerCase();
+	fontname = fontname.replace(new RegExp(' ', 'g'), '');
+	tab.push(fontname);
 	// output += textdata.color;
 	
 	var size = textdata.size;
@@ -176,8 +179,69 @@ Array.prototype.reverse = function(tab)
 
 
 
+
+
 //____________________________________________________________
 //for template-functions
+
+
+function transformMargins(data)
+{
+	trace('transformData');
+	
+	let listMargin = ['top', 'right', 'bottom', 'left'];
+	
+	let countMargin = 0;
+	for(let i in listMargin){
+		let prop = 'margin-' + listMargin[i];
+		if(data[prop]) countMargin++;
+	}
+	trace('countMargin : '+countMargin);
+	if(countMargin > 1){
+		
+		let values = [];
+		for(let i in listMargin){
+			let prop = 'margin-' + listMargin[i];
+			var value = data[prop] ? data[prop].data : 0;
+			values.push(value);
+			
+			if(data[prop]){
+				trace('connnnfig : '+prop);
+				for(let k in data[prop].config) trace('--- conf '+k+' : '+data[prop].config[k]);
+			}
+			
+		}
+		trace('values : '+values);
+		
+		if(values[0] == values[2] && values[1] == values[3]){
+			values = values.splice(0, 2);
+		}
+		
+		let marginValue = values.join(' ');
+		data['margin'] = {
+			data  :marginValue,
+			config: {},
+		};
+		
+		for(let i in listMargin){
+			let prop = 'margin-' + listMargin[i];
+			if(data[prop]) delete data[prop];
+		}
+		
+		
+		return data;
+	}
+	
+	
+	for(let k in data){
+		
+		let obj = data[k];
+		trace(k+' : '+obj.data+', config : '+obj.config);
+	}
+}
+
+
+
 
 function propsToString(props, options, closeTag=true)
 {
@@ -214,10 +278,12 @@ function propsToString(props, options, closeTag=true)
 		else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
 			tab[tab.length - 1] += '; '+str;
 		}
+		/* 
+		//bug in some condition (removed margin-top)
 		else if((i == 'margin-top' && props['margin-left'])){
 			tab[tab.length - 1] += '; '+str;
 		}
-		
+		 */
 		else tab.push(str);
 	}
 
@@ -328,6 +394,7 @@ function checkSassVariable(value, variables, type)
 module.exports = {
 	mapProps,
 	propsToString,
+	transformMargins,
 	getCloseTag,
 	tpl_reset,
 	tpl_add_line,

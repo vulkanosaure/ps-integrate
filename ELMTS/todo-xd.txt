@@ -63,19 +63,30 @@ color replace												OK
 	shadow?						pas important
 	color (refactoring)			OK
 	
+opacity global sur Rectangle								OK
+	voir tous les types impactés (shape only jpense)
+	pas de prise en compte générale
+	juste fusionner ds background-color
+	
+shadow non reportée si bgparent								OK
+	
 selection																							OK
 	si config.classroot null, pas d'écrasement des classes root
 	prendre l'artboard parent de la selection en cours (ou artboard lui meme)
 	si rien selectionné, message d'erreur
 	
 
-test bgparent on btn shape									todo
+test bgparent on btn shape									OK
 	transform SVG in PNG									OK
 	tester avec shape										OK
-	problem margin content									COMPLETE, stand by
+	problem margin content									COMPLEX, stand by
 
 	
-globalisation des propriétés
+linebreak template
+	add line break after opening
+	only if nbchildren > 1
+	
+remontée des propriétés
 	color
 	text-align
 	bold ?
@@ -84,6 +95,7 @@ globalisation des propriétés
 
 si centerx on text											TODO
 	=> override text-align		OK
+	=> override margin-left
 	add width:100%
 	si centery => line-height => parent height(px, not 100%)
 	enlever la margin auto qui sert a rien ? (display inline)
@@ -95,6 +107,7 @@ margin vs padding
 	et l'enfant et aligné avec le parent...
 	PAS forcement bgparent, mais dimensionné
 	test : container dimensioné, positionement static child
+	idée : convertir la margin du 1er item en padding (left, top)
 	
 	
 if flex defined
@@ -112,7 +125,7 @@ justify-content
 	
 
 position abs
-	if parent not abs or relative, turn into relative
+	if parent not abs or relative, turn into relative			+1
 	
 	
 text.styleRange
@@ -132,6 +145,22 @@ class reusability
 	find a way to tell him, use this class, (and don't generate one)
 	au sein d'une meme page
 	au sein plus global
+	
+	still create a class for positionning
+	position-class= / render-class=
+	only render-class ds un 1er tps
+	comment ça s'imbrique avec !export :
+		si render-class est défini : on exporte pas
+		!export peut disparaitre
+	dont browser inside
+		
+	
+	si au sein de la mm page :
+		on reference une render-class qui vient detre définie
+		déclare tjs l'elmt ds la template
+		ne pas répéter les classes déja définies
+		
+	
 	
 class composition
 	before, always gives classname, could get markup only (when nbchild <= 2 && diff markup)
@@ -159,7 +188,8 @@ casser le nesting css par endroit
 file appened instead overriden sometime
 	check options
 	
-j'ai été obligé de rendre tous les sibblings du root invisible
+root node filtering
+	j'ai été obligé de rendre tous les sibblings du root invisible
 	améliorer le process de filtering
 	
 une width est set en dur
@@ -167,10 +197,17 @@ une width est set en dur
 	alors qu'on aurait voulu le définir via ses margins
 	
 	
-opacity global sur Rectangle
-	voir tous les types impactés (shape only jpense)
-	pas de prise en compte générale
-	juste fusionner ds background-color
+root node
+	recupérer certaines propriétés
+	path
+	if name set => englober dans un container de ce nom
+	PAS URGENT : on peut englober dans un container, et avoir les mm resultats
+	
+	
+	
+offset negatif sur un item
+	change les bounds
+	compliqué à résoudre, laisser de coté
 	
 	
 ____________________________

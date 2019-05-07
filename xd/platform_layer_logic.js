@@ -9,6 +9,8 @@ var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
 imp = {...imp, ...file_constantes};
 
+imp = {...imp, ...require('./lib/math.js')};
+
 
 function get_natural_imgtype(layer)
 {
@@ -163,10 +165,10 @@ function isTextBold(fontStyle)
 }
 
 
-function isLayerShape(layer)
+function isLayerOfType(layer, types)
 {
 	let layerkind = layer.constructor.name;
-	if(['Rectangle', 'Ellipse', 'Line'].indexOf(layerkind) > -1) return true;
+	if(types.indexOf(layerkind) > -1) return true;
 	else return false;
 }
 
@@ -187,7 +189,7 @@ function getShadowData(layer)
 			y: layer.shadow.y,
 			blur: layer.shadow.blur,
 			colorHex: layer.shadow.color.toHex(),
-			color: getColorData(s.color),
+			color: getColorData(s.color, layer.opacity),
 		};
 	}
 	
@@ -196,20 +198,28 @@ function getShadowData(layer)
 
 
 
-function getColorData(colorObj)
+function getColorData(colorObj, globalAlpha = 1)
 {
 	let c = colorObj;
+	let alpha = c.a * globalAlpha;
+	let alpha1 = alpha / 255;
+	
+	if(alpha1 < 1){
+		let math = new imp.MathService();
+		alpha1 = math.round(alpha1, 0.01);
+	}
+	
 	return {
 		r: c.r,
 		g: c.g,
 		b: c.b,
-		a: c.a,
-		rgba: "rgba(" + c.r + "," + c.g + "," + c.b + "," + c.a / 255 + ")",
+		a: alpha,
+		rgba: "rgba(" + c.r + ", " + c.g + ", " + c.b + ", " + alpha1 + ")",
 		hex: c.toHex(),
 	}
 }
 
-function getGradientColorData(colorObj)
+function getGradientColorData(colorObj, globalAlpha = 1)
 {
 	let c = colorObj;
 	
@@ -236,13 +246,47 @@ function getGradientColorData(colorObj)
 		colorStops: c.colorStops.map(item => {
 			return {
 				stop: item.stop, 
-				color: getColorData(item.color),
+				color: getColorData(item.color, globalAlpha),
 			}
 		}),
 		dir: dir,
 	};
 }
 
+
+function retrieveNestedType(layer, types)
+{
+	if(!isLayerOfType(layer, types)){
+		for(var i=0; i<5; i++){
+			if(layer.children && layer.children.length > 0){
+				layer = layer.children.at(0);
+				if(isLayerOfType(layer, types)) break;
+			}
+			else break;
+		}
+	}
+	return layer;
+}
+
+
+/*
+{
+	data
+	bgColor
+}
+*/
+
+function getPathData(layer)
+{
+	//recursive fix, if shape nested
+	layer = retrieveNestedType(layer, ['Path']);
+	
+	let output = {};
+	
+	output.data = layer.pathData;
+	output.bgColor = getColorData(layer.fill, layer.opacity);
+	return output;
+}
 
 
 
@@ -252,15 +296,7 @@ function getShapeData(layer, width, height)
 	trace('getShapeData '+width+', '+height+', layerkind : '+layerkind);
 	
 	//recursive fix, if shape nested
-	if(!isLayerShape(layer)){
-		for(var i=0; i<5; i++){
-			if(layer.children && layer.children.length > 0){
-				layer = layer.children.at(0);
-				if(isLayerShape(layer)) break;
-			}
-			else break;
-		}
-	}
+	layer = retrieveNestedType(layer, ['Rectangle', 'Ellipse', 'Line']);
 	
 	
 	/*
@@ -282,15 +318,15 @@ function getShapeData(layer, width, height)
 	layerkind = layer.constructor.name;
 	if(layer.fillEnabled){
 		let fillkind = layer.fill ? layer.fill.constructor.name : '';
-		if(fillkind == 'Color') output.bgColor = getColorData(layer.fill);
-		if(fillkind == 'LinearGradientFill') output.bgGradient = getGradientColorData(layer.fill);
+		if(fillkind == 'Color') output.bgColor = getColorData(layer.fill, layer.opacity);
+		if(fillkind == 'LinearGradientFill') output.bgGradient = getGradientColorData(layer.fill, layer.opacity);
 	}
 	
 	
 	else output.bgColor = '';
 	if(layer.strokeEnabled){
 		output.borderWidth = layer.strokeWidth;
-		output.borderColor = getColorData(layer.stroke);
+		output.borderColor = getColorData(layer.stroke, layer.opacity);
 	}
 	else{
 		output.borderWidth = null;
@@ -343,6 +379,7 @@ module.exports = {
 	getTextData,
 	getShadowData,
 	getShapeData,
+	getPathData,
 	getLayerName,
 	getLayersArray,
 	isLayerVisible,

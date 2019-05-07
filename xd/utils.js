@@ -1,3 +1,5 @@
+var imp = {};
+
 const file_constantes = require('./constantes.js');
 var PREFIX_LENGTH = file_constantes.PREFIX_LENGTH;
 var PREFIX = file_constantes.PREFIX;
@@ -6,6 +8,7 @@ var OPTIONS_SHORCUTS = file_constantes.OPTIONS_SHORCUTS;
 var OPTIONS_SHORCUTS2 = file_constantes.OPTIONS_SHORCUTS2;
 var OPTIONS_SHORCUTS3 = file_constantes.OPTIONS_SHORCUTS3;
 var OPTIONS_SHORCUTS_PREFIX = file_constantes.OPTIONS_SHORCUTS_PREFIX;
+imp = {...imp, ...file_constantes};
 
 const file_debug = require('./debug.js');
 var trace = file_debug.trace;
@@ -182,6 +185,16 @@ function encodeNameParentRef(name, parentItem)
 }
 
 
+function isItemExport(item, type)
+{
+	return (
+		imp.EXPORTS_TYPE.indexOf(type) != -1 
+		&& item[imp.OPT_DOEXPORT]
+		&& item[imp.OPT_IMGTYPE] != 'svg-inline'
+	);
+}
+
+
 
 
 module.exports = {
@@ -196,4 +209,5 @@ module.exports = {
 	handleShorcuts,
 	decodeNameParentRef,
 	encodeNameParentRef,
+	isItemExport,
 };

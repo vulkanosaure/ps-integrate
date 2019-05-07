@@ -293,9 +293,13 @@ function undoHistory()
 function getBounds(layer, type)
 {
 	//{x:number, y:number, width:number, height:number}
-	// let b = layer.localBounds;
     let b = layer.globalBounds;
-    trace('b.width : '+b.width);
+	return [b.x, b.y, b.x + b.width, b.y + b.height, b.width, b.height];
+}
+function getBoundsLocal(layer, type)
+{
+	//{x:number, y:number, width:number, height:number}
+	let b = layer.localBounds;
 	return [b.x, b.y, b.x + b.width, b.y + b.height, b.width, b.height];
 }
 
@@ -359,5 +363,6 @@ function rasterizeLayerStyle(layer)
 module.exports = {
 	getFontSize,
 	getBounds,
+	getBoundsLocal,
 };
 

@@ -301,15 +301,22 @@ async function generate_template(items, tpl_id, config)
 		else if(item.type == imp.TYPE_GFX){
 			
 			data["classes"] = classes.join(' ');
-			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
+			if(item.has_graphic){
+				var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
+			}
+			else if(item[imp.OPT_IMGTYPE] == 'svg-inline'){
+				
+				let tpl = 'pathdata';
+				data['data'] = item.pathdata;
+				var str2 = await imp.convertTemplate(path_tpl + "main/"+tpl+".txt", data);
+			}
+			else{
+				throw new Error('no type gfx?');
+			}
 			str += str2;
 		}
 		else if(item.type == imp.TYPE_TEXT){
-			/* 
-			data["textformat_id"] = imp.getTextFormatID(item.textdata, configConfig);
-			data["text_color"] = imp.getTextColorID(item.textdata, config.colors);
-			data["text_align"] = "text_" + item.textdata.halign;
-			 */
+			
 			let textformat_id = imp.getTextFormatID(item.textdata, configConfig);
 			let text_color = imp.getTextColorID(item.textdata, config.colors);
 			let text_align = "text_" + item.textdata.halign;

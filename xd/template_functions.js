@@ -122,11 +122,7 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 			
-			/* 
-			if(propsModel["position"]) propsModel["position"].comment = true;
-			if(propsModel["margin_left"]) propsModel["margin_left"].comment = true;
-			if(propsModel["margin_top"]) propsModel["margin_top"].comment = true;
-			 */
+			
 		}
 		
 		//_______________________________
@@ -144,18 +140,11 @@ TPL_FUNCTIONS["html"] = {
 				var value = x - (prevPosition + prevDim);
 				var value2 = y;
 				
+				
 				if(lx == "center"){
 					propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
 				}
 				else{
-					
-					if(value == -263){
-						trace('x : '+x);
-						trace('prevPosition : '+prevPosition);
-						trace('prevDim : '+prevDim);
-						throw new Error('ok -263');
-						
-					}
 					
 					if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
 					
@@ -178,15 +167,15 @@ TPL_FUNCTIONS["html"] = {
 				var prevDim = prevStaticItem ? prevStaticItem[imp.OPT_HEIGHT] : 0;
 				var value = y - (prevPosition + prevDim);
 				
-				if(value == -265){
-					trace('y : '+y);
-					trace('prevPosition : '+prevPosition);
-					trace('prevDim : '+prevDim);
-					throw new Error('-265 ok');
-				}
+				
 				
 				if(lx == "center"){
-					propsModel["margin_global"] = { name: 'margin', value: value, sufix:'px auto 0 auto' };
+					// propsModel["margin_global"] = { name: 'margin', value: value, sufix:'px auto 0 auto' };
+					
+					propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+					propsModel["margin_left2"] = { name: 'margin-left', value: 'auto' };
+					propsModel["margin_right2"] = { name: 'margin-right', value: 'auto' };
+					
 				}
 				else{
 					
@@ -211,6 +200,12 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["height"] = {sufix : "px", comment:true};
 			
 			propsModel["halign"] = {name : 'text-align', value : tdata.halign, quote : 'none'};
+			
+			if(ly == 'center'){
+				let value = parent[imp.OPT_HEIGHT] + "px";
+				propsModel["lineHeight"] = {name : 'line-height', value : value, quote : 'none'};
+				delete propsModel["margin_top2"];
+			}
 			
 			// trace('tdata.color : '+tdata.color);
 			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
@@ -288,13 +283,28 @@ TPL_FUNCTIONS["html"] = {
 			
 		}
 		
+		if(item.pathdata){
+			let value = imp.getColorProperty(item.pathdata.bgColor, config.sass_variable.colors);
+			propsModel["bgColor"] = {name : "fill", value: value};
+		}
 		
 		if(item.shadow){
 			
 			let s = item.shadow;
 			let c  = s.color;
-			let value = s.x + "px " + s.y + "px " + s.blur + "px 0px " + c.rgba;
-			propsModel['shadow'] = {name: 'box-shadow', value: value};
+			
+			let isBox = item[imp.OPT_TYPE] != imp.TYPE_TEXT;
+			
+			let tab = [];
+			tab.push(s.x + 'px');
+			tab.push(s.y + 'px');
+			tab.push(s.blur + 'px');
+			if(isBox) tab.push('0px');
+			tab.push(c.rgba);
+			let value = tab.join(' ');
+			
+			let propname = isBox ? 'box-shadow' : 'text-shadow';
+			propsModel['shadow'] = {name: propname, value: value};
 		}
 		
 		
@@ -352,9 +362,28 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		var data = imp.mapProps(propsModel, item);
+		data = imp.transformMargins(data);
+		
+		
+		
 		
 		var closeTag = !configLayout.file.sass_indent;
 		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag);
+		/* 
+		if(item.name == 'bloc-quiz-score-label'){
+			
+			trace('propsModel : '+propsModel['margin_top2'].value);
+			for(var i in data){
+				trace('- data '+i+' : '+data[i].data);	
+				trace('- config '+i+' : '+data[i].config);
+				for(let k in data[i].config){
+					trace('   ------ '+k+' : '+data[i].config[k]);
+				}
+			}
+			trace('str : '+str);
+			throw new Error('score label debug');
+		}
+		 */
 		
 		return str;
 	}

@@ -145,7 +145,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 				else parentItem.childrens.push(item);
 			}
 
-			if (EXPORTS_TYPE.indexOf(type) != -1 && item[OPT_DOEXPORT]) {
+			if (imp.isItemExport(item, type)) {
 				
 				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
@@ -226,37 +226,40 @@ function create_item(layer, name, type, parentItem, level, index) {
 	output.bounds = bounds;
 	// tracerec('bounds : '+output.bounds, level);
 	
-
-	// if (parentItem != null) {
-	if (true) {
 		
-		var x1 = Math.round(bounds[0]);
-		var y1 = Math.round(bounds[1]);
-		var x2 = Math.round(bounds[2]);
-		var y2 = Math.round(bounds[3]);
-		
-		// tracerec('x1 : '+x1, level);
-		/* 
-		if (x1 < 0) x1 = 0;
-		if (y1 < 0) y1 = 0;
-		 */
-		// tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
-
-		output.position = [x1, y1];
-		/* 
-		output.width = x2 - x1;
-		output.height = y2 - y1;
-		 */
-		//to test
-		output.width = Math.round(bounds[4]);
-		output.height = Math.round(bounds[5]);
-		
-		/* 
-		trace("output.width : " + output.width + ", output.height:  " + output.height);
-		trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
-		trace("bounds[3] : " + bounds[3] + ", bounds[1]:  " + bounds[1]);
-		 */
+	var x1 = Math.round(bounds[0]);
+	var y1 = Math.round(bounds[1]);
+	var x2 = Math.round(bounds[2]);
+	var y2 = Math.round(bounds[3]);
+	
+	if(parentItem == null){
+		let localBounds = imp.getBoundsLocal(layer, type);
+		x1 = localBounds[0];
+		y1 = localBounds[1];
 	}
+	
+	// tracerec('x1 : '+x1, level);
+	/* 
+	if (x1 < 0) x1 = 0;
+	if (y1 < 0) y1 = 0;
+		*/
+	// tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
+
+	output.position = [x1, y1];
+	
+	/* 
+	output.width = x2 - x1;
+	output.height = y2 - y1;
+		*/
+	//to test
+	output.width = Math.round(bounds[4]);
+	output.height = Math.round(bounds[5]);
+	
+	/* 
+	trace("output.width : " + output.width + ", output.height:  " + output.height);
+	trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
+	trace("bounds[3] : " + bounds[3] + ", bounds[1]:  " + bounds[1]);
+		*/
 	
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
@@ -427,6 +430,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 		if (output[OPT_BGPARENT]) {
 			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
+			if(output.shadow) parentItem.shadow = output.shadow;
 			if(output[imp.OPT_IMGTYPE]) parentItem[imp.OPT_IMGTYPE] = output[imp.OPT_IMGTYPE];
 			parentItem.has_graphic = true;
 			output["disable"] = true;
@@ -452,9 +456,19 @@ function create_item(layer, name, type, parentItem, level, index) {
 		
 		if (output[OPT_BGPARENT]) {
 			parentItem.shapedata = output.shapedata;
+			if(output.shadow) parentItem.shadow = output.shadow;
 			output["disable"] = true;
 		}
 		
+	}
+	
+	
+	//inline svg
+	if(type == imp.TYPE_GFX && output[imp.OPT_IMGTYPE]=='svg-inline'){
+		
+		output["pathdata"] = imp.getPathData(layer);
+		trace('pathdata : '+output["pathdata"]);
+		//maybe refactor later in list of PathData object
 	}
 	
 	

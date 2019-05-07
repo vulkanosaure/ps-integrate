@@ -45,6 +45,11 @@ function check_error_layername(name, parentItem)
 		}
 	}
 	
+	if(name.indexOf('name=$') > -1){
+		value = props[imp.OPT_NAME];
+		output.push(getErrorObject("Wrong value for property '"+'name'+"' : '"+value+"'", getItemStructureStr(parentItem), name));
+	}
+	
 	
 	for(var k in props){
 		if(OPTIONS_RULES[k] == undefined) output.push(getErrorObject("Property '"+k+"' doesn't exist", getItemStructureStr(parentItem), name));
@@ -100,6 +105,10 @@ function check_error_item(name, item)
 		output.push(getErrorObject("Only containers can set options '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
 	}
 	
+	trace('error item.name : '+item.name);
+	if(item.name.charAt(0) == '$'){
+		output.push(getErrorObject("Name property can't start with a $", getItemStructureStr(item), name));
+	}
 	
 	
 	return output;

@@ -54,7 +54,7 @@ OPTIONS_RULES[OPT_LAYOUT_Y] = ["top", "center", "bottom"];
 OPTIONS_RULES[OPT_ALIGN_ITEMS] = ["start", "center", "end"];
 
 OPTIONS_RULES[OPT_DOEXPORT] = ["!export", "1", "0"];
-OPTIONS_RULES[OPT_IMGTYPE] = ["png", "svg"];
+OPTIONS_RULES[OPT_IMGTYPE] = ["png", "svg", "svg-inline"];
 
 //if only value found : add property=value
 var OPTIONS_SHORCUTS = {};
@@ -73,6 +73,7 @@ OPTIONS_SHORCUTS2["centery"] = OPT_LAYOUT_Y + "=center";
 OPTIONS_SHORCUTS2["center"] = OPT_LAYOUT_X+"=center--"+OPT_LAYOUT_Y+"=center";
 OPTIONS_SHORCUTS2["png"] = OPT_TYPE + "=img--"+OPT_IMGTYPE+"=png";
 OPTIONS_SHORCUTS2["svg"] = OPT_TYPE + "=img--"+OPT_IMGTYPE+"=svg";
+OPTIONS_SHORCUTS2["svg-inline"] = OPT_TYPE + "=img--"+OPT_IMGTYPE+"=svg-inline";
 
 
 OPTIONS_SHORCUTS2["bg"] = OPT_BGPARENT + "=1";
@@ -92,7 +93,7 @@ var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";
 
 var DEBUG_MODE = true;
-var ENABLE_EXPORT = true;
+var ENABLE_EXPORT = false;
 
 
 var DOC_WIDTH;
