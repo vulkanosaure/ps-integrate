@@ -69,7 +69,6 @@ imp = {...imp, ...file_platform_export};
 var fileExist = file_platform_export.fileExist;
 var saveLayer = file_platform_export.saveLayer;
 
-trace('imp : '+imp.ENABLE_EXPORT); 
 
 
 
@@ -130,7 +129,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 		if (type != "") {
 
-			var item = create_item(layer, name, type, parentItem, level, i);
+			var item = create_item(layer, name, type, parentItem, level, i, params);
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
 
 			var errors = check_error_item(name, item);
@@ -194,22 +193,22 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 	let _len = listitems.length;
 	let listtags = listitems.map(item => item.tag);
 	let listnamedebug = listitems.map(item => item.name);
-	tracerec('listtags : '+listtags, level);
-	tracerec('listname : '+listnamedebug, level);
+	// tracerec('listtags : '+listtags, level);
+	// tracerec('listname : '+listnamedebug, level);
 	
 	for (var _i = 0; _i < _len; _i++) {
 		let item = listitems[_i];
 		let count = 0;
 		let countBefore = 0;
 		listtags.forEach((tag, index) => {
-			trace('- foreach('+tag+', '+index+')');
+			// trace('- foreach('+tag+', '+index+')');
 			if(tag == item.tag){
 				count++;
 				if(index < _i) countBefore++;
 			}
 		});
-		trace('count tag '+item.tag+' : '+count);
-		trace('countBefore '+item.tag+' : '+countBefore);
+		// trace('count tag '+item.tag+' : '+count);
+		// trace('countBefore '+item.tag+' : '+countBefore);
 		item.countTag = count;
 		item.positionTag = count - 1 - countBefore;
 	}
@@ -223,7 +222,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 
 
-function create_item(layer, name, type, parentItem, level, index) {
+function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	// trace("create_item");
 	var output = {};
@@ -253,10 +252,12 @@ function create_item(layer, name, type, parentItem, level, index) {
 	
 	output[OPT_FILENAME] = output[OPT_NAME];
 
-	// var bounds = layer.bounds;
 	var bounds = getBounds(layer, type);
+	var bounds_l = imp.getBoundsLocal(layer, type);
 	output.bounds = bounds;
-	// tracerec('bounds : '+output.bounds, level);
+	
+	tracerec('bounds l : '+bounds_l.map(item => Math.round(item)).join(', '), level);
+	tracerec('bounds g : '+bounds.map(item => Math.round(item)).join(', '), level);
 	
 		
 	var x1 = Math.round(bounds[0]);
@@ -264,26 +265,23 @@ function create_item(layer, name, type, parentItem, level, index) {
 	var x2 = Math.round(bounds[2]);
 	var y2 = Math.round(bounds[3]);
 	
+	/* 
 	if(parentItem == null){
-		let localBounds = imp.getBoundsLocal(layer, type);
-		x1 = localBounds[0];
-		y1 = localBounds[1];
+		
+		x1 -= params.boundsRoot[0];
+		y1 -= params.boundsRoot[1];
+		tracerec('boundsRoot : ' + params.boundsRoot.map(item => Math.round(item)).join(', '), level);
+		// throw new Error('');
 	}
+	 */
 	
-	// tracerec('x1 : '+x1, level);
 	/* 
 	if (x1 < 0) x1 = 0;
 	if (y1 < 0) y1 = 0;
-		*/
-	// tracerec(output[OPT_NAME]+" :: x, y : "+x1+", "+y1, level);
+	*/
 
 	output.position = [x1, y1];
 	
-	/* 
-	output.width = x2 - x1;
-	output.height = y2 - y1;
-		*/
-	//to test
 	output.width = Math.round(bounds[4]);
 	output.height = Math.round(bounds[5]);
 	
@@ -344,10 +342,10 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (parentItem) {
 		output.position[0] -= parentItem.position_abs[0];
 		output.position[1] -= parentItem.position_abs[1];
-		tracerec('x after sub : '+output.position[0], level);
-		// trace('minus parent w - '+parentItem.position_abs[0]+' : '+output.position[0]);
-		// trace('minus parent h - '+parentItem.position_abs[1]+' : '+output.position[1]);
-		// trace('parent : '+parentItem[OPT_NAME]);
+	}
+	else{
+		output.position[0] -= params.boundsRoot[0];
+		output.position[1] -= params.boundsRoot[1];
 	}
 	
 	/* 
@@ -512,6 +510,17 @@ function create_item(layer, name, type, parentItem, level, index) {
 		trace('pathdata : '+output["pathdata"]);
 		//maybe refactor later in list of PathData object
 	}
+	
+	
+	
+	//rotation
+	/* 
+	let rotation = imp.getRotation(layer);
+	if(rotation != 0){
+		
+		throw new Error('rotation : '+rotation);
+	}
+	 */
 	
 	
 	

@@ -289,6 +289,13 @@ function getPathData(layer)
 }
 
 
+//degree, clockwise
+function getRotation(layer)
+{
+	return layer.rotation;
+}
+
+
 
 function getShapeData(layer, width, height)
 {
@@ -388,4 +395,5 @@ module.exports = {
 	get_natural_imgtype,
 	getLayerId,
 	getArtboardByLayer,
+	getRotation,
 };

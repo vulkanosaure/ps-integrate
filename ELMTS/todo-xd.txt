@@ -88,18 +88,26 @@ remontée des propriétés
 	color
 	text-align
 	bold ?
+	text-shadow
 	(génériser le concept)
 	trouver l'ancetre commun pour lequel tout les element ont cette meme propriété
+	se débarasser du textformat
 	
 	
-margin vs padding
-	si content avec bgparent
+
+margin vs padding																				+1
 	la margin de l'enfant s'applique sur le parent, qui n'est donc plus bien positionné
-	et l'enfant et aligné avec le parent...
-	PAS forcement bgparent, mais dimensionné
-	test : container dimensioné, positionement static child
-	idée : convertir la margin du 1er item en padding (left, top)
+	conditions : 
+		1er child static d'un container, possedant une margin top ?
+		
+	solutions :
+		ajouter un padding-top:1px au parent
+		convertir la margin-top du child en padding-top
+		
+	in both case : permettre des definitions de padding
+	génériser leur traitement avec celui des margin
 	
+
 	
 if flex defined
 	check if order correct, else send ERROR
@@ -117,6 +125,11 @@ justify-content
 	centery = cross-self if row
 	centerx = axis-self if row
 	centery = axis-self if column
+	
+	reflechir aux autres valeurs de justify-content (space-between...)
+	
+	
+	
 	
 
 si centerx on text											TODO
@@ -142,6 +155,8 @@ naming auto : class-index
 	et on enleve la classe
 	attention, peut causer des bugs si ya des subchildren qui utilisent "&"
 
+	
+	
 
 class reusability
 	ex : buttons
@@ -156,13 +171,34 @@ class reusability
 		si render-class est défini : on exporte pas
 		!export peut disparaitre
 	dont browser inside
-		
 	
 	si au sein de la mm page :
 		on reference une render-class qui vient detre définie
 		déclare tjs l'elmt ds la template
 		ne pas répéter les classes déja définies
 		
+	ptet qu'au dela d'une class
+		il doit s'agit d'une template particulière (html)
+		ex : <button>, smth specifique inside...
+		
+	loop item on a same page
+		define for the first
+		second, refer to the first
+		for the other child
+			define positionning only 
+			no browsing
+			
+		(ideal is too complicated, separating rendering in generic selector, and positionning in nth selector)
+		
+		
+		
+generalisation nth-child
+	nth-child works only for tag-version
+	i should be able to name 2 element the same
+	and css will realise it and add the nth-child
+	
+	
+	
 	
 	
 class composition

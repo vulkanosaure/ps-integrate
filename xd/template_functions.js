@@ -146,7 +146,15 @@ TPL_FUNCTIONS["html"] = {
 				
 				
 				if(lx == "center"){
-					propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
+					// propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
+					
+					//ce scenario n'a aucun sens
+					throw new Error('ce scenario n\'a aucun sens');
+					
+					propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+					propsModel["margin_left2"] = { name: 'margin-left', value: 'auto' };
+					propsModel["margin_right2"] = { name: 'margin-right', value: 'auto' };
+					
 				}
 				else{
 					
@@ -317,7 +325,7 @@ TPL_FUNCTIONS["html"] = {
 			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? 'width' : 'height';
 			if(propsModel[testdim] && !propsModel[testdim].comment){
 				let value = '0 0 auto';
-				propsModel['flex_shorhand'] = {name: 'flex', value: value};
+				propsModel['flex_shorhand'] = {name: "flex", value: value};
 			}
 			
 		}

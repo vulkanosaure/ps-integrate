@@ -22,6 +22,7 @@ imp = {...imp, ...require('./generate_template.js')};
 imp = {...imp, ...require('./errors_utils.js')};
 imp = {...imp, ...file_constantes};
 imp = {...imp, ...file_recursive_loop};
+imp = {...imp, ...require('./platform_layer_utils.js')};
 
 
 const fs = require("uxp").storage.localFileSystem;
@@ -67,6 +68,8 @@ async function exportFunction(selection, documentRoot)
 	let bounds = documentRoot.globalBounds;
 	imp.DOC_WIDTH = bounds.width;
 	imp.DOC_HEIGHT = bounds.height;
+	
+	
 	
 	
 	var settings = {
@@ -118,6 +121,8 @@ async function main(settings, rootNode, documentRoot)
 	
 	//layer browsing and exports
 	
+	let boundsRoot = imp.getBounds(rootNode);
+	
 	let params = {
 		settings : globalSettings,
 		listErrors : listErrors,
@@ -125,6 +130,7 @@ async function main(settings, rootNode, documentRoot)
 		overwrite : overwrite,
 		exportPath : exportPath,
 		config : config,
+		boundsRoot : boundsRoot,
 	};
 	
 	

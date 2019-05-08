@@ -93,7 +93,7 @@ var EXPORT_FOLDER_IMG = "images";
 var EXPORT_FOLDER_TPL = "templates";
 
 var DEBUG_MODE = true;
-var ENABLE_EXPORT = false;
+var ENABLE_EXPORT = true;
 
 
 var DOC_WIDTH;
