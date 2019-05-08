@@ -130,6 +130,10 @@ TPL_FUNCTIONS["html"] = {
 		
 		else{
 			
+			if(item.positionRelative){
+				propsModel["position"] = { value: "relative", quote: "none" };
+			}
+			
 			var direction = parent ? parent[imp.OPT_DIRECTION] : 'col';
 			
 			if(direction == "row"){
@@ -317,9 +321,6 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 		}
-		
-		
-		
 		
 		
 		//______________________________

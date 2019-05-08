@@ -187,6 +187,34 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 	}
 	
 	
+	//count tags number in sibblings
+	let listitems;
+	if (parentItem) listitems = parentItem.childrens;
+	else listitems = params.listItem;
+	let _len = listitems.length;
+	let listtags = listitems.map(item => item.tag);
+	let listnamedebug = listitems.map(item => item.name);
+	tracerec('listtags : '+listtags, level);
+	tracerec('listname : '+listnamedebug, level);
+	
+	for (var _i = 0; _i < _len; _i++) {
+		let item = listitems[_i];
+		let count = 0;
+		let countBefore = 0;
+		listtags.forEach((tag, index) => {
+			trace('- foreach('+tag+', '+index+')');
+			if(tag == item.tag){
+				count++;
+				if(index < _i) countBefore++;
+			}
+		});
+		trace('count tag '+item.tag+' : '+count);
+		trace('countBefore '+item.tag+' : '+countBefore);
+		item.countTag = count;
+		item.positionTag = count - 1 - countBefore;
+	}
+	
+	
 	
 }
 
@@ -204,6 +232,9 @@ function create_item(layer, name, type, parentItem, level, index) {
 	if (CONTAINERS_TYPE.indexOf(type) != -1) output.childrens = [];
 	output[OPT_TYPE] = type;
 	
+	
+	
+	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
 	output[OPT_NAME] = imp.decodeNameParentRef(output[OPT_NAME], parentItem);
@@ -215,6 +246,7 @@ function create_item(layer, name, type, parentItem, level, index) {
 		if(parentItem) output[OPT_NAME] += parentItem.name;
 		else output[OPT_NAME] += type;
 		output[OPT_NAME] += '-' + index;
+		output.generatedName = true;
 		
 	}
 	
@@ -330,6 +362,16 @@ function create_item(layer, name, type, parentItem, level, index) {
 		output[OPT_POSITION] = get_value_option(name, OPT_POSITION);
 	}
 	else output[OPT_POSITION] = "static";
+	
+	
+	//set parent relative
+	if(output[OPT_POSITION] == 'absolute'){
+		if(parentItem && parentItem[OPT_POSITION] == 'static'){
+			parentItem.positionRelative = true;
+		}
+	}
+	
+	
 	
 	
 	//direction
@@ -470,6 +512,19 @@ function create_item(layer, name, type, parentItem, level, index) {
 		trace('pathdata : '+output["pathdata"]);
 		//maybe refactor later in list of PathData object
 	}
+	
+	
+	
+	let tag;
+	if(type == imp.TYPE_BTN) tag = 'a';
+	else if(type == imp.TYPE_BTNC) tag = 'div';
+	else if(type == imp.TYPE_CONTAINER) tag = 'div';
+	else if(type == imp.TYPE_GFX && output[imp.OPT_IMGTYPE]=='svg-inline') tag = 'svg';
+	else if(type == imp.TYPE_GFX) tag = 'div';
+	else if(type == imp.TYPE_SHAPE) tag = 'div';
+	else if(type == imp.TYPE_TEXT) tag = 'p';
+	else throw new Error('type unknown : '+type);
+	output.tag = tag;
 	
 	
 

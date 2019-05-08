@@ -187,7 +187,7 @@ Array.prototype.reverse = function(tab)
 
 function transformMargins(data)
 {
-	trace('transformData');
+	// trace('transformData');
 	
 	let listMargin = ['top', 'right', 'bottom', 'left'];
 	
@@ -196,7 +196,7 @@ function transformMargins(data)
 		let prop = 'margin-' + listMargin[i];
 		if(data[prop]) countMargin++;
 	}
-	trace('countMargin : '+countMargin);
+	// trace('countMargin : '+countMargin);
 	if(countMargin > 1){
 		
 		let values = [];
@@ -205,17 +205,14 @@ function transformMargins(data)
 			var value = data[prop] ? data[prop].data : 0;
 			values.push(value);
 			
-			if(data[prop]){
-				trace('connnnfig : '+prop);
-				for(let k in data[prop].config) trace('--- conf '+k+' : '+data[prop].config[k]);
-			}
-			
 		}
-		trace('values : '+values);
+		// trace('values : '+values);
 		
 		if(values[0] == values[2] && values[1] == values[3]){
 			values = values.splice(0, 2);
+			if(values[0] == values[1]) values = values.splice(0, 1);
 		}
+		
 		
 		let marginValue = values.join(' ');
 		data['margin'] = {
@@ -227,17 +224,15 @@ function transformMargins(data)
 			let prop = 'margin-' + listMargin[i];
 			if(data[prop]) delete data[prop];
 		}
-		
-		
-		return data;
 	}
 	
-	
+	/* 
 	for(let k in data){
-		
 		let obj = data[k];
 		trace(k+' : '+obj.data+', config : '+obj.config);
 	}
+	 */
+	return data;
 }
 
 

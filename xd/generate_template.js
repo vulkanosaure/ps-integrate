@@ -184,13 +184,26 @@ async function generate_template(items, tpl_id, config)
 				
 				if(data_str != undefined){
 					
-					var layout_id = imp.getLayoutID(item);
-					var selector = layout_id;
+					var selector;
 					
-					if(configLayout.file.sass_indent){
-						selector = imp.encodeNameParentRef(selector, parent);
+					if(item.selectorType == 'classname'){
+						var layout_id = imp.getLayoutID(item);
+						selector = layout_id;
+						if(configLayout.file.sass_indent){
+							selector = imp.encodeNameParentRef(selector, parent);
+						}
+						if(selector.charAt(0) != '&') selector = '.' + selector;
 					}
-					if(selector.charAt(0) != '&') selector = '.' + selector;
+					else if(item.selectorType == 'tag'){
+						selector = '& > ' + item.tag;
+						if(item.countTag > 1){
+							let positionTag = item.positionTag + 1;
+							selector += ':nth-child(' + positionTag + ')';
+						}
+					}
+					
+					
+					
 					
 					
 					var data = {"selector" : selector, "layout_data" : data_str};
@@ -273,6 +286,13 @@ async function generate_template(items, tpl_id, config)
 		classes.push(layout_id);
 		
 		
+		if(item.generatedName && item.countTag <= 2 && configLayout.file.sass_indent){
+			classes.splice(0, 1);
+			item.selectorType = 'tag';
+		}
+		else item.selectorType = 'classname';
+		
+		
 		if(!_tffile && item.type == imp.TYPE_TEXT){
 			data["textformat_data"] = imp.TPL_FUNCTIONS[tpl_id].getTextFormatData(item.textdata, configConfig);
 		}
@@ -291,29 +311,20 @@ async function generate_template(items, tpl_id, config)
 		
 		
 		var str = "";
+		let tplFile = item.type;
 		
 		if(item.type == imp.TYPE_CONTAINER){
 			
-			data["classes"] = classes.join(' ');
-			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
-			str += str2;
 		}
 		else if(item.type == imp.TYPE_GFX){
 			
-			data["classes"] = classes.join(' ');
-			if(item.has_graphic){
-				var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
-			}
-			else if(item[imp.OPT_IMGTYPE] == 'svg-inline'){
+			if(!item.has_graphic && item[imp.OPT_IMGTYPE] == 'svg-inline'){
 				
 				let tpl = 'pathdata';
 				data['data'] = item.pathdata;
-				var str2 = await imp.convertTemplate(path_tpl + "main/"+tpl+".txt", data);
+				tplFile = tpl;
 			}
-			else{
-				throw new Error('no type gfx?');
-			}
-			str += str2;
+			
 		}
 		else if(item.type == imp.TYPE_TEXT){
 			
@@ -321,32 +332,28 @@ async function generate_template(items, tpl_id, config)
 			let text_color = imp.getTextColorID(item.textdata, config.colors);
 			let text_align = "text_" + item.textdata.halign;
 			classes.push(textformat_id);
-			// classes.push(text_color);
-			// classes.push(text_align);
-			data["classes"] = classes.join(' ');
 			
 			//eventuellement une boucle sur textdata ici
 			data["text"] = item.textdata.text;
 			data["text_br"] = item.textdata.text.replace(/\\n/g, "<br />");
 			
-			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
-			str += str2;
 		}
 		else if(item.type == imp.TYPE_SHAPE){
 			
-			data["classes"] = classes.join(' ');
-			var str2 = await imp.convertTemplate(path_tpl + "main/"+item.type+".txt", data);
-			str += str2;
 		}
-		
-		else if(imp.BTNS_TYPE.indexOf(item.type) != -1){
-			
-			data["classes"] = classes.join(' ');
-			var str3 = await imp.convertTemplate(path_tpl + "main/"+TYPE_BTN+".txt", data);
-			str += str3;
+		else if(imp.BTNS_TYPE.indexOf(item.type) != -1){	
+			tplFile = TYPE_BTN;
 		}
 		
 		
+		let strclasses = '';
+		if(classes && classes.length > 0){
+			strclasses = ' class="'+classes.join(' ')+'"';
+		}		
+		data["classes"] = strclasses;
+		
+		var str2 = await imp.convertTemplate(path_tpl + "main/"+tplFile+".txt", data);
+		str += str2;
 		
 		
 		

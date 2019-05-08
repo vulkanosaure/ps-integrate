@@ -293,7 +293,7 @@ function getPathData(layer)
 function getShapeData(layer, width, height)
 {
 	let layerkind = layer.constructor.name;
-	trace('getShapeData '+width+', '+height+', layerkind : '+layerkind);
+	// trace('getShapeData '+width+', '+height+', layerkind : '+layerkind);
 	
 	//recursive fix, if shape nested
 	layer = retrieveNestedType(layer, ['Rectangle', 'Ellipse', 'Line']);
@@ -336,7 +336,7 @@ function getShapeData(layer, width, height)
 	if(layerkind == 'Rectangle'){
 		let radius = layer.cornerRadii;
 		if(isBorderRadiusEqual(radius)){
-			trace('radius equal');
+			// trace('radius equal');
 			output.radius = radius.topLeft;
 		}
 		else{

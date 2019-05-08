@@ -79,8 +79,6 @@ selection																							OK
 test bgparent on btn shape									OK
 	transform SVG in PNG									OK
 	tester avec shape										OK
-	problem margin content									COMPLEX, stand by
-
 	
 linebreak template
 	add line break after opening
@@ -92,14 +90,7 @@ remontée des propriétés
 	bold ?
 	(génériser le concept)
 	trouver l'ancetre commun pour lequel tout les element ont cette meme propriété
-
-si centerx on text											TODO
-	=> override text-align		OK
-	=> override margin-left
-	add width:100%
-	si centery => line-height => parent height(px, not 100%)
-	enlever la margin auto qui sert a rien ? (display inline)
-
+	
 	
 margin vs padding
 	si content avec bgparent
@@ -115,13 +106,25 @@ if flex defined
 	x, y check selon direction
 	
 justify-content	
-	maybe reformat alignitems into
-	cross-align (align-items)
+	maybe reformat alignitems into cross-align (align-items)
 	axis-align (justify-content)
 	idem with self 
 		cross-self => align-self
 		axis-self => margin auto
+	contradiction between centerx/y
+	et axis/cross-self
+	centerx = cross-self if column
+	centery = cross-self if row
+	centerx = axis-self if row
+	centery = axis-self if column
 	
+
+si centerx on text											TODO
+	=> override text-align		OK
+	si centery => line-height => parent height(px, not 100%)	OK
+	line-height only for text, 
+	what if container ? could be a align-self
+	what if multiple children ? 
 	
 
 position abs

@@ -105,7 +105,6 @@ function check_error_item(name, item)
 		output.push(getErrorObject("Only containers can set options '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
 	}
 	
-	trace('error item.name : '+item.name);
 	if(item.name.charAt(0) == '$'){
 		output.push(getErrorObject("Name property can't start with a $", getItemStructureStr(item), name));
 	}
