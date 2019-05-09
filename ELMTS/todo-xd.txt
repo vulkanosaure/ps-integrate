@@ -69,16 +69,45 @@ opacity global sur Rectangle								OK
 	juste fusionner ds background-color
 	
 shadow non reportée si bgparent								OK
+
+
+margin vs padding (COLLAPSING MARGIN)														+1	OK
+	la margin de l'enfant s'applique sur le parent, qui n'est donc plus bien positionné
+	conditions : 
+		1er child static d'un container, possedant une margin top
+		container, no border, no padding
+	solutions :
+		ajouter un padding-top:1px au parent
+		convertir la margin-top du child en padding-top
+	in both case : permettre des definitions de padding
+	génériser leur traitement avec celui des margin
 	
-selection																							OK
-	si config.classroot null, pas d'écrasement des classes root
-	prendre l'artboard parent de la selection en cours (ou artboard lui meme)
-	si rien selectionné, message d'erreur
+	FAIT LA TOP ONLY, voir si LEFT necessary		TODO
 	
 
-test bgparent on btn shape									OK
-	transform SVG in PNG									OK
-	tester avec shape										OK
+position abs													OK
+	if parent not abs or relative, turn into relative			+1
+	
+	
+naming auto : class-index										OK
+	si un seul enfant avec le tag en question
+	& > tag
+	et on enleve la classe
+	peut causer des bugs si subchildren with "&"
+	
+	
+	
+if flex defined																				OK
+	check if order correct (positionnement maquete), else send ERROR
+	x, y check selon direction
+	
+	
+selection								
+	2eme commande pour prendre la selection en cours
+	il faut implémenter lecture du name de l'artboard
+	pour paramétrage PATH
+	selection multiple ?
+	
 	
 linebreak template
 	add line break after opening
@@ -94,24 +123,6 @@ remontée des propriétés
 	se débarasser du textformat
 	
 	
-
-margin vs padding																				+1
-	la margin de l'enfant s'applique sur le parent, qui n'est donc plus bien positionné
-	conditions : 
-		1er child static d'un container, possedant une margin top ?
-		
-	solutions :
-		ajouter un padding-top:1px au parent
-		convertir la margin-top du child en padding-top
-		
-	in both case : permettre des definitions de padding
-	génériser leur traitement avec celui des margin
-	
-
-	
-if flex defined
-	check if order correct, else send ERROR
-	x, y check selon direction
 	
 justify-content	
 	maybe reformat alignitems into cross-align (align-items)
@@ -128,34 +139,16 @@ justify-content
 	
 	reflechir aux autres valeurs de justify-content (space-between...)
 	
-	
-	
-	
 
-si centerx on text											TODO
-	=> override text-align		OK
+si centerx on text												TODO (RACCROCHER AU PT PRECEDENT)
+	=> override text-align										OK
 	si centery => line-height => parent height(px, not 100%)	OK
 	line-height only for text, 
 	what if container ? could be a align-self
 	what if multiple children ? 
 	
-
-position abs
-	if parent not abs or relative, turn into relative			+1
-	
 	
 text.styleRange
-
-img vs background-image
-
-
-naming auto : class-index
-	si un seul enfant avec le tag en question
-	& > tag
-	et on enleve la classe
-	attention, peut causer des bugs si ya des subchildren qui utilisent "&"
-
-	
 	
 
 class reusability
@@ -189,30 +182,37 @@ class reusability
 			no browsing
 			
 		(ideal is too complicated, separating rendering in generic selector, and positionning in nth selector)
-		
-		
-		
-generalisation nth-child
-	nth-child works only for tag-version
-	i should be able to name 2 element the same
-	and css will realise it and add the nth-child
 	
 	
 	
+si une image contient une shadow => export décalé
+	example : page cours, video player
+	il faudrait désactiver la shadow avt l'export
 	
 	
-class composition
-	before, always gives classname, could get markup only (when nbchild <= 2 && diff markup)
-	thematic separation : position, rendering, ... ?
 	
+paddings
+	only for container column
+	only for padding left/right
+	ptet for padding bottom ?	
+	tolerance, si delta <= 2-3, prendre la moyenne arrondie
+	on la réduit ? si text, il faut,
+	sinon, il la faut exact...
+
+
+enchainement de tab dans le contenu d'un Text
+	ex : page step masterclass => "Tu recevras une alerte"
+	
+____________________________
+
+	
+img vs background-image
+
 
 invert order,
 	when is it interesting ?
 	only for z-index
 
-gestion des textes, multiline ou pas
-	en fonction, set width ou pas
-	
 	
 override markup
 	OPT_TAG = 'tag'
@@ -221,27 +221,7 @@ override markup
 
 casser le nesting css par endroit
 	attention a l'algo &,
-	qui se base sur les parents, mais la parent displaylist != parent sass
-	
-	
-file appened instead overriden sometime
-	check options
-	
-root node filtering
-	j'ai été obligé de rendre tous les sibblings du root invisible
-	améliorer le process de filtering
-	
-une width est set en dur
-	a 4 endroits
-	alors qu'on aurait voulu le définir via ses margins
-	
-	
-root node
-	recupérer certaines propriétés
-	path
-	if name set => englober dans un container de ce nom
-	PAS URGENT : on peut englober dans un container, et avoir les mm resultats
-	
+	qui se base sur les parents, mais la parent displaylist != parent sass	
 	
 	
 offset negatif sur un item

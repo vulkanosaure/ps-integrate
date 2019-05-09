@@ -122,10 +122,11 @@ function getTextData(layer)
 	textdata.underline = ti.underline;
 	
 	
-	if(ti.textAlign == 'ALIGN_LEFT') textdata.halign = 'left';
-	else if(ti.textAlign == 'ALIGN_CENTER') textdata.halign = 'center';
-	else if(ti.textAlign == 'ALIGN_RIGHT') textdata.halign = 'right';
+	if(ti.textAlign == 'left') textdata.halign = 'left';
+	else if(ti.textAlign == 'center') textdata.halign = 'center';
+	else if(ti.textAlign == 'right') textdata.halign = 'right';
 	else textdata.halign = 'left';
+	trace('textdata.halign : '+textdata.halign);
 	
 	var ranges = ti.styleRanges;
 	textdata.styleRanges = [];

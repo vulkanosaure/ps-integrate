@@ -133,12 +133,14 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
 
 			var errors = check_error_item(name, item);
+			
+			
 			tracerec('errors.length : '+errors.length, level);
 			if (errors.length > 0) {
 				tracerec("errors : " + errors, level);
 				params.listErrors = params.listErrors.concat(errors);
 			}
-
+			
 			if (!item["disable"]) {
 				if (isRoot) params.listItem.push(item);
 				else parentItem.childrens.push(item);
@@ -186,29 +188,35 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 	}
 	
 	
+	
+	
+	let errors2 = imp.check_error_item2(parentItem);
+	tracerec('errors2.length : '+errors2.length, level);
+	if (errors2.length > 0) {
+		tracerec("errors2 : " + errors2, level);
+		params.listErrors = params.listErrors.concat(errors2);
+	}
+	
+	
+	
+	
 	//count tags number in sibblings
 	let listitems;
 	if (parentItem) listitems = parentItem.childrens;
 	else listitems = params.listItem;
 	let _len = listitems.length;
 	let listtags = listitems.map(item => item.tag);
-	let listnamedebug = listitems.map(item => item.name);
-	// tracerec('listtags : '+listtags, level);
-	// tracerec('listname : '+listnamedebug, level);
 	
 	for (var _i = 0; _i < _len; _i++) {
 		let item = listitems[_i];
 		let count = 0;
 		let countBefore = 0;
 		listtags.forEach((tag, index) => {
-			// trace('- foreach('+tag+', '+index+')');
 			if(tag == item.tag){
 				count++;
 				if(index < _i) countBefore++;
 			}
 		});
-		// trace('count tag '+item.tag+' : '+count);
-		// trace('countBefore '+item.tag+' : '+countBefore);
 		item.countTag = count;
 		item.positionTag = count - 1 - countBefore;
 	}
@@ -456,7 +464,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	if([TYPE_GFX, imp.TYPE_SHAPE].indexOf(type) > -1){
+	if([TYPE_GFX, imp.TYPE_SHAPE, TYPE_CONTAINER].indexOf(type) > -1){
 		output[OPT_BGPARENT] = get_value_option_safe(name, OPT_BGPARENT);
 		output[OPT_BGPARENT] = (output[OPT_BGPARENT] == "1");
 	}
@@ -485,9 +493,12 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		
 		output["textdata"] = imp.getTextData(layer);
 		//if layoutx set (ex centerx), override align
+		
 		if (has_option(name, OPT_LAYOUT_X)) {
+			trace('override halign');
 			output["textdata"].halign = output[OPT_LAYOUT_X];
 		}
+		
 	}
 	
 	if (type == imp.TYPE_SHAPE) {

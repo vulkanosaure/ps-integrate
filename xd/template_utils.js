@@ -185,7 +185,7 @@ Array.prototype.reverse = function(tab)
 //for template-functions
 
 
-function transformMargins(data)
+function transformMargins(data, _property)
 {
 	// trace('transformData');
 	
@@ -193,15 +193,15 @@ function transformMargins(data)
 	
 	let countMargin = 0;
 	for(let i in listMargin){
-		let prop = 'margin-' + listMargin[i];
+		let prop = _property + '-' + listMargin[i];
 		if(data[prop]) countMargin++;
 	}
-	// trace('countMargin : '+countMargin);
+	trace('_property : '+_property+', countMargin : '+countMargin);
 	if(countMargin > 1){
 		
 		let values = [];
 		for(let i in listMargin){
-			let prop = 'margin-' + listMargin[i];
+			let prop = _property + '-' + listMargin[i];
 			var value = data[prop] ? data[prop].data : 0;
 			values.push(value);
 			
@@ -215,13 +215,13 @@ function transformMargins(data)
 		
 		
 		let marginValue = values.join(' ');
-		data['margin'] = {
+		data[_property] = {
 			data  :marginValue,
 			config: {},
 		};
 		
 		for(let i in listMargin){
-			let prop = 'margin-' + listMargin[i];
+			let prop = _property + '-' + listMargin[i];
 			if(data[prop]) delete data[prop];
 		}
 	}

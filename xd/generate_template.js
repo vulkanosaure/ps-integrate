@@ -321,7 +321,8 @@ async function generate_template(items, tpl_id, config)
 			if(!item.has_graphic && item[imp.OPT_IMGTYPE] == 'svg-inline'){
 				
 				let tpl = 'pathdata';
-				data['data'] = item.pathdata;
+				data['data'] = item.pathdata.data;
+				//.bgcolor
 				tplFile = tpl;
 			}
 			

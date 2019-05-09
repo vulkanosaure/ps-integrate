@@ -66,7 +66,7 @@ TPL_FUNCTIONS["html"] = {
 	},
 	
 	
-	getLayoutData : function (item, parent, prevItem, prevStaticItem, config, configLayout)
+	getLayoutData : function (item, parent, prevItem, isLayerOfType, config, configLayout)
 	{
 		trace('item.position : '+item.position);
 		
@@ -126,9 +126,9 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		//_______________________________
-		//margins left (relative)
+		//position static
 		
-		else{
+		else if(item[imp.OPT_POSITION] == "static"){
 			
 			if(item.positionRelative){
 				propsModel["position"] = { value: "relative", quote: "none" };
@@ -139,8 +139,8 @@ TPL_FUNCTIONS["html"] = {
 			if(direction == "row"){
 				
 				//relative to prev child
-				var prevPosition = prevStaticItem ? prevStaticItem.position[0] : 0;
-				var prevDim = prevStaticItem ? prevStaticItem[imp.OPT_WIDTH] : 0;
+				var prevPosition = isLayerOfType ? isLayerOfType.position[0] : 0;
+				var prevDim = isLayerOfType ? isLayerOfType[imp.OPT_WIDTH] : 0;
 				var value = x - (prevPosition + prevDim);
 				var value2 = y;
 				
@@ -175,8 +175,8 @@ TPL_FUNCTIONS["html"] = {
 				var value2 = x;
 				
 				//relative to prev child
-				var prevPosition = prevStaticItem ? prevStaticItem.position[1] : 0;
-				var prevDim = prevStaticItem ? prevStaticItem[imp.OPT_HEIGHT] : 0;
+				var prevPosition = isLayerOfType ? isLayerOfType.position[1] : 0;
+				var prevDim = isLayerOfType ? isLayerOfType[imp.OPT_HEIGHT] : 0;
 				var value = y - (prevPosition + prevDim);
 				
 				
@@ -197,7 +197,27 @@ TPL_FUNCTIONS["html"] = {
 				}
 				
 			}
+			
+			
+			//collapsed margin 
+			//(top only, voir si left necessary)
+			
+			if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 0){
+				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
+					if(!isLayerOfType){	//is first static item
+						if(!parent.shapedata || !parent.shapedata.borderWidth){
+							
+							var marginValue = propsModel["margin_top2"].value;
+							delete propsModel["margin_top2"];
+							propsModel["padding_top"] = { name: 'padding-top', value: marginValue, sufix: 'px' };
+						}
+					}
+				}
+			}
+			
+			
 		}
+		else throw new Error('unknown position '+item[imp.OPT_POSITION]);
 		
 		
 		
@@ -371,7 +391,10 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		var data = imp.mapProps(propsModel, item);
-		data = imp.transformMargins(data);
+		
+		
+		data = imp.transformMargins(data, 'margin');
+		data = imp.transformMargins(data, 'padding');
 		
 		
 		

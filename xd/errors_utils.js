@@ -22,6 +22,9 @@ var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
 var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
 
 imp = {...imp, ...require('./platform_export.js')};
+imp = {...imp, ...file_constantes};
+
+
 
 
 
@@ -89,7 +92,7 @@ function check_error_layername(name, parentItem)
 
 
 
-function check_error_item(name, item)
+function check_error_item(name, item, parent, listitems)
 {
 	var output = [];
 	if(item.type != TYPE_GFX && item.type != TYPE_TEXT){
@@ -98,11 +101,17 @@ function check_error_item(name, item)
 		}
 	}
 	
+	trace('imp.TYPE_SHAPE : '+imp.TYPE_SHAPE);
+	trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);
+	
 	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
 		output.push(getErrorObject("Only containers can set options '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
 	}
 	if(item[OPT_ALIGN_ITEMS] && CONTAINERS_TYPE.indexOf(item.type) == -1){
 		output.push(getErrorObject("Only containers can set options '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
+	}
+	if(item[OPT_BGPARENT] && [TYPE_GFX, imp.TYPE_SHAPE].indexOf(item.type) == -1){
+		output.push(getErrorObject("Only img and shape can set options '"+OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));
 	}
 	
 	if(item.name.charAt(0) == '$'){
@@ -112,6 +121,60 @@ function check_error_item(name, item)
 	
 	return output;
 }
+
+
+
+
+function check_error_item2(parent)
+{
+	var output = [];
+	
+	if(parent && parent["pos"] == 'static'){
+		
+		// trace('parent name : '+parent.name);
+		
+		let dir = parent["dir"];
+		// trace('dir : '+dir);
+		let prop = dir == 'row' ? 'x' : 'y';
+		let index_pos = dir == 'row' ? 0 : 1;
+		
+		// trace('dir : '+dir);
+		// trace('cur_pos : '+cur_pos);
+		
+		var len = parent.childrens.length;
+		let prev_pos;
+		
+		for(let i=0; i<len; i++){
+			var _i = len - 1 - i;
+			let _item = parent.childrens[_i];
+			let pos = _item.position[index_pos];
+			// trace('-- '+_item.name+', pos : '+pos+', bgparnet : '+_item["bgparent"]);
+			
+			if(i > 0 && _item["pos"] == "static" && !_item["bgparent"]){
+				// if(pos > cur_pos){
+				// trace('----- candidate');
+				if(pos < prev_pos){
+					// trace('----- ok error');
+					output.push(getErrorObject("The order of the layer seems incorrect", getItemStructureStr(_item), ''));
+					
+					// throw new Error('');
+					break;
+				}
+			}
+			prev_pos = pos;
+		}
+	}
+	/* 
+	if(item.name == 'page-step-content-block-mclass-title'){
+		trace('output: '+output);
+		trace('parent pos: '+parent["pos"]);
+		throw new Error('check_error_item2');
+	}
+	 */
+	
+	return output;
+}
+
 
 
 
@@ -175,6 +238,7 @@ async function createErrorFile(exportPath, listErrors)
 module.exports = {
 	check_error_layername,
 	check_error_item,
+	check_error_item2,
 	getErrorObject,
 	getItemStructureStr,
 	createErrorFile,
