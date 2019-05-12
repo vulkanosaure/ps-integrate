@@ -171,8 +171,9 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 		}
 		
 		// tracerec('isContainer : '+isContainer, level);
+		let hasClass = (item && item[imp.OPT_CLASS]);
 
-		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
+		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1 && !hasClass) {
 			
 			parentLayer = null;	//never used
 			tracerec("reccc type : " + type, level);
@@ -242,10 +243,22 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
+	
+	//class (reusability)
+	if (has_option(name, imp.OPT_CLASS)) {
+		var val = get_value_option(name, imp.OPT_CLASS);
+		output[imp.OPT_CLASS] = val;
+	}
+	
+	
+	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
 	output[OPT_NAME] = imp.decodeNameParentRef(output[OPT_NAME], parentItem);
 	
+	if (output[OPT_NAME] == "" && output[imp.OPT_CLASS]){
+		output[OPT_NAME] = output[imp.OPT_CLASS];
+	}
 	
 	if (output[OPT_NAME] == "") {
 		// output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
@@ -339,6 +352,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if(shadow) output.shadow = shadow;
 	
 	
+	
+	
 
 
 	tracerec("item " + name + ", parentItem : " + ((parentItem) ? parentItem.name : "") + ", position : " + output.position + ", exp : "+output.doexport, level);
@@ -376,6 +391,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			parentItem.positionRelative = true;
 		}
 	}
+	
 	
 	
 	
@@ -520,6 +536,20 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output["pathdata"] = imp.getPathData(layer);
 		trace('pathdata : '+output["pathdata"]);
 		//maybe refactor later in list of PathData object
+	}
+	
+	
+	//if static
+	//if parent dir == col
+	//if ly = center
+	
+	//set parent flex if col / centery
+	if(output[OPT_POSITION] == 'static'){
+		if(parentItem && parentItem[OPT_DIRECTION] == 'col'){
+			if(output[OPT_LAYOUT_Y] == 'center'){
+				parentItem.setFlex = true;
+			}
+		}
 	}
 	
 	

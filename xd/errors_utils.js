@@ -61,7 +61,7 @@ function check_error_layername(name, parentItem)
 			var rule = OPTIONS_RULES[k];
 			
 			var type = typeof rule;
-			// trace('type : '+type+', rule : '+rule);
+			trace('type : '+type+', rule : '+rule+', value : '+value);
 			
 			//regex
 			if(rule instanceof RegExp){
@@ -72,15 +72,14 @@ function check_error_layername(name, parentItem)
 					output.push(getErrorObject("Wrong value for property '"+k+"' : '"+value+"'", getItemStructureStr(parentItem), name));
 				}
 			}
+			else if(rule == "*"){
+				//nothing to do
+			}
 			//tab possible options
 			else if(type == "object"){
 				if(rule.indexOf(value) == -1){
 					output.push(getErrorObject("Wrong value for property '"+k+"' : '"+value+"'", getItemStructureStr(parentItem), name));
 				}
-			}
-			//string "*"
-			else{
-				//nothing to do
 			}
 		}
 	}

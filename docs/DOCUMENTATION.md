@@ -96,6 +96,9 @@ Similar to the *align-items* property for a flex container
 Forces all the img childrens of the container to be exported at the size of the container (handy for game sprites)
 *Only available for type container*
 
+#### class
+Attributes an additionnal class (in addition to the name), and stop browsing nested element inside.
+
 
 
 ## Shortcuts

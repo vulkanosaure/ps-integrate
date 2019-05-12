@@ -37,6 +37,7 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 			scale: 1,
 			minify: true,
 			embedImages: true,
+			overwrite: true,
 	}];
 	
 	if(config.retina && imgtype!='svg'){
@@ -47,6 +48,7 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 			scale: 2,
 			minify: true,
 			embedImages: true,
+			overwrite: true,
 		});
 	}
 	

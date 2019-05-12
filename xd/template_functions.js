@@ -89,6 +89,10 @@ TPL_FUNCTIONS["html"] = {
 			
 		}
 		
+		if(item.setFlex){
+			propsModel["display"] = { value: "flex", quote: "none" };
+		}
+		
 		
 		//____________________________________________________________
 		//position absolute
@@ -168,6 +172,12 @@ TPL_FUNCTIONS["html"] = {
 					
 				}
 				
+				
+				if(ly == "center"){
+					propsModel["margin_top2"] = { name: 'margin-top', value: 'auto' };
+					propsModel["margin_bottom2"] = { name: 'margin-bottom', value: 'auto' };
+				}
+				
 			}
 			else if(direction == "col"){
 				
@@ -196,6 +206,15 @@ TPL_FUNCTIONS["html"] = {
 					if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
 				}
 				
+				
+				
+				if(ly == "center"){
+					propsModel["margin_top2"] = { name: 'margin-top', value: 'auto' };
+					propsModel["margin_bottom2"] = { name: 'margin-bottom', value: 'auto' };
+					//todo : parent flex
+					
+				}
+				
 			}
 			
 			
@@ -216,6 +235,9 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 			
+			
+			
+			
 		}
 		else throw new Error('unknown position '+item[imp.OPT_POSITION]);
 		
@@ -233,10 +255,18 @@ TPL_FUNCTIONS["html"] = {
 			
 			propsModel["halign"] = {name : 'text-align', value : tdata.halign, quote : 'none'};
 			
+			
+			if(lx == 'center'){
+				delete propsModel["margin_left2"];
+				delete propsModel["margin_right2"];
+			}
 			if(ly == 'center'){
 				let value = parent[imp.OPT_HEIGHT] + "px";
 				propsModel["lineHeight"] = {name : 'line-height', value : value, quote : 'none'};
 				delete propsModel["margin_top2"];
+				delete propsModel["margin_bottom2"];
+				delete propsModel["padding_top"];
+				delete propsModel["padding_bottom"];
 			}
 			
 			// trace('tdata.color : '+tdata.color);
@@ -350,6 +380,20 @@ TPL_FUNCTIONS["html"] = {
 			
 		}
 		
+		if(false && parent && parent.name == "divcentery"){
+			
+			for(var i in propsModel){
+				let obj = propsModel[i];
+				trace(' - '+i+' : '+obj.value);
+				for(var k in obj){
+					trace('**** --- '+k+' : '+obj[k]);
+				}
+				trace('ùùùù -- '+item[i]);
+			}
+			
+			throw new Error('debug');
+		}
+		
 		
 		//______________________________
 		//retina handling
@@ -401,21 +445,7 @@ TPL_FUNCTIONS["html"] = {
 		
 		var closeTag = !configLayout.file.sass_indent;
 		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag);
-		/* 
-		if(item.name == 'bloc-quiz-score-label'){
-			
-			trace('propsModel : '+propsModel['margin_top2'].value);
-			for(var i in data){
-				trace('- data '+i+' : '+data[i].data);	
-				trace('- config '+i+' : '+data[i].config);
-				for(let k in data[i].config){
-					trace('   ------ '+k+' : '+data[i].config[k]);
-				}
-			}
-			trace('str : '+str);
-			throw new Error('score label debug');
-		}
-		 */
+		
 		
 		return str;
 	}

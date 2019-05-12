@@ -245,7 +245,7 @@ function propsToString(props, options, closeTag=true)
 	if(options.separator == undefined) options.separator = ",";
 	if(options.equal == undefined) options.equal = " : ";
 	
-	
+	let propsOK = [];
 	var output = "{";
 	if(options.multiline) output += "\n\t";
 	var tab = [];
@@ -267,19 +267,18 @@ function propsToString(props, options, closeTag=true)
 		str += obj.data;
 		
 		//exception, no line break
-		if(i == 'height' && props['width']){
+		if(i == 'height' && propsOK.indexOf('width') > -1){
+			tab[tab.length - 1] += '; '+str;
+		}
+		else if(i == 'width' && propsOK.indexOf('height') > -1){
 			tab[tab.length - 1] += '; '+str;
 		}
 		else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
 			tab[tab.length - 1] += '; '+str;
 		}
-		/* 
-		//bug in some condition (removed margin-top)
-		else if((i == 'margin-top' && props['margin-left'])){
-			tab[tab.length - 1] += '; '+str;
-		}
-		 */
 		else tab.push(str);
+		
+		propsOK.push(i);
 	}
 
 	var str;

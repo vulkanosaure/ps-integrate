@@ -36,6 +36,7 @@ var OPT_HEIGHT = "height";
 var OPT_EQUALOFFSET = "equaloffset";
 var OPT_DOEXPORT = "doexport";
 var OPT_IMGTYPE = "imgtype";
+var OPT_CLASS = "class";
 
 
 var OPTIONS_RULES = {};
@@ -46,6 +47,7 @@ OPTIONS_RULES[OPT_NAME] = new RegExp(".*(?<!(\.png)|(\.jpg))$", "i");	//not work
 OPTIONS_RULES[OPT_BGPARENT] = [0, 1];
 OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
+OPTIONS_RULES[OPT_CLASS] = ["*"];
 
 OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
@@ -143,4 +145,5 @@ module.exports = {
 	ENABLE_EXPORT,
 	DOC_WIDTH,
 	DOC_HEIGHT,
+	OPT_CLASS,
 };

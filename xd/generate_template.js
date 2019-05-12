@@ -347,6 +347,11 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
+		if(item[imp.OPT_CLASS] && classes.indexOf(item[imp.OPT_CLASS]) == -1){
+			classes.push(item[imp.OPT_CLASS]);
+		}
+		
+		
 		let strclasses = '';
 		if(classes && classes.length > 0){
 			strclasses = ' class="'+classes.join(' ')+'"';

@@ -123,72 +123,116 @@ remontée des propriétés
 	se débarasser du textformat
 	
 	
+font-size : EM / REM
+	dans config : indiquer font-size base pour pouvoir la calculer en fct
 	
-justify-content	
+	
+	
+
+CENTER																							OK
+	=> override text-align											OK
+	si textcentery => line-height => parent height(px, not 100%)	OK
+	doc XD avec tableau de cas : 3 colonne, pour centerx, centery, center
+	
+	------------------
+	text : text-center => remove margin auto						OK
+	voir pourquoi no height sur centery								OK
+	to make margin-top/bottom : auto (vertical center) works		OK
+		=> parent.display = flex
+	centery => no margin auto auto									OK
+	
+	
+
+FLEX CENTER
+
 	maybe reformat alignitems into cross-align (align-items)
-	axis-align (justify-content)
-	idem with self 
-		cross-self => align-self
-		axis-self => margin auto
-	contradiction between centerx/y
-	et axis/cross-self
-	centerx = cross-self if column
-	centery = cross-self if row
-	centerx = axis-self if row
-	centery = axis-self if column
+	
+	cross-align=x
+	scross-align=x
+	axis-align=x
+	saxis-align=x
+	
+	cross-value
+	scross-value
+	axis-value
+	saxis-value
 	
 	reflechir aux autres valeurs de justify-content (space-between...)
 	
 
-si centerx on text												TODO (RACCROCHER AU PT PRECEDENT)
-	=> override text-align										OK
-	si centery => line-height => parent height(px, not 100%)	OK
-	line-height only for text, 
-	what if container ? could be a align-self
-	what if multiple children ? 
+	
+addition ;:
+	if item flex row & centerx => axis-align=center
+	
+	
+shorthand: flex: 0 0 auto
+	est mis trop souvent
+	(sur un container)
+	le mettre avec plus de parcimonie
+	
 	
 	
 text.styleRange
 	
 
 class reusability
-	ex : buttons
-	find a way to tell him, use this class, (and don't generate one)
-	au sein d'une meme page
-	au sein plus global
+	class=""
+	if class defined, don't define css rendering property
+	if class defined, don't recurse inside (partie pris)
 	
-	still create a class for positionning
-	position-class= / render-class=
-	only render-class ds un 1er tps
-	comment ça s'imbrique avec !export :
-		si render-class est défini : on exporte pas
-		!export peut disparaitre
-	dont browser inside
-	
-	si au sein de la mm page :
-		on reference une render-class qui vient detre définie
-		déclare tjs l'elmt ds la template
-		ne pas répéter les classes déja définies
-		
-	ptet qu'au dela d'une class
-		il doit s'agit d'une template particulière (html)
-		ex : <button>, smth specifique inside...
-		
-	loop item on a same page
-		define for the first
-		second, refer to the first
-		for the other child
-			define positionning only 
-			no browsing
-			
-		(ideal is too complicated, separating rendering in generic selector, and positionning in nth selector)
+	if already defined on page
+		still recurse, for html
+		don't redefined in CSS
 	
 	
 	
 si une image contient une shadow => export décalé
 	example : page cours, video player
 	il faudrait désactiver la shadow avt l'export
+	mettre en place page de test avec :
+		- shadow parent, child img, export parent
+		- shadow parent, child img, export child
+		- shadow img, export img
+		- shadow img, export img, shadow disabled
+		
+	même image everytime
 	
+	
+	
+software, export SVG bug si shadow déclaré, 
+	avec x, y > 0
+	et si case disabled
+	ajoute une margin
+	chercher sur google
+	
+	google: xd createRenditions shadow bug4
+	
+	
+sizing understanding
+	what to size
+		parent to child
+		child to parent
+	remove comments ?
+	% ?
+	
+	
+height text often too big in browser					+1
+	=> margin-top too much
+	rechercher
+	
+	
+1 line html with class=""
+	doesn't print in one line
+	
+	
+OPT lvl
+	default : lvl nested (if sass)
+	lvl=0 => root
+	lvl=1, ou name item => a la fin de ce node
+	nécéssite :
+		- de duppliquer la structure pour pouvoir la modifier (optionel car non réutiliser apres)
+		- lors du parsing layout : déplacer les elements au sein de la structure
+	règle : interdir definition lvl if name = &
 	
 	
 paddings
@@ -202,11 +246,19 @@ paddings
 
 enchainement de tab dans le contenu d'un Text
 	ex : page step masterclass => "Tu recevras une alerte"
+	arrive qd ya des linebreaks
 	
 ____________________________
 
-	
 img vs background-image
+
+bgparent positionné
+	exemple : page prof v2 / menu
+
+
+ps--&-label
+	est passé
+	devrait générer une erreur
 
 
 invert order,
@@ -238,11 +290,7 @@ DEBUG PS
 ____________________________
 BUG
 
-software, export SVG bug si shadow déclaré, 
-	avec x, y > 0
-	et si case disabled
-	ajoute une margin
-	chercher sur google
+
 	
 	
 	
