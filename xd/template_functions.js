@@ -14,6 +14,8 @@ var trace = file_debug.trace;
 //HTML 
 
 TPL_FUNCTIONS["html"] = {
+	
+	
 
 	getTextFormatData : function (textdata, config)
 	{
@@ -92,6 +94,13 @@ TPL_FUNCTIONS["html"] = {
 		if(item.setFlex){
 			propsModel["display"] = { value: "flex", quote: "none" };
 		}
+		
+		
+		
+		
+		
+		
+		
 		
 		
 		//____________________________________________________________
@@ -218,12 +227,40 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 			
+			
+			
+			
+			
+			//substract padding to margin
+			if(parent){
+				if(!isLayerOfType || direction == "col"){		//is first static item
+					if(parent["p_left"] > 0){
+						if(propsModel["margin_left2"] && propsModel["margin_left2"].value != 'auto'){
+							propsModel["margin_left2"].value -= parent["p_left"];
+						}
+					}
+				}
+				
+				if(!isLayerOfType || direction == "row"){		//is first static item
+					if(parent["p_top"] > 0){
+						if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 'auto'){
+							propsModel["margin_top2"].value -= parent["p_top"];
+						}
+					}
+				}
+				
+			}
+			
+			
+			
+			//PROBABLY USELESS NOW (tocheck)
+			
 			//collapsed margin 
 			//(top only, voir si left necessary)
-			
+			/* 
 			if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 0){
 				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
-					if(!isLayerOfType){	//is first static item
+					if(!isLayerOfType){		//is first static item
 						if(!parent.shapedata || !parent.shapedata.borderWidth){
 							
 							var marginValue = propsModel["margin_top2"].value;
@@ -233,13 +270,26 @@ TPL_FUNCTIONS["html"] = {
 					}
 				}
 			}
-			
+			*/
 			
 			
 			
 			
 		}
 		else throw new Error('unknown position '+item[imp.OPT_POSITION]);
+		
+		
+		
+		
+		
+		//paddings
+		if(item["p_left"] > 0) propsModel["p_left"] = { name: 'padding-left', sufix: 'px' };
+		if(item["p_top"] > 0) propsModel["p_top"] = { name: 'padding-top', sufix: 'px' };
+		if(item["p_right"] > 0) propsModel["p_right"] = { name: 'padding-right', sufix: 'px' };
+		if(item["p_bottom"] > 0) propsModel["p_bottom"] = { name: 'padding-bottom', sufix: 'px' };
+		
+		
+		
 		
 		
 		
@@ -251,9 +301,11 @@ TPL_FUNCTIONS["html"] = {
 			let tdata = item.textdata;
 			
 			propsModel["width"] = {sufix : "px", comment:true};
-			propsModel["height"] = {sufix : "px", comment:true};
+			// propsModel["height"] = {sufix : "px", comment:true};
 			
 			propsModel["halign"] = {name : 'text-align', value : tdata.halign, quote : 'none'};
+			
+			
 			
 			
 			if(lx == 'center'){
@@ -314,9 +366,11 @@ TPL_FUNCTIONS["html"] = {
 		if(item.shapedata){
 			
 			let s = item.shapedata;
+			let isContainer = (imp.CONTAINERS_TYPE.indexOf(item.type) != -1);
 			
 			propsModel["width"] = {sufix : "px", br: false};
-			propsModel["height"] = {sufix : "px"};
+			if(!isContainer) propsModel["height"] = {sufix : "px"};
+			
 			
 			if(s.bgColor){
 				let value = imp.getColorProperty(s.bgColor, config.sass_variable.colors);
@@ -430,6 +484,18 @@ TPL_FUNCTIONS["html"] = {
 					}
 				}
 			};
+		}
+		
+		
+		
+		
+		//delete useless margin_padding
+		let propsClean = ['margin_left2', 'margin_top2', 'margin_bottom2', 'margin_right2']
+		for(var k in propsClean){
+			let prop = propsClean[k];
+			if(propsModel[prop] && propsModel[prop].value == 0){
+				delete propsModel[prop];
+			}
 		}
 		
 		

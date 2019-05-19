@@ -185,7 +185,7 @@ Array.prototype.reverse = function(tab)
 //for template-functions
 
 
-function transformMargins(data, _property)
+function transformMargins(data, _property, nameItem="")
 {
 	// trace('transformData');
 	
@@ -194,9 +194,11 @@ function transformMargins(data, _property)
 	let countMargin = 0;
 	for(let i in listMargin){
 		let prop = _property + '-' + listMargin[i];
-		if(data[prop]) countMargin++;
+		// trace('- data[prop] : '+data[prop]+', .data : '+data[prop].data);
+		if(data[prop] && data[prop].data != 0) countMargin++;
 	}
 	trace('_property : '+_property+', countMargin : '+countMargin);
+	
 	if(countMargin > 1){
 		
 		let values = [];

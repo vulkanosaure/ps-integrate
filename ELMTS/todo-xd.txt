@@ -125,6 +125,33 @@ remontée des propriétés
 	
 font-size : EM / REM
 	dans config : indiquer font-size base pour pouvoir la calculer en fct
+	line-height ? (non px)
+	margin / padding ?
+	trouver un moyen de faire de la réutilisation des textes (h1, classe?)
+	lire débat margin % vs em
+	
+	font : soit 1 seul 1em+1vw declaration, or 1 per elmt
+	size doit etre traité à part, c le seul elmt responsive
+	
+	avoir ds la config une liste de declaration css (copié collable) qui permet de savoir quoi réutiliser
+	h1{
+		font-size:20px;
+	}
+	.maclasse{
+		font-size:18px;
+	}
+	h1.maclasse{
+		
+	}
+	3 types de selector accepte : tag, class, tag + class
+	en fonction,on va ajouter une classe, ou override le tag
+	
+	comment écrire ces choses : manuellement
+	ou bien les generer comme le textformat actuel : sauf que option tag ou class va permettre d'override le name
+	
+	https://css-tricks.com/books/volume-i/scale-typography-screen-size/
+	font-size: calc([minimum size] + ([maximum size] - [minimum size]) * ((100vw - [minimum viewport width]) / ([maximum viewport width] - [minimum viewport width])));
+	
 	
 	
 	
@@ -183,6 +210,27 @@ class reusability
 	if already defined on page
 		still recurse, for html
 		don't redefined in CSS
+		
+	template ! (file avec specific sub elemnt)
+	on se qu'on casse le nesting ? 7
+	de quoi on peut avoir besoin a l'interieur ?
+		text (multiple ?)
+		img
+		etablir un matching entre type / name
+		reporter le tag, 
+		ne pas le styler ds le css
+		text : exception car on veut juste le text
+		
+		available placeholder : text, text_value, img
+	
+	
+	
+	
+placeholder
+	border dashed red 1 px
+	correct dimension
+	to seperate internal implementation from external positioning
+	
 	
 	
 	
@@ -197,8 +245,6 @@ si une image contient une shadow => export décalé
 		
 	même image everytime
 	
-	
-	
 software, export SVG bug si shadow déclaré, 
 	avec x, y > 0
 	et si case disabled
@@ -208,11 +254,14 @@ software, export SVG bug si shadow déclaré,
 	google: xd createRenditions shadow bug4
 	
 	
+	
 sizing understanding
+	size less in height (than in width)
 	what to size
 		parent to child
 		child to parent
 	remove comments ?
+	understand when 100% is equivalent to nothing ?
 	% ?
 	
 	
@@ -225,6 +274,12 @@ height text often too big in browser					+1
 	doesn't print in one line
 	
 	
+property extensible
+	ou qqchose du genre
+	pour flex : 0 0 auto
+	
+	
+	
 OPT lvl
 	default : lvl nested (if sass)
 	lvl=0 => root
@@ -235,18 +290,37 @@ OPT lvl
 	règle : interdir definition lvl if name = &
 	
 	
-paddings
+	
+	
+paddings														TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITIONS
 	only for container column
-	only for padding left/right
-	ptet for padding bottom ?	
-	tolerance, si delta <= 2-3, prendre la moyenne arrondie
-	on la réduit ? si text, il faut,
-	sinon, il la faut exact...
+	only nb children > 1		NO
+	toute les paddings, (horrizontal, top, bottom)
+	tester la collapsing margin, si conflit
+	
+	
+	
 
 
 enchainement de tab dans le contenu d'un Text
 	ex : page step masterclass => "Tu recevras une alerte"
 	arrive qd ya des linebreaks
+	
+	
+	
+	
+Dimensions
+	il faudrait que les item ABS n'influent pas sur les bounds
+	au moment de mesurer (getBounds)
+		il faudrait scanner tous les children (non-recursif)
+		hide ceux qui sont en position abs
+		prendre la mesure
+		les redisplay
+	l'ennui c'est qu'à ce stade, on a pas encore analyser l'objet, alors il faut le réanalyser... 
+	pas de hack, c'est simple à réanalyser, avec les fonction
+	
+	bosser sur xd-paddings
+	
 	
 ____________________________
 
@@ -256,15 +330,10 @@ bgparent positionné
 	exemple : page prof v2 / menu
 
 
-ps--&-label
-	est passé
-	devrait générer une erreur
 
-
-invert order,
-	when is it interesting ?
-	only for z-index
-
+refactoring template
+	supprimer les multiples template
+	
 	
 override markup
 	OPT_TAG = 'tag'
@@ -288,23 +357,14 @@ DEBUG PS
 
 
 ____________________________
-BUG
+PRIORITY
 
 
-	
-	
-	
-SceneNode
-	GraphicNode
-		Artboard
-		Rectangle
-		Ellipse
-		Line
-		Path
-		BooleanGroup
-		Text
-	Group
-	SymbolInstance
-	RepeatGrid
-	LinkedGraphic
-	RootNode
+padding							OK, TOCHECK
+lvl
+remove textformat				? plus trop sur
+bug shadow
+refactoring tpl
+style range (after)
+
+

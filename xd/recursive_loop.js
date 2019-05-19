@@ -455,8 +455,10 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		
 	}
 	else output[OPT_LAYOUT_Y] = "top";
-
-
+	
+	
+	
+	
 
 
 
@@ -575,6 +577,48 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	else if(type == imp.TYPE_TEXT) tag = 'p';
 	else throw new Error('type unknown : '+type);
 	output.tag = tag;
+	
+	
+	
+	
+	
+	//paddings
+	if(parentItem){
+		
+		if(output[OPT_POSITION] == 'static' && !output[OPT_BGPARENT]){
+			
+			if(!parentItem.hasOwnProperty("p_left")) parentItem["p_left"] = output.position[0];
+			else if(output.position[0] < parentItem["p_left"]) parentItem["p_left"] = output.position[0];
+			
+			if(!parentItem.hasOwnProperty("p_top")) parentItem["p_top"] = output.position[1];
+			else if(output.position[1] < parentItem["p_top"]) parentItem["p_top"] = output.position[1];
+			
+			let p_right = parentItem.width - (output.position[0] + output.width);
+			let p_bottom = parentItem.height - (output.position[1] + output.height);
+			
+			if(!parentItem.hasOwnProperty("p_right")) parentItem["p_right"] = p_right;
+			else if(p_right < parentItem["p_right"]) parentItem["p_right"] = p_right;
+			
+			if(!parentItem.hasOwnProperty("p_bottom")) parentItem["p_bottom"] = p_bottom;
+			else if(p_bottom < parentItem["p_bottom"]) parentItem["p_bottom"] = p_bottom;
+			
+			/* 
+			if(parentItem.name=="test-bulle"){
+				trace('parentItem["p_left"] : '+parentItem["p_left"]);
+				trace('parentItem["p_top"] : '+parentItem["p_top"]);
+				trace('parentItem["p_right"] : '+parentItem["p_right"]);
+				trace('parentItem["p_bottom"] : '+parentItem["p_bottom"]);
+			}
+			 */
+			
+		}
+		
+		
+	}
+	
+	
+	
+	
 	
 	
 
