@@ -501,6 +501,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			parentItem.has_graphic = true;
 			output["disable"] = true;
 		}
+		
+		output["shapedata"] = imp.getShapeData(layer, output.width, output.height);
+		
 	}
 
 

@@ -30,6 +30,26 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 	else if(imgtype == 'svg') type = application.RenditionType.SVG;
 	else throw new Error('wrong imgtype '+imgtype);
 	
+	
+	let saveShadow;
+	if(layer.shadow && layer.shadow.visible){
+		saveShadow = layer.shadow;
+		layer.shadow = null;
+	}
+	
+	let disableStroke = false;
+	if(layer.strokeEnabled){
+		layer.strokeEnabled = false;
+		disableStroke = true;
+	}
+	
+	let saveCornerRadius;
+	if(layer.hasRoundedCorners){
+		saveCornerRadius = layer.cornerRadii;
+		layer.setAllCornerRadii(0);
+	}
+	
+	
 	let settings = [{
 			node: layer,
 			outputFile: file,
@@ -52,7 +72,13 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 		});
 	}
 	
+	
 	await application.createRenditions(settings);
+	
+	if(saveShadow) layer.shadow = saveShadow;
+	if(disableStroke) layer.strokeEnabled = true;
+	if(saveCornerRadius) layer.cornerRadii = saveCornerRadius;
+	
 }
 
 

@@ -234,16 +234,27 @@ placeholder
 	
 	
 	
-si une image contient une shadow => export décalé
+si une image contient une shadow => export décalé									OK
 	example : page cours, video player
 	il faudrait désactiver la shadow avt l'export
 	mettre en place page de test avec :
+		- shadow img, export PARENT							OK
+		- shadow img, export img							OK
 		- shadow parent, child img, export parent
 		- shadow parent, child img, export child
-		- shadow img, export img
 		- shadow img, export img, shadow disabled
-		
-	même image everytime
+	idem border
+
+	
+
+paramtres sur border :
+	contour externe/interne/middle
+	sommet
+	extremités
+	chercher si on a des correspondances CSS (priorité sur externe interne middle)
+
+	
+	
 	
 software, export SVG bug si shadow déclaré, 
 	avec x, y > 0
@@ -361,10 +372,10 @@ PRIORITY
 
 
 padding							OK, TOCHECK
-lvl
 remove textformat				? plus trop sur
-bug shadow
-refactoring tpl
+bug shadow						OK
+lvl
+refactoring tpl & btn/btnc
 style range (after)
 
 
