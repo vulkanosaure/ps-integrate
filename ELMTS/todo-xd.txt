@@ -200,6 +200,31 @@ shorthand: flex: 0 0 auto
 	
 	
 text.styleRange
+	on traite pas ça de manière lourde avec multi element etc...
+	on évalue le style dominant
+	font info générales doivent être basée la dessus (pas le cas actuellement)
+		voir styleRange sur text normal
+		
+	pour chaque styleRange
+		on inserera des <span> ou il faut
+		on établi un diff only (color, size, bold, italic)
+		créé un id avec ce diff pour savoir si besoin de recréer class
+		
+		on nommera des classes "key"+index
+			avec exception key0 = key
+			
+	complication :
+		ça créé un element CSS sans créer d'élement HTML
+		jusqu'à mnt on avait tjs une relation 1-1
+		
+		apres la passe template
+		on peut ajouter des trucs aux items
+		ou bien un layoutChildren, qui n'est scanné que pour la passe layout
+		
+
+
+
+
 	
 
 class reusability
@@ -299,6 +324,11 @@ OPT lvl
 		- de duppliquer la structure pour pouvoir la modifier (optionel car non réutiliser apres)
 		- lors du parsing layout : déplacer les elements au sein de la structure
 	règle : interdir definition lvl if name = &
+	or if sass not enabled
+	
+	TOTEST : 
+		IMBRICATION
+		set name (instead of number)
 	
 	
 	
@@ -320,7 +350,7 @@ enchainement de tab dans le contenu d'un Text
 	
 	
 	
-Dimensions
+Dimensions abs
 	il faudrait que les item ABS n'influent pas sur les bounds
 	au moment de mesurer (getBounds)
 		il faudrait scanner tous les children (non-recursif)
@@ -374,7 +404,7 @@ PRIORITY
 padding							OK, TOCHECK
 remove textformat				? plus trop sur
 bug shadow						OK
-lvl
+lvl								OK
 refactoring tpl & btn/btnc
 style range (after)
 

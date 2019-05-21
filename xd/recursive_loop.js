@@ -251,6 +251,12 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	
 	
+	//lvl
+	if (has_option(name, imp.OPT_LVL)) {
+		var val = get_value_option(name, imp.OPT_LVL);
+		output[imp.OPT_LVL] = val;
+	}
+	
 	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
@@ -502,7 +508,18 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			output["disable"] = true;
 		}
 		
-		output["shapedata"] = imp.getShapeData(layer, output.width, output.height);
+		//added for : border and radius
+		output["shapedata"] = imp.getShapeData(layer, output.width, output.height, filter);
+		
+		var filter = [
+			'bgColor',
+			'bgGradient',
+		];
+		
+		for(var k in output["shapedata"]){
+			if(filter.indexOf(k) > -1) delete output["shapedata"][k];
+		}
+		
 		
 	}
 

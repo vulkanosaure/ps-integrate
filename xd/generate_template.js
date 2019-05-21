@@ -10,7 +10,6 @@ imp = {...imp, ...require('./constantes.js')};
 imp = {...imp, ...require('./utils.js')};
 
 
-// var generate_template = function(items, tpl_id, config)
 async function generate_template(items, tpl_id, config)
 {
 	trace("generate_template ("+tpl_id+")");
@@ -82,6 +81,10 @@ async function generate_template(items, tpl_id, config)
 	
 	if(layoutFile){
 		
+		recLayoutData(items, null);
+		
+		imp.recTransformLvl(items, null, items);
+		
 		imp.tpl_reset();
 		baseIndent = configLayout.file.base_indent;
 		await rec(items, null, 0, "layout");
@@ -117,7 +120,6 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
-		//for(var i=0; i<len; i++){
 		for(var i=len - 1; i>=0; i--){
 			
 			var item = items[i];
@@ -135,7 +137,6 @@ async function generate_template(items, tpl_id, config)
 			
 			//separator
 			
-			// if(imp.CONTAINERS_TYPE.indexOf(item.type) != -1  || level == 0){
 			if(level == 0){
 				
 				var tplname = level == 0 ? item.name : item.name;
@@ -178,9 +179,10 @@ async function generate_template(items, tpl_id, config)
 			}
 			else if(type == "layout"){
 				
-				// if(items.length > 1)
 				
-				var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
+				// var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
+				var data_str = item.layoutData;
+				
 				
 				if(data_str != undefined){
 					
@@ -256,6 +258,39 @@ async function generate_template(items, tpl_id, config)
 			prevItem = item;
 			if(item[imp.OPT_POSITION] == 'static') prevStaticItem = item;
 			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	function recLayoutData(items, parent)
+	{
+		var len = items.length;
+		var prevItem = null;
+		var prevStaticItem = null;
+		
+		for(var i=len - 1; i>=0; i--){
+			
+			var item = items[i];
+			
+			var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
+			item.layoutData = data_str;
+			
+			var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
+			
+			if(iscontainer){
+				recLayoutData(item.childrens, item);
+			}
+			
+			prevItem = item;
+			if(item[imp.OPT_POSITION] == 'static') prevStaticItem = item;
 		}
 		
 	}

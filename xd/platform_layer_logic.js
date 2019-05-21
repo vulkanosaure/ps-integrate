@@ -362,6 +362,8 @@ function getShapeData(layer, width, height)
 		if(output.borderWidth) output.borderWidth *= 0.5;
 	}
 	
+	
+	
 	return output;
 }
 

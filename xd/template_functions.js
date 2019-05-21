@@ -547,6 +547,59 @@ function getGradientColorStr(obj, colors)
 
 
 
+
+function recTransformLvl(items, parent, root)
+{
+	var len = items.length;
+	for(var i=len - 1; i>=0; i--){
+		
+		var item = items[i];
+		
+		if(item.hasOwnProperty(imp.OPT_LVL)){
+			
+			var lvl = item[imp.OPT_LVL];
+			recTransformLvl_push(root, lvl, item);
+			items.splice(i, 1);
+		}
+		
+		var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
+		if(iscontainer){
+			recTransformLvl(item.childrens, item, root);
+		}
+		
+	}
+}
+
+function cloneTree(items)
+{
+	
+}
+
+
+
+function recTransformLvl_push(root, lvl, item)
+{
+	//todo : if lvl=name
+	if(['0', '1', '2'].indexOf(lvl) > -1){
+		
+		lvl = +lvl;
+		var tab = root;
+		for(var i=0; i<lvl; i++) {
+			tab = tab[0].childrens;
+		}
+		tab.push(item);
+	}
+	
+}
+
+
+
+
+
+
+
+
 module.exports = {
 	TPL_FUNCTIONS,
+	recTransformLvl,
 };

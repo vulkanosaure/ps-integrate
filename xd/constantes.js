@@ -37,6 +37,7 @@ var OPT_EQUALOFFSET = "equaloffset";
 var OPT_DOEXPORT = "doexport";
 var OPT_IMGTYPE = "imgtype";
 var OPT_CLASS = "class";
+var OPT_LVL = "lvl";
 
 
 var OPTIONS_RULES = {};
@@ -48,6 +49,7 @@ OPTIONS_RULES[OPT_BGPARENT] = [0, 1];
 OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_CLASS] = ["*"];
+OPTIONS_RULES[OPT_LVL] = ["*"];
 
 OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
@@ -146,4 +148,5 @@ module.exports = {
 	DOC_WIDTH,
 	DOC_HEIGHT,
 	OPT_CLASS,
+	OPT_LVL,
 };
