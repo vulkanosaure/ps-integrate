@@ -12,10 +12,7 @@
 		},
 		
 		"linebreaks" : {
-			"std" : 0,
-			"before" : 1,
-			"after" : 0,
-			"before_closetag" : 0
+			
 		}
 	},
 
@@ -26,7 +23,7 @@
 			"base_indent" : 0,
 			
 			"linebreaks" : {
-				"std" : 2
+				
 			}
 		}
 	},
@@ -38,9 +35,7 @@
 			"sass_indent" : true,
 			
 			"linebreaks" : {
-				"std" : 1,
-				"before" : 1,
-				"after" : 1
+				
 			}
 		}
 	},

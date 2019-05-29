@@ -10,7 +10,7 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 	
 	let folder = await createFolderStructure(basepath, path);
 	
-	trace('saveLayer imgtype : '+imgtype);
+	trace('saveLayer path : '+path+', imgtype : '+imgtype);
 	if(!imgtype) imgtype = 'png';
 	
 	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png

@@ -4,14 +4,11 @@ var PREFIX_LENGTH = PREFIX.length;
 
 var TYPE_GFX = "img";
 var TYPE_TEXT = "txt";
-var TYPE_BTN = "btn";
-var TYPE_BTNC = "btnc";
 var TYPE_CONTAINER = "cont";
 var TYPE_SHAPE = "shape";
 
-var CONTAINERS_TYPE = [TYPE_CONTAINER, TYPE_BTNC];
-var EXPORTS_TYPE = [TYPE_GFX, TYPE_BTN];
-var BTNS_TYPE = [TYPE_BTN, TYPE_BTNC];
+var CONTAINERS_TYPE = [TYPE_CONTAINER];
+var EXPORTS_TYPE = [TYPE_GFX];
 
 
 
@@ -38,10 +35,13 @@ var OPT_DOEXPORT = "doexport";
 var OPT_IMGTYPE = "imgtype";
 var OPT_CLASS = "class";
 var OPT_LVL = "lvl";
+var OPT_TAG = "tag";
 
+
+var list_tags = ["a", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"];
 
 var OPTIONS_RULES = {};
-OPTIONS_RULES[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_BTN, TYPE_BTNC, TYPE_CONTAINER, TYPE_SHAPE];
+OPTIONS_RULES[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_CONTAINER, TYPE_SHAPE];
 OPTIONS_RULES[OPT_PATH] = "*";
 OPTIONS_RULES[OPT_FILENAME] = new RegExp("^(?!.*\.png$).*");
 OPTIONS_RULES[OPT_NAME] = new RegExp(".*(?<!(\.png)|(\.jpg))$", "i");	//not working yet
@@ -50,6 +50,7 @@ OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_CLASS] = ["*"];
 OPTIONS_RULES[OPT_LVL] = ["*"];
+OPTIONS_RULES[OPT_TAG] = list_tags;
 
 OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
@@ -62,12 +63,13 @@ OPTIONS_RULES[OPT_IMGTYPE] = ["png", "svg", "svg-inline"];
 
 //if only value found : add property=value
 var OPTIONS_SHORCUTS = {};
-OPTIONS_SHORCUTS[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_BTN, TYPE_BTNC, TYPE_CONTAINER, TYPE_SHAPE];
+OPTIONS_SHORCUTS[OPT_TYPE] = [TYPE_GFX, TYPE_TEXT, TYPE_CONTAINER, TYPE_SHAPE];
 OPTIONS_SHORCUTS[OPT_LAYOUT_X] = ["left", "right"];
 OPTIONS_SHORCUTS[OPT_LAYOUT_Y] = ["top", "bottom"];
 OPTIONS_SHORCUTS[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_SHORCUTS[OPT_DIRECTION] = ["row", "col"];
 OPTIONS_SHORCUTS[OPT_DOEXPORT] = ["!export"];
+OPTIONS_SHORCUTS[OPT_TAG] = list_tags;
 
 //keywords with special meaning
 var OPTIONS_SHORCUTS2 = {};
@@ -110,13 +112,10 @@ module.exports = {
 	PREFIX_LENGTH,
 	TYPE_GFX,
 	TYPE_TEXT,
-	TYPE_BTN,
-	TYPE_BTNC,
 	TYPE_CONTAINER,
 	TYPE_SHAPE,
 	CONTAINERS_TYPE,
 	EXPORTS_TYPE,
-	BTNS_TYPE,
 	OPT_TYPE,
 	OPT_PATH,
 	OPT_FILENAME,
@@ -134,6 +133,7 @@ module.exports = {
 	OPT_HEIGHT,
 	OPT_EQUALOFFSET,
 	OPT_DOEXPORT,
+	OPT_TAG,
 	OPT_IMGTYPE,
 	OPTIONS_RULES,
 	OPTIONS_SHORCUTS,

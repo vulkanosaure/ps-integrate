@@ -8,8 +8,6 @@ var PREFIX = file_constantes.PREFIX;
 var OPTIONS_RULES = file_constantes.OPTIONS_RULES;
 var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
-var TYPE_BTN = file_constantes.TYPE_BTN;
-var TYPE_BTNC = file_constantes.TYPE_BTNC;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
 var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
 var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
@@ -94,11 +92,6 @@ function check_error_layername(name, parentItem)
 function check_error_item(name, item, parent, listitems)
 {
 	var output = [];
-	if(item.type != TYPE_GFX && item.type != TYPE_TEXT){
-		if(item.parent != null && item.parent.type == TYPE_BTNC){
-			output.push(getErrorObject("Only '"+TYPE_GFX+"' and '"+TYPE_TEXT+"' are allowed in '"+TYPE_BTNC+"'", getItemStructureStr(item), name));
-		}
-	}
 	
 	trace('imp.TYPE_SHAPE : '+imp.TYPE_SHAPE);
 	trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);

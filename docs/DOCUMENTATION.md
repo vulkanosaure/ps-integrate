@@ -35,26 +35,23 @@ The name of the file to be exported, don't include the file extension
 
 *__note__ : only png export is handled at the moment*
 
-*If not specified, and ID will be automatically generated.*
+*If not specified, an ID will be automatically generated.*
 
 #### name
 The name of the element, used template generation.
 
-*If not specified, and ID will be automatically generated.*
+*If not specified, an ID will be automatically generated.*
 
 #### bgparent
 - **1**
 - **0**
 Defines a graphic element to be passed to the parent. 
-This is mandatory for 1 child of an element of type 'btnc'
 *Only available for type img*
 
 #### doexport
 - **1**
 - **0**
-Defines a graphic element to be passed to the parent. 
-This is mandatory for 1 child of an element of type 'btnc'
-*Only available for type img*
+deprecated : for reusability, but should probably disapear soon
 
 #### imgtype
 
@@ -97,7 +94,12 @@ Forces all the img childrens of the container to be exported at the size of the 
 *Only available for type container*
 
 #### class
+deprecated : selon le reformatage reusability, à voir
 Attributes an additionnal class (in addition to the name), and stop browsing nested element inside.
+
+#### tag
+override the default tag used
+Possible values : "a", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"
 
 
 
@@ -112,7 +114,7 @@ set name = item
 - **!export**
 set doexport = 0
 - **special values (can be set without props)**
-left, right, top, bottom, row, col, cont, img, btn, btnc, txt
+left, right, top, bottom, row, col, cont, img, txt
 - **centerx, centery, center** 
 layoutx=center, layouty=center or both
 - **svg/png (XD only)** 
@@ -149,14 +151,6 @@ Informations of font, size, color, leading, align will be collected for the temp
 
 #### Container (cont)
 A container is a group of other element, and will not be exported directly. It will be used by the template system to manage  integration.
-
-#### Button (btn)
-A button is considered as a graphic, but will be treated accordingly by the template system.
-
-#### Button container (btnc)
-Simillar to a button, but it can contain children of element of type 'text' and 'img' only. 
-*See option 'btnc' for details*
-
 
 
 

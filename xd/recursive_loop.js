@@ -32,7 +32,6 @@ const file_constantes = require('./constantes.js');
 imp = {...imp, ...file_constantes};
 var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
 var EXPORTS_TYPE = file_constantes.EXPORTS_TYPE;
-var BTNS_TYPE = file_constantes.BTNS_TYPE;
 var OPT_TYPE = file_constantes.OPT_TYPE;
 var OPT_PATH = file_constantes.OPT_PATH;
 var OPT_FILENAME = file_constantes.OPT_FILENAME;
@@ -52,8 +51,6 @@ var OPT_EQUALOFFSET = file_constantes.OPT_EQUALOFFSET;
 var OPT_DOEXPORT = file_constantes.OPT_DOEXPORT;
 var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
-var TYPE_BTN = file_constantes.TYPE_BTN;
-var TYPE_BTNC = file_constantes.TYPE_BTNC;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
 var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
 var EXPORT_FOLDER_IMG = file_constantes.EXPORT_FOLDER_IMG;
@@ -130,7 +127,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 		if (type != "") {
 
 			var item = create_item(layer, name, type, parentItem, level, i, params);
-			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", btnc : " + item.btnc + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
 
 			var errors = check_error_item(name, item);
 			
@@ -276,8 +273,11 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		
 	}
 	
+	if (has_option(name, imp.OPT_FILENAME)) {
+		output[imp.OPT_FILENAME] = get_value_option(name, imp.OPT_FILENAME);
+	}
+	else output[OPT_FILENAME] = output[OPT_NAME];
 	
-	output[OPT_FILENAME] = output[OPT_NAME];
 
 	var bounds = getBounds(layer, type);
 	var bounds_l = imp.getBoundsLocal(layer, type);
@@ -588,15 +588,18 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	let tag;
-	if(type == imp.TYPE_BTN) tag = 'a';
-	else if(type == imp.TYPE_BTNC) tag = 'div';
-	else if(type == imp.TYPE_CONTAINER) tag = 'div';
+	if(type == imp.TYPE_CONTAINER) tag = 'div';
 	else if(type == imp.TYPE_GFX && output[imp.OPT_IMGTYPE]=='svg-inline') tag = 'svg';
 	else if(type == imp.TYPE_GFX) tag = 'div';
 	else if(type == imp.TYPE_SHAPE) tag = 'div';
 	else if(type == imp.TYPE_TEXT) tag = 'p';
 	else throw new Error('type unknown : '+type);
-	output.tag = tag;
+	output[imp.OPT_TAG] = tag;
+	
+	if (has_option(name, imp.OPT_TAG)) {
+		output[imp.OPT_TAG] = get_value_option(name, imp.OPT_TAG);
+	}
+	
 	
 	
 	
@@ -622,14 +625,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			if(!parentItem.hasOwnProperty("p_bottom")) parentItem["p_bottom"] = p_bottom;
 			else if(p_bottom < parentItem["p_bottom"]) parentItem["p_bottom"] = p_bottom;
 			
-			/* 
-			if(parentItem.name=="test-bulle"){
-				trace('parentItem["p_left"] : '+parentItem["p_left"]);
-				trace('parentItem["p_top"] : '+parentItem["p_top"]);
-				trace('parentItem["p_right"] : '+parentItem["p_right"]);
-				trace('parentItem["p_bottom"] : '+parentItem["p_bottom"]);
-			}
-			 */
 			
 		}
 		

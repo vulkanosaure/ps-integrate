@@ -69,6 +69,10 @@ async function convertTemplate(path, params)
 		var regexp = new RegExp("{{"+k+"}}", "g");
 		output = output.replace(regexp, params[k]);
 	}
+	
+	var regexp = new RegExp("{{.+?}}", "g");
+	output = output.replace(regexp, "");
+	
 	return output;
 }
 

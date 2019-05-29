@@ -68,6 +68,10 @@ TPL_FUNCTIONS["html"] = {
 	},
 	
 	
+	
+	
+	
+	
 	getLayoutData : function (item, parent, prevItem, isLayerOfType, config, configLayout)
 	{
 		trace('item.position : '+item.position);
@@ -211,8 +215,11 @@ TPL_FUNCTIONS["html"] = {
 				else{
 					
 					var alignParent = (parent && parent[imp.OPT_ALIGN_ITEMS]);
-					if(value2 != 0 && !alignParent) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
-					if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+					
+					if(parent){
+						if(value2 != 0 && !alignParent) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
+						if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+					}
 				}
 				
 				
@@ -285,7 +292,15 @@ TPL_FUNCTIONS["html"] = {
 		//paddings
 		if(item["p_left"] > 0) propsModel["p_left"] = { name: 'padding-left', sufix: 'px' };
 		if(item["p_top"] > 0) propsModel["p_top"] = { name: 'padding-top', sufix: 'px' };
-		if(item["p_right"] > 0) propsModel["p_right"] = { name: 'padding-right', sufix: 'px' };
+		if(item["p_right"] > 0){
+			
+			//if more padding right than left, 
+			//we consider it's because the content doesn't fill up the line
+			let value = item["p_right"];
+			if(value > item["p_left"]) value = item["p_left"];
+			propsModel["p_right"] = { name: 'padding-right', value: value, sufix: 'px' };
+		}
+		
 		if(item["p_bottom"] > 0) propsModel["p_bottom"] = { name: 'padding-bottom', sufix: 'px' };
 		
 		

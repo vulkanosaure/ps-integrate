@@ -139,25 +139,29 @@ async function generate_template(items, tpl_id, config)
 			
 			if(level == 0){
 				
-				var tplname = level == 0 ? item.name : item.name;
-				var templateprefix = (level == 0) ? "-big" : "-small";
-				var str = await imp.convertTemplate(path_tpl + type + "/separator"+templateprefix+".txt", {name: tplname});
-				
-				var nbline;
-				
+				//linebreak before (root) comment
 				if(imp.get_tpl_content() != ""){
-					nbline = (level == 0) ? 2 : linebreaks.before;
-					imp.tpl_br(nbline, indent, 1.5);
+					imp.tpl_br(4, indent, 1.5);
 				}
 				
+				var str = await imp.convertTemplate(path_tpl + type + "/separator.txt", {name: item.name});
 				
 				//allow separator for
 				if(type=='main' && level <= 0) imp.tpl_add_block(str, indent);
 				else if(type=='layout' && level <= 1) imp.tpl_add_block(str, indent);
 				
-				//linebreak after comment
-				nbline = (level == 0) ? 1 : linebreaks.after;
-				imp.tpl_br(nbline, indent, 1);
+				//linebreak after (root) comment
+				imp.tpl_br(1, indent, 1);
+			}
+			
+			//linebreak level > 0
+			else{
+				
+				var nbline = 1;
+				if(type == "main"){
+					if(prevItem || len == 1) nbline = 0;
+				}
+				imp.tpl_br(nbline, indent);
 			}
 			
 			
@@ -171,6 +175,7 @@ async function generate_template(items, tpl_id, config)
 				var linebreak = (!closeTags || iscontainer);
 				imp.tpl_add_block(itemCode, indent, linebreak);
 				
+				//close tag (one line item, non container)
 				if(closeTags && !iscontainer){
 					var str = imp.getCloseTag(closeTagsConfig, itemCode);
 					if(str != "") imp.tpl_add_line(str, 0);
@@ -216,11 +221,6 @@ async function generate_template(items, tpl_id, config)
 				
 			}
 			
-			//line breaks
-			let nblinebreak = linebreaks.std;
-			if(type == "layout" && configLayout.file.sass_indent && !iscontainer) nblinebreak = 0;
-			
-			if(nblinebreak > 0) imp.tpl_br(nblinebreak, indent, 2);
 			
 			
 			if(type == "main" && textFormatFile && item.type == imp.TYPE_TEXT){
@@ -241,12 +241,10 @@ async function generate_template(items, tpl_id, config)
 			
 			
 			//close tags
-			
 			if(type == "main" && closeTags && iscontainer){
 				
 				var str = imp.getCloseTag(closeTagsConfig, itemCode);
 				if(str != ""){
-					if(linebreaks.before_closetag > 0) imp.tpl_br(linebreaks.before_closetag, indent, 4);
 					imp.tpl_add_line(str, indent);
 				}
 			}
@@ -336,6 +334,7 @@ async function generate_template(items, tpl_id, config)
 		data["x"] = item.position[0];
 		data["y"] = item.position[1];
 		
+		
 		for(var k in item){
 			if(ignore.indexOf(k) == -1){
 				//trace("- add property : "+k);
@@ -344,44 +343,33 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
-		
 		var str = "";
-		let tplFile = item.type;
+		let tplFile = "elmt";
 		
-		if(item.type == imp.TYPE_CONTAINER){
-			
-		}
-		else if(item.type == imp.TYPE_GFX){
-			
+		if(item.type == imp.TYPE_GFX){
 			if(!item.has_graphic && item[imp.OPT_IMGTYPE] == 'svg-inline'){
-				
-				let tpl = 'pathdata';
 				data['data'] = item.pathdata.data;
-				//.bgcolor
-				tplFile = tpl;
+				tplFile = 'pathdata';
 			}
-			
 		}
 		else if(item.type == imp.TYPE_TEXT){
 			
 			let textformat_id = imp.getTextFormatID(item.textdata, configConfig);
 			let text_color = imp.getTextColorID(item.textdata, config.colors);
 			let text_align = "text_" + item.textdata.halign;
-			classes.push(textformat_id);
+			classes.unshift(textformat_id);
 			
 			//eventuellement une boucle sur textdata ici
-			data["text"] = item.textdata.text;
-			data["text_br"] = item.textdata.text.replace(/\\n/g, "<br />");
 			
-		}
-		else if(item.type == imp.TYPE_SHAPE){
+			let text = item.textdata.text;
+			//text = text.replace(/\\n/g, "<br />");	//phothoshop ? (introduire constante/conditions)
+			text = text.replace(/\n/g, "<br />");
+			data["content"] = text;
 			
-		}
-		else if(imp.BTNS_TYPE.indexOf(item.type) != -1){	
-			tplFile = TYPE_BTN;
 		}
 		
 		
+		//maybe deprecated
 		if(item[imp.OPT_CLASS] && classes.indexOf(item[imp.OPT_CLASS]) == -1){
 			classes.push(item[imp.OPT_CLASS]);
 		}
@@ -396,12 +384,7 @@ async function generate_template(items, tpl_id, config)
 		var str2 = await imp.convertTemplate(path_tpl + "main/"+tplFile+".txt", data);
 		str += str2;
 		
-		
-		
-		var common_post_str = await imp.convertTemplate(path_tpl + "main/common-post.txt", data);
-		if(common_post_str != ""){
-			str += "\n" + common_post_str;
-		}
+		// str += "\n" + common_post_str;
 		
 			
 		return str;

@@ -23,15 +23,6 @@ TODO
 	fill it, test it
 	
 	
-____________________________________________________
-PRIORITE
-
-test réel
-finaliser gestion shape
-bgparent pour shape (ex button)
-sass
-
-	
 ____________________________
 Bitmap vs SVG												OK
 multiplication by 2											OK
@@ -82,7 +73,6 @@ margin vs padding (COLLAPSING MARGIN)														+1	OK
 	in both case : permettre des definitions de padding
 	génériser leur traitement avec celui des margin
 	
-	FAIT LA TOP ONLY, voir si LEFT necessary		TODO
 	
 
 position abs													OK
@@ -101,7 +91,62 @@ if flex defined																				OK
 	check if order correct (positionnement maquete), else send ERROR
 	x, y check selon direction
 	
+
 	
+si une image contient une shadow => export décalé									OK
+	example : page cours, video player
+	il faudrait désactiver la shadow avt l'export
+	mettre en place page de test avec :
+		- shadow img, export PARENT							OK
+		- shadow img, export img							OK
+		- shadow parent, child img, export parent
+		- shadow parent, child img, export child
+		- shadow img, export img, shadow disabled
+	idem border
+	
+	
+	
+	
+
+CENTER																							OK
+	=> override text-align											OK
+	si textcentery => line-height => parent height(px, not 100%)	OK
+	doc XD avec tableau de cas : 3 colonne, pour centerx, centery, center
+	
+	------------------
+	text : text-center => remove margin auto						OK
+	voir pourquoi no height sur centery								OK
+	to make margin-top/bottom : auto (vertical center) works		OK
+		=> parent.display = flex
+	centery => no margin auto auto									OK
+	
+	
+	
+	
+OPT lvl															OK
+	default : lvl nested (if sass)
+	lvl=0 => root
+	lvl=1, ou name item => a la fin de ce node
+	nécéssite :
+		- de duppliquer la structure pour pouvoir la modifier (optionel car non réutiliser apres)
+		- lors du parsing layout : déplacer les elements au sein de la structure
+	règle : interdir definition lvl if name = &
+	or if sass not enabled
+	
+	TOTEST : 
+		IMBRICATION
+		set name (instead of number)
+
+	
+
+enchainement de tab dans le contenu d'un Text					OK
+	ex : page step masterclass => "Tu recevras une alerte"
+	arrive qd ya des linebreaks
+	
+	
+	
+
+
 selection								
 	2eme commande pour prendre la selection en cours
 	il faut implémenter lecture du name de l'artboard
@@ -112,6 +157,7 @@ selection
 linebreak template
 	add line break after opening
 	only if nbchildren > 1
+	
 	
 remontée des propriétés
 	color
@@ -156,17 +202,6 @@ font-size : EM / REM
 	
 	
 
-CENTER																							OK
-	=> override text-align											OK
-	si textcentery => line-height => parent height(px, not 100%)	OK
-	doc XD avec tableau de cas : 3 colonne, pour centerx, centery, center
-	
-	------------------
-	text : text-center => remove margin auto						OK
-	voir pourquoi no height sur centery								OK
-	to make margin-top/bottom : auto (vertical center) works		OK
-		=> parent.display = flex
-	centery => no margin auto auto									OK
 	
 	
 
@@ -186,16 +221,23 @@ FLEX CENTER
 	
 	reflechir aux autres valeurs de justify-content (space-between...)
 	
+	addition : if item flex row & centerx => axis-align=center
+	
+	
+	
+	
 
-	
-addition ;:
-	if item flex row & centerx => axis-align=center
-	
-	
 shorthand: flex: 0 0 auto
 	est mis trop souvent
 	(sur un container)
 	le mettre avec plus de parcimonie
+	
+property extensible
+	ou qqchose du genre
+	pour flex : 0 0 auto
+	
+	
+	
 	
 	
 	
@@ -227,14 +269,9 @@ text.styleRange
 
 	
 
-class reusability
-	class=""
-	if class defined, don't define css rendering property
-	if class defined, don't recurse inside (partie pris)
-	
-	if already defined on page
-		still recurse, for html
-		don't redefined in CSS
+GLOBAL REUSABILITY
+
+	REMOVE CLASS (deprecated)
 		
 	template ! (file avec specific sub elemnt)
 	on se qu'on casse le nesting ? 7
@@ -247,7 +284,23 @@ class reusability
 		text : exception car on veut juste le text
 		
 		available placeholder : text, text_value, img
+		if unavailable : define width, height, dashed red border
+		
+	on continue à récurse dedans 
+		on continue à récurse dedans (on veut extraire les img)
+		par contre on gènere ni HTML ni CSS
+		mais on récupère des propriétés obtenus lors de la recursion
+		
+	mener cette reflexion en parallèle avec "on page reusability"
 	
+	
+	
+	
+ON PAGE REUSABILITY
+	1er bug : same filename export
+	filename permet de contourner, mais ça serait bien d'automatiser
+
+
 	
 	
 	
@@ -259,16 +312,7 @@ placeholder
 	
 	
 	
-si une image contient une shadow => export décalé									OK
-	example : page cours, video player
-	il faudrait désactiver la shadow avt l'export
-	mettre en place page de test avec :
-		- shadow img, export PARENT							OK
-		- shadow img, export img							OK
-		- shadow parent, child img, export parent
-		- shadow parent, child img, export child
-		- shadow img, export img, shadow disabled
-	idem border
+
 
 	
 
@@ -279,16 +323,8 @@ paramtres sur border :
 	chercher si on a des correspondances CSS (priorité sur externe interne middle)
 
 	
-	
-	
-software, export SVG bug si shadow déclaré, 
-	avec x, y > 0
-	et si case disabled
-	ajoute une margin
-	chercher sur google
-	
-	google: xd createRenditions shadow bug4
-	
+
+
 	
 	
 sizing understanding
@@ -301,39 +337,20 @@ sizing understanding
 	% ?
 	
 	
+	
 height text often too big in browser					+1
 	=> margin-top too much
 	rechercher
 	
-	
-1 line html with class=""
-	doesn't print in one line
+
 	
 	
-property extensible
-	ou qqchose du genre
-	pour flex : 0 0 auto
-	
-	
-	
-OPT lvl
-	default : lvl nested (if sass)
-	lvl=0 => root
-	lvl=1, ou name item => a la fin de ce node
-	nécéssite :
-		- de duppliquer la structure pour pouvoir la modifier (optionel car non réutiliser apres)
-		- lors du parsing layout : déplacer les elements au sein de la structure
-	règle : interdir definition lvl if name = &
-	or if sass not enabled
-	
-	TOTEST : 
-		IMBRICATION
-		set name (instead of number)
+
 	
 	
 	
 	
-paddings														TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITIONS
+paddings														OK, TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITIONS
 	only for container column
 	only nb children > 1		NO
 	toute les paddings, (horrizontal, top, bottom)
@@ -342,10 +359,6 @@ paddings														TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITIONS
 	
 	
 
-
-enchainement de tab dans le contenu d'un Text
-	ex : page step masterclass => "Tu recevras une alerte"
-	arrive qd ya des linebreaks
 	
 	
 	
@@ -366,24 +379,15 @@ Dimensions abs
 ____________________________
 
 img vs background-image
-
-bgparent positionné
-	exemple : page prof v2 / menu
+	eventuellement géré en tpl ?
 
 
-
-refactoring template
+refactoring template										OK
 	supprimer les multiples template
 	
 	
-override markup
+override markup												OK
 	OPT_TAG = 'tag'
-	shorcut prefix <a-- 
-	
-
-casser le nesting css par endroit
-	attention a l'algo &,
-	qui se base sur les parents, mais la parent displaylist != parent sass	
 	
 	
 offset negatif sur un item
@@ -405,7 +409,21 @@ padding							OK, TOCHECK
 remove textformat				? plus trop sur
 bug shadow						OK
 lvl								OK
+
 refactoring tpl & btn/btnc
+	remove btn/btnc (doc too)		OK
+	remove max tpl file				OK
+	simplify separator ?			OK
+
+line spacing (refactoring too)		OK
+
+reusability (plus gros morceaux)
 style range (after)
 
+____________________________
+why masterclass item, no padding side					normal
+remove measured coordinate of root elmt					OK
+masterclass item1 => egaliser le padding right			OK
+linebreak
 
+2 css to put back (components / pages)
