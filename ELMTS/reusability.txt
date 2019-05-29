@@ -1,0 +1,201 @@
+une template est un bout de code avec
+	tag custom
+	attributs custom
+	content custom
+	
+closeTag sera a gérer spécifiquement
+
+dans un objet avec tpl
+	on continue la récursion interieur :
+		- img doivent etre exportées
+		- propriétés doivent être extraites (populate {{placeholder}}
+		
+		
+structurer l'interieur d'un elmt réutilisable (coté XD)
+	si onpage : structure parfaite 
+	sinon : pas très importante, faut juste que les infos dynamiques soit mise en évidence
+		on verra plus tard comment
+		
+		
+le css correspondant au positionnement doit etre généré
+	margin
+	top/left/abs
+	flex:0 0 auto
+	
+on trouvera un moyen générique de différencier : positionnement / autre
+	et de subscribe à l'un et/ou l'autre
+	
+
+	
+__________________________________________________________________
+différences entre global / onpage
+	onpage doit définir le modèle au moins une fois (définir les sous-calques)
+	onpage doit se limiter à ce que le plugin sait faire
+	
+global, je lui dit de chercher le code ds un fichier texte tout fait	
+	mais qd mm de scanner le contenu et de populate les placeholder
+	
+onpage, je lui dit de créer tout normalement
+	pour les suivant:
+	je veux encore la structure html (naturellement issue des calques)
+	NOTE : ça sous-entend que pour du onpage : on est OBLIGE de bien tout nommer les sous infos ?
+	ou alors sur du onpage : 
+		je sauvegarde en mémoire le code HTML du première element
+		donc plutot que de créer les element suivants en fct de la structure XD, il reprend le code
+		CA A L'AVANTAGE D'ETRE GENERIQUE AVEC LE GLOBAL
+		
+	donc, on créerait dynamiquement, in-memory, une template
+		
+		
+	
+
+	
+donc ds la maquete, j'ai un bouton
+
+
+
+NIVEAU MARQUAGE :
+	ps--*elmt--tpl=btn
+	
+	si tpl btn existe : global
+	sinon : onpage
+	
+	pour le onpage : le 1er element doit etre complètement définit
+	les suivant : seules les infos dynamique doivent etre trouvable
+	
+	
+	
+PROCESS TPL_CREATION :
+	on rencontre un tpl
+		on a ni fichier tpl
+		ni in-memory tpl
+		=> alors mode "TPL_CREATION"
+		
+	on scanne normalement l'objet
+	on divise sa définition CSS en 2
+		name => pour le positionement
+		tpl => pour le reste
+		
+	le HTML est construit normalement
+		
+	on enregistre le bout de code complet in-memory
+		comment on sait ou placer les placeholder
+		
+	on peut pas simplement dire : tous les texts et toutes les imgs sont des placeholder
+	ph=?
+	ph aurait un double sens :
+		- en mode création d'une ONPAGE TPL : il signale la création d'un placeholder sur le TPL
+		- en mode lecture (GLOBAL/ONPAGE) : il signale une valeur du model à associer au placeholder TPL
+	
+	
+	
+	
+
+PROCESS TPL_READING
+	le process de lecture est sensé être identique GLOBAL et ONPAGE
+	le CSS ne définit que le positionnement
+	le HTML est copié de la template
+	la recursion est en mode "TPL_READING" => ne recherche que des placeholder à associer au template
+	
+	
+	
+	
+	
+	
+PLACEHOLDER
+
+de quelles natures peuvent etre les placeholder ?
+- img (path)
+- svg-inline
+- txt
+
+- color (moins important)
+
+si je place sur une image
+-ph=icon1
+implicitement, on sait que {{icon1}} va valoir le PATH
+
+mais sur une shape mnt : 
+-ph=color1
+comment on sait que {{color1}} va valoir la COLOR et pas la TRANSPARENCE (exemple merdique mais bon)
+
+
+comment on caracterise un placeholder
+- elmt only ?
+- elmt + id ? (path, value)
+
+implications :
+mode creation : en placant ph=x sur image : je dis que le placeholder devra etre dans src
+donc telle quel : on ne permet d'enregistrer qu'une valeur de placeholder par element, qu'on choisit arbitrairement par défaut
+j'pense que c'est ok
+
+
+
+______________________
+IMG SRC va etre important
+	pour les path image, comment on gere ?
+	avec la methode background-img actuelle : 
+	"population" du placeholder se fait coté CSS
+	c'est un vrai problème !!!
+
+conflit type=img /tag=img
+	type=img est important à garder
+	enlever les raccourci sur type (on s'en sert jms kazi)
+	tag=img
+	=> genere un traitement particulier => ajoute attribut src
+	traitement générique des attributs.
+
+
+	
+	
+	
+	
+DEFINITION DES INFOS DYNAMIQUES
+
+	permettre un max de confort
+	possibilité de définir le nom du placeholder
+		--ph=zer
+		sinon utiliser le type {{img}} {{txt}}
+		
+	idéalement, pas avoir a nommer ps-- les container 
+		qd on est ds un tpl => recursion auto si type = cont
+		
+	
+
+
+
+
+	
+__________________________________________________________________
+EXEMPLES
+
+______________________
+boutons avec icones (global reusability)
+
+<button class="btn {{classes}}">
+	{{text}}
+	<img src="{{path_img}} />
+</button>
+
+=> fichier avec plusieurs boutons, mais différentes texts / icons
+
+
+<div class="onpage_btn">
+	<p class="textformat">hello</p>
+</div>
+
+
+
+
+______________________
+puces de la frise (on page reusability)
+
+
+
+______________________
+structure complexe (on page / puis global)
+
+
+
+
+

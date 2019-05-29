@@ -274,7 +274,7 @@ GLOBAL REUSABILITY
 	REMOVE CLASS (deprecated)
 		
 	template ! (file avec specific sub elemnt)
-	on se qu'on casse le nesting ? 7
+	et ce qu'on casse le nesting ? 7
 	de quoi on peut avoir besoin a l'interieur ?
 		text (multiple ?)
 		img
@@ -283,7 +283,7 @@ GLOBAL REUSABILITY
 		ne pas le styler ds le css
 		text : exception car on veut juste le text
 		
-		available placeholder : text, text_value, img
+		available placeholders : text, text_value, img
 		if unavailable : define width, height, dashed red border
 		
 	on continue à récurse dedans 
