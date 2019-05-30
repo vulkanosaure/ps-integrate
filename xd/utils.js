@@ -185,14 +185,31 @@ function encodeNameParentRef(name, parentItem)
 }
 
 
-function isItemExport(item, type)
+function isItemExport(item, type, templateMode)
 {
 	return (
 		imp.EXPORTS_TYPE.indexOf(type) != -1 
 		&& item[imp.OPT_DOEXPORT]
 		&& item[imp.OPT_IMGTYPE] != 'svg-inline'
+		&& (templateMode != 'read' || item[imp.OPT_PLACEHOLDER])
 	);
 }
+
+
+
+function getParentsProperty(item, prop)
+{
+	let count = 0;
+	while(item.parent){
+		if(item.parent[prop]) return item.parent[prop];
+		count++;
+		item = item.parent;
+		if(count > 99) break;
+	}
+	trace('count : '+count);
+	return null;
+}
+
 
 
 
@@ -210,4 +227,5 @@ module.exports = {
 	decodeNameParentRef,
 	encodeNameParentRef,
 	isItemExport,
+	getParentsProperty,
 };

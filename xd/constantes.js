@@ -36,6 +36,9 @@ var OPT_IMGTYPE = "imgtype";
 var OPT_CLASS = "class";
 var OPT_LVL = "lvl";
 var OPT_TAG = "tag";
+var OPT_TPL = "tpl";
+var OPT_TPLMODEL = "tplmodel";
+var OPT_PLACEHOLDER = "ph";
 
 
 var list_tags = ["a", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"];
@@ -51,6 +54,9 @@ OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_CLASS] = ["*"];
 OPTIONS_RULES[OPT_LVL] = ["*"];
 OPTIONS_RULES[OPT_TAG] = list_tags;
+OPTIONS_RULES[OPT_TPL] = ["*"];
+OPTIONS_RULES[OPT_TPLMODEL] = ["*"];
+OPTIONS_RULES[OPT_PLACEHOLDER] = ["*"];
 
 OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
@@ -149,4 +155,7 @@ module.exports = {
 	DOC_HEIGHT,
 	OPT_CLASS,
 	OPT_LVL,
+	OPT_TPL,
+	OPT_TPLMODEL,
+	OPT_PLACEHOLDER,
 };

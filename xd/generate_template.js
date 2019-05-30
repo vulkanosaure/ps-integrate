@@ -128,10 +128,13 @@ async function generate_template(items, tpl_id, config)
 			tracerec("item : "+item.name+", parentname : "+parentname, level);
 			
 			var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
+			var readMode = (item[imp.OPT_TPL]) ? true : false;
+			
 			
 			var indent = baseIndent;
 			if(type == "main" && configMain.indent) indent += level;
 			if(type == "layout" && configLayout.file.sass_indent) indent += level;
+			
 			
 			
 			
@@ -161,6 +164,11 @@ async function generate_template(items, tpl_id, config)
 				if(type == "main"){
 					if(prevItem || len == 1) nbline = 0;
 				}
+				else if(type == "layout"){
+					if(item[imp.OPT_TPLMODEL]) nbline += 1;
+					else if(item[imp.OPT_TPL]) nbline = 0;
+				}
+				
 				imp.tpl_br(nbline, indent);
 			}
 			
@@ -169,56 +177,56 @@ async function generate_template(items, tpl_id, config)
 			
 			if(type == "main"){
 				
-				//instanciation / integration code
-				itemCode = await getItemCode(item, parent, textFormatFile, layoutFile);
 				
-				var linebreak = (!closeTags || iscontainer);
+				//define selector type
+				
+				if(item.generatedName && item.countTag <= 2 && configLayout.file.sass_indent){
+					item.selectorType = 'tag';
+				}
+				else item.selectorType = 'classname';
+				
+				
+				//transform text
+				
+				if(item.type == imp.TYPE_TEXT){
+					var text = item.textdata.text;
+					//text = text.replace(/\\n/g, "<br />");	//phothoshop ? (introduire constante/conditions)
+					text = text.replace(/\n/g, "<br />");
+					item.textdata.text = text;
+				}
+				
+				
+				
+				
+				//instanciation / integration code
+				
+				if(item[imp.OPT_TPL]){
+					
+					var values = imp.getPlaceHolderValues(item, configConfig);
+					itemCode = await getTemplateCode(item, values);
+				}
+				else{
+					itemCode = await getItemCode(item, parent, textFormatFile, layoutFile);
+				}
+				
+				
+				var linebreak = (!closeTags || iscontainer || readMode);
 				imp.tpl_add_block(itemCode, indent, linebreak);
 				
+				
 				//close tag (one line item, non container)
-				if(closeTags && !iscontainer){
+				if(closeTags && !iscontainer && !readMode){
 					var str = imp.getCloseTag(closeTagsConfig, itemCode);
 					if(str != "") imp.tpl_add_line(str, 0);
 				}
 				
 			}
-			else if(type == "layout"){
+			else if(type == "layout" && item.layoutData != undefined){
 				
-				
-				// var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
-				var data_str = item.layoutData;
-				
-				
-				if(data_str != undefined){
-					
-					var selector;
-					
-					if(item.selectorType == 'classname'){
-						var layout_id = imp.getLayoutID(item);
-						selector = layout_id;
-						if(configLayout.file.sass_indent){
-							selector = imp.encodeNameParentRef(selector, parent);
-						}
-						if(selector.charAt(0) != '&') selector = '.' + selector;
-					}
-					else if(item.selectorType == 'tag'){
-						selector = '& > ' + item.tag;
-						if(item.countTag > 1){
-							let positionTag = item.positionTag + 1;
-							selector += ':nth-child(' + positionTag + ')';
-						}
-					}
-					
-					
-					
-					
-					
-					var data = {"selector" : selector, "layout_data" : data_str};
-					var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
-					
-					imp.tpl_add_block(str, indent);
-				}
-				
+				//print 1st selector
+				var data = item.layoutData[0];
+				var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
+				imp.tpl_add_block(str, indent);
 			}
 			
 			
@@ -234,14 +242,21 @@ async function generate_template(items, tpl_id, config)
 				}
 			}
 			
-			if(iscontainer){
+			
+			
+			if(iscontainer && 
+				(item['templateMode'] != 'read')
+			){
 				
 				await rec(item.childrens, item, level + 1, type);
 			}
 			
 			
+			
+			
+			
 			//close tags
-			if(type == "main" && closeTags && iscontainer){
+			if(type == "main" && closeTags && iscontainer && !readMode){
 				
 				var str = imp.getCloseTag(closeTagsConfig, itemCode);
 				if(str != ""){
@@ -252,6 +267,35 @@ async function generate_template(items, tpl_id, config)
 				var str = "}";
 				imp.tpl_add_line(str, indent);
 			}
+			
+			
+			//linebreak (after tpl definition)
+			if(type == "layout"){
+				var nbline = 0;
+				if(item[imp.OPT_TPLMODEL]) nbline += 2;
+				imp.tpl_br(nbline, indent);
+			}
+			
+			
+			
+			
+			
+			
+			//print other selector if any (position after render, mode write)
+			
+			if(type == "layout" && item.layoutData != undefined){
+				
+				var len = item.layoutData.length;
+				for(var j=1;j<len;j++){
+					
+					var data = item.layoutData[j];
+					var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
+					imp.tpl_add_block(str, indent);
+				}
+			}
+			
+			
+			
 			
 			prevItem = item;
 			if(item[imp.OPT_POSITION] == 'static') prevStaticItem = item;
@@ -278,8 +322,41 @@ async function generate_template(items, tpl_id, config)
 			
 			var item = items[i];
 			
-			var data_str = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
-			item.layoutData = data_str;
+			var data = imp.TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
+			
+			var sass_indent = configLayout.file.sass_indent;
+			var closeTag = !sass_indent;
+			var selectorName = imp.getSelector(item, parent, sass_indent);
+			
+			
+			item.layoutData = [];
+			var data_str;
+			
+			
+			
+			//write (render + position)
+			if(item[imp.OPT_TPLMODEL]){
+				
+				var selectorTemplate = '.' + item[imp.OPT_TPLMODEL];
+				data_str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag, 'render');
+				item.layoutData.push({ selector: selectorTemplate, layout_data: data_str });
+				
+				data_str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, true, 'position');
+				item.layoutData.push({ selector: selectorName, layout_data: data_str });
+				
+			}
+			//read (position only)
+			else if(item[imp.OPT_TPL]){
+				
+				data_str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag, 'position');
+				item.layoutData.push({ selector: selectorName, layout_data: data_str });
+			}
+			//normal (both mixed)
+			else{
+				data_str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag);
+				item.layoutData.push({ selector: selectorName, layout_data: data_str });
+			}
+			
 			
 			var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
 			
@@ -297,7 +374,28 @@ async function generate_template(items, tpl_id, config)
 	
 	
 
-
+	async function getTemplateCode(item, values)
+	{
+		var idtemplate = item[imp.OPT_TPL];
+		var templateData = await imp.getTemplateData(idtemplate);
+		
+		var layout_id = imp.getLayoutID(item);
+		
+		var classes = [];
+		if(item.selectorType == 'classname') classes.push(layout_id);
+		
+		var data = {};
+		
+		var strclasses = classes.join(' ');
+		data["classes"] = strclasses;
+		data = Object.assign(data, values);
+		
+		var output = await imp.convertTemplateFromStr(templateData, data);
+		
+		return output;
+	}
+	
+	
 	
 	async function getItemCode(item, parent, _tffile, _layoutfile)
 	{
@@ -316,14 +414,8 @@ async function generate_template(items, tpl_id, config)
 		};
 		
 		var classes = [];
-		classes.push(layout_id);
-		
-		
-		if(item.generatedName && item.countTag <= 2 && configLayout.file.sass_indent){
-			classes.splice(0, 1);
-			item.selectorType = 'tag';
-		}
-		else item.selectorType = 'classname';
+		if(item[imp.OPT_TPLMODEL]) classes.push(item[imp.OPT_TPLMODEL]);
+		if(item.selectorType == 'classname') classes.push(layout_id);
 		
 		
 		if(!_tffile && item.type == imp.TYPE_TEXT){
@@ -344,27 +436,25 @@ async function generate_template(items, tpl_id, config)
 		
 		
 		var str = "";
-		let tplFile = "elmt";
+		var tplFile = "elmt";
+		var attributes = [];
 		
 		if(item.type == imp.TYPE_GFX){
 			if(!item.has_graphic && item[imp.OPT_IMGTYPE] == 'svg-inline'){
-				data['data'] = item.pathdata.data;
-				tplFile = 'pathdata';
+				
+				attributes.push({ key: 'width', value: item.width });
+				attributes.push({ key: 'height', value: item.height });
+				data["content"] = '<path d="'+ item.pathdata.data +'"/>';
 			}
 		}
 		else if(item.type == imp.TYPE_TEXT){
 			
-			let textformat_id = imp.getTextFormatID(item.textdata, configConfig);
-			let text_color = imp.getTextColorID(item.textdata, config.colors);
-			let text_align = "text_" + item.textdata.halign;
+			var textformat_id = imp.getTextFormatID(item.textdata, configConfig);
+			var text_color = imp.getTextColorID(item.textdata, config.colors);
+			var text_align = "text_" + item.textdata.halign;
 			classes.unshift(textformat_id);
 			
-			//eventuellement une boucle sur textdata ici
-			
-			let text = item.textdata.text;
-			//text = text.replace(/\\n/g, "<br />");	//phothoshop ? (introduire constante/conditions)
-			text = text.replace(/\n/g, "<br />");
-			data["content"] = text;
+			data["content"] = item.textdata.text;
 			
 		}
 		
@@ -375,16 +465,22 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
-		let strclasses = '';
+		var strclasses = '';
 		if(classes && classes.length > 0){
 			strclasses = ' class="'+classes.join(' ')+'"';
 		}		
 		data["classes"] = strclasses;
 		
+		
+		var strattributes = '';
+		if(attributes && attributes.length > 0){
+			var tabattrs = attributes.map(obj => obj.key+'="'+obj.value+'"');
+			strattributes = ' '+tabattrs.join(' ');
+		}
+		data["attributes"] = strattributes;
+		
 		var str2 = await imp.convertTemplate(path_tpl + "main/"+tplFile+".txt", data);
 		str += str2;
-		
-		// str += "\n" + common_post_str;
 		
 			
 		return str;

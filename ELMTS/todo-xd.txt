@@ -205,25 +205,6 @@ font-size : EM / REM
 	
 	
 
-FLEX CENTER
-
-	maybe reformat alignitems into cross-align (align-items)
-	
-	cross-align=x
-	scross-align=x
-	axis-align=x
-	saxis-align=x
-	
-	cross-value
-	scross-value
-	axis-value
-	saxis-value
-	
-	reflechir aux autres valeurs de justify-content (space-between...)
-	
-	addition : if item flex row & centerx => axis-align=center
-	
-	
 	
 	
 
@@ -344,9 +325,7 @@ height text often too big in browser					+1
 	
 
 	
-	
 
-	
 	
 	
 	
@@ -356,10 +335,33 @@ paddings														OK, TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITI
 	toute les paddings, (horrizontal, top, bottom)
 	tester la collapsing margin, si conflit
 	
-	
+	si all children (static, !bgparent) are centerx => pas de padding x
+		bosser sur les btns facebook google twitch
+		pourquoi ne ce centre ni avec margin:auto, ni avec text-align
+		
 	
 
+
+FLEX CENTER
+
+	maybe reformat alignitems into cross-align (align-items)
 	
+	cross-align=x
+	scross-align=x
+	axis-align=x
+	saxis-align=x
+	
+	cross-value
+	scross-value
+	axis-value
+	saxis-value
+	
+	reflechir aux autres valeurs de justify-content (space-between...)
+	
+	addition : if item flex row & centerx => axis-align=center
+	
+		
+
 	
 	
 	
@@ -396,7 +398,11 @@ offset negatif sur un item
 	
 	
 ____________________________
-DEBUG PS
+GESTION ERRORS
+
+	if try to set svg-inline on a img => error
+	cannot export a line as an img (maybe shape in general?)
+
 
 
 

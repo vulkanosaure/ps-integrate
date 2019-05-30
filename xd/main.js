@@ -2,7 +2,7 @@ var imp = {};
 
 const file_platform_export = require('./platform_export.js');
 var get_tpl_ids = file_platform_export.get_tpl_ids;
-var getPluginFolder = file_platform_export.getPluginFolder;
+var getDataFolder = file_platform_export.getDataFolder;
 var deleteFolder = file_platform_export.deleteFolder;
 imp = {...imp, ...file_platform_export};
 imp = {...imp, ...require('./dialog.js')};
@@ -74,7 +74,7 @@ async function exportFunction(selection, documentRoot)
 	
 	var settings = {
 		overwrite: true,
-		destination: await getPluginFolder(),
+		destination: await getDataFolder(),
 		indexTpl: 1,
 	};
 	
@@ -109,7 +109,7 @@ async function main(settings, rootNode, documentRoot)
 	var tpl_id = 'html';
 	console.log('tpl_id : '+tpl_id);
 	
-	let folderPlugin = await fs.getPluginFolder();
+	let folderPlugin = await imp.getPluginFolder();
 	var config_str = await imp.loadFilePath(folderPlugin, "templates/" + tpl_id + "/config.json");
 	config_str = config_str.substr(1);
 	var config = JSON.parse(config_str);
@@ -133,9 +133,12 @@ async function main(settings, rootNode, documentRoot)
 		boundsRoot : boundsRoot,
 	};
 	
+	let paramscopy = {
+		templateMode : '',
+	};
 	
 	
-	await recursive_loop(rootNode, null, null, 0, params);
+	await recursive_loop(rootNode, null, null, 0, params, paramscopy);
 	
 	
 	

@@ -71,6 +71,8 @@ PROCESS TPL_CREATION :
 		ni in-memory tpl
 		=> alors mode "TPL_CREATION"
 		
+		
+	AU CURRENT LEVEL :
 	on scanne normalement l'objet
 	on divise sa définition CSS en 2
 		name => pour le positionement
@@ -93,12 +95,30 @@ PROCESS TPL_CREATION :
 
 PROCESS TPL_READING
 	le process de lecture est sensé être identique GLOBAL et ONPAGE
-	le CSS ne définit que le positionnement
+	le CSS ne définit que le positionnement (SUR LE CURRENT LEVEL)
 	le HTML est copié de la template
 	la recursion est en mode "TPL_READING" => ne recherche que des placeholder à associer au template
 	
+	export :
+		si reading : uniquement les ph
+		sinon : tout
+		si !reading || ph
 	
 	
+	if mode == read on CURRENT LEVEL
+		only positionning
+		
+	if mode == read
+		no recursion (css and html)
+	
+	if mode == write
+		everything normal i guess
+	
+	if create
+		=> both separately
+	if read
+		=> only position
+		
 	
 	
 	
@@ -164,13 +184,21 @@ DEFINITION DES INFOS DYNAMIQUES
 
 
 
+__________________________________________________________________
+TODO
+
+img src
+mode write, template data creation
+	
+	
 
 	
 __________________________________________________________________
 EXEMPLES
+tout tester en global puis onpage (boolean pour disable le test d'existence)
 
 ______________________
-boutons avec icones (global reusability)
+boutons avec icones
 
 <button class="btn {{classes}}">
 	{{text}}
@@ -185,15 +213,23 @@ boutons avec icones (global reusability)
 </div>
 
 
+linesep (cobra zero)
+	(img = root elmt, not child)
+	ne plus utiliser !exportées
+	ps--*sep1--tpl=linesep
+	
 
 
-______________________
-puces de la frise (on page reusability)
+masterclass-item
+	1 img fixe
+	1 img dyn
+	plusieurs texts
+
+
+puces de la frise
 
 
 
-______________________
-structure complexe (on page / puis global)
 
 
 

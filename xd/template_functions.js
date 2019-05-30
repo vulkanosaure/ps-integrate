@@ -163,7 +163,6 @@ TPL_FUNCTIONS["html"] = {
 				
 				
 				if(lx == "center"){
-					// propsModel["margin_global"] = { name: 'margin', value: value, prefix:'auto 0 auto ', sufix:'px' };
 					
 					//ce scenario n'a aucun sens
 					throw new Error('ce scenario n\'a aucun sens');
@@ -348,27 +347,18 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["width"] = {sufix : "px", br : false};
 			propsModel["height"] = {sufix : "px"};
 			
-			var path = item.path;
-			if(item.path != "") path += "/";
-			path += item.filename;
-			var path_noext = path;
-			
-			if(!item[imp.OPT_IMGTYPE]) item[imp.OPT_IMGTYPE] = 'png';
-			var ext = item[imp.OPT_IMGTYPE];
-			path += "." + ext;
-			
 			propsModel["background-image"] = {
-				value : path, prefix : "url('" + config.prefix_images, sufix : "')"
+				value : config.prefix_images + item.fullpath, prefix : "url('", sufix : "')"
 			};
-			
 			
 			//retina
 			if(config.retina){
-				var path = config.prefix_images + path_noext;
 				var w = Math.round(item['width'] * 0.5);
 				var h = Math.round(item['height'] * 0.5);
 				
-				propsModel["retinaBG"] = {value : "@include retinaBg('"+path+"', "+w+"px, "+h+"px)", raw:true, comment:true};
+				propsModel["retinaBG"] = {
+					value : "@include retinaBg('"+config.prefix_images + item.fullpath_noext+"', "+w+"px, "+h+"px)", raw:true, comment:true
+				};
 			}
 			
 		}
@@ -449,19 +439,7 @@ TPL_FUNCTIONS["html"] = {
 			
 		}
 		
-		if(false && parent && parent.name == "divcentery"){
-			
-			for(var i in propsModel){
-				let obj = propsModel[i];
-				trace(' - '+i+' : '+obj.value);
-				for(var k in obj){
-					trace('**** --- '+k+' : '+obj[k]);
-				}
-				trace('ùùùù -- '+item[i]);
-			}
-			
-			throw new Error('debug');
-		}
+		
 		
 		
 		//______________________________
@@ -521,17 +499,13 @@ TPL_FUNCTIONS["html"] = {
 		data = imp.transformMargins(data, 'margin');
 		data = imp.transformMargins(data, 'padding');
 		
+		return data;
 		
-		
-		
-		var closeTag = !configLayout.file.sass_indent;
-		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'}, closeTag);
-		
-		
-		return str;
 	}
 
 }
+
+
 
 
 function getGradientColorStr(obj, colors)

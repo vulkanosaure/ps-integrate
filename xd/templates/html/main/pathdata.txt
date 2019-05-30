@@ -1,1 +1,0 @@
-<svg{{classes}} width="{{width}}" height="{{height}}"><path d="{{data}}"/>

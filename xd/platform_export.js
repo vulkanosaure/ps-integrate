@@ -8,6 +8,7 @@ var trace = file_debug.trace;
 
 async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, config) {
 	
+	// trace('createFolderStructure basepath : '+basepath+', path : '+path);
 	let folder = await createFolderStructure(basepath, path);
 	
 	trace('saveLayer path : '+path+', imgtype : '+imgtype);
@@ -93,19 +94,23 @@ function fileExist(path, basepath) {
 }
 
 
-async function getPluginFolder()
+async function getDataFolder()
 {
 	let folder = await fs.getDataFolder();
 	return folder;
 }
-
+async function getPluginFolder()
+{
+	let folder = await fs.getPluginFolder();
+	return folder;
+}
 
 
 
 async function get_tpl_ids(path, basepath) {
 	
 	var output = [];
-	const scriptFileDirectory = await fs.getPluginFolder();
+	const scriptFileDirectory = await getPluginFolder();
 	
 	// var folder = new Folder(scriptFileDirectory + "/templates");
 	var folder = await scriptFileDirectory.getEntry('templates');
@@ -204,8 +209,16 @@ async function deleteFolderRec(folder)
 async function loadFilePath(folderObj, path)
 {
 	// trace("loadFilePath("+path+")");
-	let file = await folderObj.getEntry(path);
-	let content = await file.read();
+	
+	let content = null;
+	
+	try{
+		let file = await folderObj.getEntry(path);
+		content = await file.read();
+	}
+	catch(error){
+		trace('error : '+error);
+	}
 	return content;
 }
 
@@ -241,6 +254,7 @@ function loadResource(file)
 
 module.exports = {
 	get_tpl_ids,
+	getDataFolder,
 	getPluginFolder,
 	deleteFolder,
 	saveLayer,

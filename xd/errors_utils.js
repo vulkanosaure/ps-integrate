@@ -28,7 +28,7 @@ imp = {...imp, ...file_constantes};
 
 function check_error_layername(name, parentItem)
 {
-	trace('check_error_layername('+name+')');
+	// trace('check_error_layername('+name+')');
 	var output = [];
 	
 	var len = PREFIX.length;
@@ -59,7 +59,7 @@ function check_error_layername(name, parentItem)
 			var rule = OPTIONS_RULES[k];
 			
 			var type = typeof rule;
-			trace('type : '+type+', rule : '+rule+', value : '+value);
+			// trace('type : '+type+', rule : '+rule+', value : '+value);
 			
 			//regex
 			if(rule instanceof RegExp){
@@ -93,8 +93,8 @@ function check_error_item(name, item, parent, listitems)
 {
 	var output = [];
 	
-	trace('imp.TYPE_SHAPE : '+imp.TYPE_SHAPE);
-	trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);
+	// trace('imp.TYPE_SHAPE : '+imp.TYPE_SHAPE);
+	// trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);
 	
 	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
 		output.push(getErrorObject("Only containers can set options '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
@@ -186,7 +186,7 @@ function getItemStructureStr(item)
 	while(true){
 		if(item == null) break;
 		tab.push(item.name);
-		trace("item.name : "+item.name+", parent : "+item.parent);
+		// trace("item.name : "+item.name+", parent : "+item.parent);
 		secu++;
 		item = item.parent;
 		if(secu == 20) return;

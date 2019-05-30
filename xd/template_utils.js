@@ -1,5 +1,6 @@
 var imp = {};
 imp = {...imp, ...require('./platform_export.js')};
+imp = {...imp, ...require('./utils.js')};
 
 const fs = require("uxp").storage.localFileSystem;
 
@@ -62,9 +63,16 @@ function get_tpl_content()
 async function convertTemplate(path, params)
 {
 	// trace('convertTemplate : '+path);
-	let folderPlugin = await fs.getPluginFolder();
+	let folderPlugin = await imp.getPluginFolder();
 	var output = await imp.loadFilePath_cache(folderPlugin, path);
+	return convertTemplateFromStr(output, params);
 	
+}
+
+
+function convertTemplateFromStr(str, params)
+{
+	var output = str;
 	for(var k in params){
 		var regexp = new RegExp("{{"+k+"}}", "g");
 		output = output.replace(regexp, params[k]);
@@ -72,7 +80,6 @@ async function convertTemplate(path, params)
 	
 	var regexp = new RegExp("{{.+?}}", "g");
 	output = output.replace(regexp, "");
-	
 	return output;
 }
 
@@ -243,9 +250,34 @@ function transformMargins(data, _property, nameItem="")
 
 
 
+/*
+filters can be : "position", "render"
+*/
 
-function propsToString(props, options, closeTag=true)
+var filterProps = {
+	'position' : [
+		'display',
+		'position',
+		'margin',
+		'margin-left',
+		'margin-right',
+		'margin-top',
+		'margin-bottom',
+		'left',
+		'top',
+		'right',
+		'bottom',
+		'translate',
+		'flex',
+	],
+	
+};
+
+
+function propsToString(props, options, closeTag, filter)
 {
+	if(closeTag == undefined) closeTag = true;
+	
 	if(options.multiline == undefined) options.multiline = false;
 	if(options.quoteProperty == undefined) options.quoteProperty = "double";	//none-simple-double
 	if(options.separator == undefined) options.separator = ",";
@@ -272,19 +304,25 @@ function propsToString(props, options, closeTag=true)
 		
 		str += obj.data;
 		
-		//exception, no line break
-		if(i == 'height' && propsOK.indexOf('width') > -1){
-			tab[tab.length - 1] += '; '+str;
-		}
-		else if(i == 'width' && propsOK.indexOf('height') > -1){
-			tab[tab.length - 1] += '; '+str;
-		}
-		else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
-			tab[tab.length - 1] += '; '+str;
-		}
-		else tab.push(str);
 		
-		propsOK.push(i);
+		if(filterProp(i, filter)){
+			
+			//exception, no line break
+			if(i == 'height' && propsOK.indexOf('width') > -1){
+				tab[tab.length - 1] += '; '+str;
+			}
+			else if(i == 'width' && propsOK.indexOf('height') > -1){
+				tab[tab.length - 1] += '; '+str;
+			}
+			else if((i == 'top' || i=='bottom') && (props['left'] || props['right'])){
+				tab[tab.length - 1] += '; '+str;
+			}
+			else{
+				tab.push(str);
+			}
+			propsOK.push(i);
+		}
+		
 	}
 
 	var str;
@@ -298,6 +336,20 @@ function propsToString(props, options, closeTag=true)
 	if(closeTag) output += "\n}";
 	return output;
 }
+
+
+
+function filterProp(prop, filter)
+{
+	if(!filter) return true;
+	
+	var isPosition = filterProps['position'].indexOf(prop) > -1;
+	var typeProp = isPosition ? 'position' : 'render';
+	return typeProp == filter;
+	
+}
+
+
 
 
 
@@ -391,6 +443,89 @@ function checkSassVariable(value, variables, type)
 
 
 
+function getSelector(item, parent, sass_indent)
+{
+	var selector;	
+	if(item.selectorType == 'classname'){
+		var layout_id = getLayoutID(item);
+		selector = layout_id;
+		if(sass_indent){
+			selector = imp.encodeNameParentRef(selector, parent);
+		}
+		if(selector.charAt(0) != '&') selector = '.' + selector;
+	}
+	else if(item.selectorType == 'tag'){
+		selector = '& > ' + item.tag;
+		if(item.countTag > 1){
+			var positionTag = item.positionTag + 1;
+			selector += ':nth-child(' + positionTag + ')';
+		}
+	}
+	return selector;
+}
+
+
+
+
+async function getTemplateData(id)
+{
+	//read from filesystem
+	
+	var path = 'templates/html/main/tpl/' + id + '.txt';
+	var folderPlugin = await imp.getPluginFolder();
+	var output = await imp.loadFilePath_cache(folderPlugin, path);
+	
+	if(output) return output;
+	
+	
+	//todo read from memory
+	
+	
+	
+	//throw error
+	throw new Error('template "'+id+'" wasnt found');
+	
+	return null;
+}
+
+
+
+
+function getPlaceHolderValues(item, config)
+{
+	var output = {};
+	getPlaceHolderValues_rec(item, config, output);
+	return output;
+}
+function getPlaceHolderValues_rec(parent, config, values)
+{
+	var len = parent.childrens ? parent.childrens.length : 0;
+	for(var i=0; i<len; i++){
+		
+		var item = parent.childrens[i];
+		
+		if(item[imp.OPT_PLACEHOLDER]){
+			
+			var key = item[imp.OPT_PLACEHOLDER];
+			var value;
+			if(item.type == imp.TYPE_TEXT) value = item.textdata.text;
+			else if(item.type == imp.TYPE_GFX){
+				value = config.prefix_images + item.fullpath;
+			}
+			
+			values[key] = value;
+		}
+		
+		var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
+		if(iscontainer) getPlaceHolderValues_rec(item, config, values);
+	}
+}
+
+
+
+
+
+
 module.exports = {
 	mapProps,
 	propsToString,
@@ -402,9 +537,13 @@ module.exports = {
 	tpl_br,
 	get_tpl_content,
 	convertTemplate,
+	convertTemplateFromStr,
 	getLayoutID,
 	getTextFormatID,
 	getTextColorID,
 	getVarname,
 	getColorProperty,
+	getSelector,
+	getTemplateData,
+	getPlaceHolderValues,
 };

@@ -72,7 +72,8 @@ var saveLayer = file_platform_export.saveLayer;
 
 
 
-async function recursive_loop(container, parentItem, parentLayer, level, params) {
+async function recursive_loop(container, parentItem, parentLayer, level, params, paramscopy) {
+	
 	tracerec("recursive_loop", level);
 	
 
@@ -122,17 +123,29 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
-		tracerec('type : '+type+', parentitemname : '+parentitemname, level);
+		// tracerec('type : '+type+', parentitemname : '+parentitemname, level);
 
 		if (type != "") {
 
 			var item = create_item(layer, name, type, parentItem, level, i, params);
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
-
+			
+			
+			let isTemplate = ((item[imp.OPT_TPL]) || (imp.getParentsProperty(item, imp.OPT_TPL)));
+			let isTemplateModel = ((item[imp.OPT_TPLMODEL]) || (imp.getParentsProperty(item, imp.OPT_TPLMODEL)));
+			
+			let templateMode = '';
+			if(isTemplate) templateMode = 'read';
+			else if(isTemplateModel) templateMode = 'write';
+			item['templateMode'] = templateMode;
+			
 			var errors = check_error_item(name, item);
 			
 			
 			tracerec('errors.length : '+errors.length, level);
+			tracerec('isTemplate : '+isTemplate+', isTemplateModel : '+isTemplateModel, level);
+			tracerec('templateMode : '+templateMode, level);
+			
 			if (errors.length > 0) {
 				tracerec("errors : " + errors, level);
 				params.listErrors = params.listErrors.concat(errors);
@@ -142,18 +155,21 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 				if (isRoot) params.listItem.push(item);
 				else parentItem.childrens.push(item);
 			}
+			
+			
+			
 
-			if (imp.isItemExport(item, type)) {
+			if (imp.isItemExport(item, type, templateMode)) {
 				
 				item.has_graphic = true;
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if (item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
-				//tracerec("path : "+path, level);
+				tracerec("path : "+path, level);
 				
 				
 				if ((params.overwrite || !fileExist(path, params.exportPath)) && imp.ENABLE_EXPORT) {
-
+					
 					var bounds = null;
 					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
 						bounds = parentItem.bounds;
@@ -161,6 +177,8 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 
 					let imgtype = item[imp.OPT_IMGTYPE];
 					await saveLayer(layer, path, params.exportPath, false, bounds, imgtype, params.config);
+					
+					
 				}
 
 			}
@@ -178,7 +196,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 			var newParentItem = parentItem;
 			if (CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
 
-			await recursive_loop(layer, newParentItem, parentLayer, level + 1, params);
+			await recursive_loop(layer, newParentItem, parentLayer, level + 1, params, paramscopy);
 			
 		}
 		
@@ -188,11 +206,15 @@ async function recursive_loop(container, parentItem, parentLayer, level, params)
 	
 	
 	
-	let errors2 = imp.check_error_item2(parentItem);
-	tracerec('errors2.length : '+errors2.length, level);
-	if (errors2.length > 0) {
-		tracerec("errors2 : " + errors2, level);
-		params.listErrors = params.listErrors.concat(errors2);
+	let isParentTemplate = (imp.getParentsProperty(item, imp.OPT_TPL));
+	tracerec("isParentTemplate : " + isParentTemplate, level);
+	
+	if(!isParentTemplate){
+		let errors2 = imp.check_error_item2(parentItem);
+		if (errors2.length > 0) {
+			tracerec("errors2 : " + errors2, level);
+			params.listErrors = params.listErrors.concat(errors2);
+		}
 	}
 	
 	
@@ -241,7 +263,28 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	//class (reusability)
+	//template
+	if (has_option(name, imp.OPT_TPL)) {
+		var val = get_value_option(name, imp.OPT_TPL);
+		output[imp.OPT_TPL] = val;
+	}
+	if (has_option(name, imp.OPT_TPLMODEL)) {
+		var val = get_value_option(name, imp.OPT_TPLMODEL);
+		output[imp.OPT_TPLMODEL] = val;
+	}
+	
+	
+	
+	//placeholders
+	if (has_option(name, imp.OPT_PLACEHOLDER)) {
+		var val = get_value_option(name, imp.OPT_PLACEHOLDER);
+		output[imp.OPT_PLACEHOLDER] = val;
+	}
+	
+	
+	
+	
+	//class (reusability) (deprecated)
 	if (has_option(name, imp.OPT_CLASS)) {
 		var val = get_value_option(name, imp.OPT_CLASS);
 		output[imp.OPT_CLASS] = val;
@@ -283,8 +326,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	var bounds_l = imp.getBoundsLocal(layer, type);
 	output.bounds = bounds;
 	
-	tracerec('bounds l : '+bounds_l.map(item => Math.round(item)).join(', '), level);
-	tracerec('bounds g : '+bounds.map(item => Math.round(item)).join(', '), level);
+	// tracerec('bounds l : '+bounds_l.map(item => Math.round(item)).join(', '), level);
+	// tracerec('bounds g : '+bounds.map(item => Math.round(item)).join(', '), level);
 	
 		
 	var x1 = Math.round(bounds[0]);
@@ -349,6 +392,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	else if(type == imp.TYPE_GFX){
 		output[imp.OPT_IMGTYPE] = imp.get_natural_imgtype(layer);
+		if(!output[imp.OPT_IMGTYPE]) output[imp.OPT_IMGTYPE] = 'png';
 	}
 	
 	
@@ -481,6 +525,22 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		}
 		output[OPT_PATH] += path;
 	}
+	
+	
+	
+	if(type == imp.TYPE_GFX){
+		var path = output.path;
+		if(path != "") path += "/";
+		path += output.filename;
+		output.fullpath_noext = path;
+		path += "." + output[imp.OPT_IMGTYPE];
+		
+		output.fullpath = path;
+	}
+	
+	
+	
+	
 	
 	if (type == TYPE_CONTAINER) {
 		output[OPT_EQUALOFFSET] = get_value_option_safe(name, OPT_EQUALOFFSET);

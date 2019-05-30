@@ -25,7 +25,7 @@ function get_natural_type(layer)
 {
 	var kind = layer.constructor.name;
 	var fillkind = layer.fill ? layer.fill.constructor.name : '';
-	trace('kind : '+kind+', fillkind : '+fillkind);
+	// trace('kind : '+kind+', fillkind : '+fillkind);
 	
 	// trace('get_natural_type');
 	if(layer.isContainer) return TYPE_CONTAINER;
@@ -126,7 +126,7 @@ function getTextData(layer)
 	else if(ti.textAlign == 'center') textdata.halign = 'center';
 	else if(ti.textAlign == 'right') textdata.halign = 'right';
 	else textdata.halign = 'left';
-	trace('textdata.halign : '+textdata.halign);
+	// trace('textdata.halign : '+textdata.halign);
 	
 	var ranges = ti.styleRanges;
 	textdata.styleRanges = [];
