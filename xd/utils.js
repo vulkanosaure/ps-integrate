@@ -158,6 +158,7 @@ function handleShorcuts(name)
 	}
 	//fix
 	name = name.replace("=*", "=");
+	name = name.replace("=<", "=");
 	
 	
 	return name;
@@ -168,16 +169,20 @@ function handleShorcuts(name)
 
 function decodeNameParentRef(name, parentItem)
 {
-	let parentName = parentItem ? parentItem.name : '';
-	if(name.charAt(0) == "&") name = parentName + name.substr(1);
+	if(name.charAt(0) == "&"){
+		let parentName = '';
+		if(parentItem) parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
+		name = parentName + name.substr(1);
+	}
 	return name;
 }
 
 function encodeNameParentRef(name, parentItem)
 {
 	if(!parentItem) return name;
-	let parentName = parentItem.name;
+	let parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
 	var lenParent = parentName.length;
+	
 	if(name.substr(0, lenParent) == parentName){
 		name = "&" + name.substr(lenParent);
 	}
@@ -189,7 +194,6 @@ function isItemExport(item, type, templateMode)
 {
 	return (
 		imp.EXPORTS_TYPE.indexOf(type) != -1 
-		&& item[imp.OPT_DOEXPORT]
 		&& item[imp.OPT_IMGTYPE] != 'svg-inline'
 		&& (templateMode != 'read' || item[imp.OPT_PLACEHOLDER])
 	);
@@ -206,7 +210,6 @@ function getParentsProperty(item, prop)
 		item = item.parent;
 		if(count > 99) break;
 	}
-	trace('count : '+count);
 	return null;
 }
 

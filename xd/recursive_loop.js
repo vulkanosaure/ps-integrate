@@ -48,7 +48,6 @@ var OPT_POS_Y = file_constantes.OPT_POS_Y;
 var OPT_WIDTH = file_constantes.OPT_WIDTH;
 var OPT_HEIGHT = file_constantes.OPT_HEIGHT;
 var OPT_EQUALOFFSET = file_constantes.OPT_EQUALOFFSET;
-var OPT_DOEXPORT = file_constantes.OPT_DOEXPORT;
 var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
@@ -135,9 +134,19 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			let isTemplateModel = ((item[imp.OPT_TPLMODEL]) || (imp.getParentsProperty(item, imp.OPT_TPLMODEL)));
 			
 			let templateMode = '';
-			if(isTemplate) templateMode = 'read';
-			else if(isTemplateModel) templateMode = 'write';
+			if(isTemplate){
+				templateMode = 'read';
+				item['tplparent'] = isTemplate;
+			}
+			else if(isTemplateModel){
+				templateMode = 'write';
+				item['tplparent'] = isTemplateModel;
+				if(item[imp.OPT_TPLMODEL]) item['tplmodelIndent'] = item.indent;
+				else item['tplmodelIndent'] = imp.getParentsProperty(item, 'tplmodelIndent');
+				tracerec('tplmodelIndent : '+item.tplmodelIndent, level);
+			}
 			item['templateMode'] = templateMode;
+			
 			
 			var errors = check_error_item(name, item);
 			
@@ -185,10 +194,8 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 		}
 		
-		// tracerec('isContainer : '+isContainer, level);
-		let hasClass = (item && item[imp.OPT_CLASS]);
-
-		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1 && !hasClass) {
+		
+		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
 			
 			parentLayer = null;	//never used
 			tracerec("reccc type : " + type, level);
@@ -260,7 +267,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	output[OPT_TYPE] = type;
 	
 	
-	
+	output['indent'] = level;
 	
 	
 	//template
@@ -284,13 +291,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	//class (reusability) (deprecated)
-	if (has_option(name, imp.OPT_CLASS)) {
-		var val = get_value_option(name, imp.OPT_CLASS);
-		output[imp.OPT_CLASS] = val;
-	}
-	
-	
 	//lvl
 	if (has_option(name, imp.OPT_LVL)) {
 		var val = get_value_option(name, imp.OPT_LVL);
@@ -300,19 +300,25 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	//output.layerName = name;
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
-	output[OPT_NAME] = imp.decodeNameParentRef(output[OPT_NAME], parentItem);
 	
-	if (output[OPT_NAME] == "" && output[imp.OPT_CLASS]){
-		output[OPT_NAME] = output[imp.OPT_CLASS];
+	//if &-name and parent.useTag => parent.useTag = false
+	tracerec('useTag : '+(parentItem && parentItem.useTag)+',  : charAt : "'+output[OPT_NAME].charAt(0)+'"');
+	if(parentItem && parentItem.useTag && output[OPT_NAME].charAt(0) == "&"){
+		parentItem.useTag = false;
 	}
 	
+	output[OPT_NAME] = imp.decodeNameParentRef(output[OPT_NAME], parentItem);
+	
+	
+	
 	if (output[OPT_NAME] == "") {
-		// output[OPT_NAME] = "" + type + "-" + getLayerId(app.activeDocument, layer);
-		
-		if(parentItem) output[OPT_NAME] += parentItem.name;
+		if(parentItem){
+			let parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
+			output[OPT_NAME] += parentName;
+		}
 		else output[OPT_NAME] += type;
 		output[OPT_NAME] += '-' + index;
-		output.generatedName = true;
+		output.useTag = true;
 		
 	}
 	
@@ -377,13 +383,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output[OPT_HEIGHT] = Math.round(val * imp.DOC_HEIGHT);
 	}
 	
-	if (has_option(name, OPT_DOEXPORT)) {
-		var val = get_value_option(name, OPT_DOEXPORT);
-		if(val == "!export") val = false;
-		else val = true;
-		output[OPT_DOEXPORT] = val;
-	}
-	else output[OPT_DOEXPORT] = true;
+	
 	
 	
 	if (has_option(name, imp.OPT_IMGTYPE)) {

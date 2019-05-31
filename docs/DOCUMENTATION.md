@@ -48,11 +48,6 @@ The name of the element, used template generation.
 Defines a graphic element to be passed to the parent. 
 *Only available for type img*
 
-#### doexport
-- **1**
-- **0**
-deprecated : for reusability, but should probably disapear soon
-
 #### imgtype
 
 *Only available for type Adobe XD*
@@ -70,6 +65,7 @@ deprecated : for reusability, but should probably disapear soon
 Defines the flow directions of the container (only for type container)
 
 #### alignitems
+(deprecated)
 - **start**
 - **center**
 - **end**
@@ -88,18 +84,33 @@ Similar to the *align-items* property for a flex container
 *When setting this option, position is automaticaly set to abs*
 
 #### equaloffset
+(deprecated)
 - **1**
 - **0**
 Forces all the img childrens of the container to be exported at the size of the container (handy for game sprites)
 *Only available for type container*
 
-#### class
-deprecated : selon le reformatage reusability, à voir
-Attributes an additionnal class (in addition to the name), and stop browsing nested element inside.
-
 #### tag
 override the default tag used
-Possible values : "a", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"
+Possible values : "a", "button", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"
+
+#### tplmodel
+create a new template that can be reused on the same page, with the **tpl** attribute
+
+#### tpl
+attach the element to a template, that can be either :
+- an in-memory template, create on the same document with the **tplmodel** attribute
+- a template in a file of the same name, with the **.txt** extension, located in the **templates/html/main/tpl** folder of the plugin
+
+#### ph (placeholder)
+must be defined inside  a template (**tpl** or **tplmodel**)
+define a dynamic element to be mapped between the template model and the copy
+it can be used for **txt** or **img** type
+for a file **tplmodel**, the {{placeholder}} with the same name must be present for the mapping
+
+
+
+
 
 
 
@@ -111,14 +122,14 @@ set position = absolute
 set bgparent = 1
 - **#item (or *item for XD)**
 set name = item
-- **!export**
-set doexport = 0
 - **special values (can be set without props)**
 left, right, top, bottom, row, col, cont, img, txt
 - **centerx, centery, center** 
 layoutx=center, layouty=center or both
 - **svg/png (XD only)** 
 set type = img, imgtype = svg/png
+- **>tagname** 
+set tag = tagname
 
 
 ## Element types
@@ -154,76 +165,18 @@ A container is a group of other element, and will not be exported directly. It w
 
 
 
-## Templates
-
-A template must have a directory in the ````template```` folder, named by the id of the template.
-
-The folder must have a ````config.json```` file.
-3 subfolders :
-- main
-- layout
-- textformat
-
-
-## Template functions
-
-In the file ````template-functions.jsx````, a new entry must be created in the object ````TPL_FUNCTIONS```` with 2 functions
-
-#### getTextFormatData
-A function that must return the string that will be displayed in ````textformat_data````
-
-#### getLayoutData
-A function that must return the string that will be displayed in ````layout_data````
 
 
 
 
 
 
-#### Template variable
-
-- varname
-- parent_varname
-- text
-- txt_style_id
-- filename
-- width / height
-- name
-- path
-- type
-- x / y
-- textformat
-- textformat_id
-- text_color (class color to be customized in config file or in the form "col_FFFFFF")
-- text_align (class name in the form "text_left")
-- layout
-- layout_id
 
 
-#### Textformat variable
-
-- textformat_id
-- textformat_data
-
-#### Layout variable
-
-- layout_id
-- layout_data
-
-
-#### Config file
-
-TODO
-
-
-
-TODO :
-	- fichier de config.json
-	- expliquer les templates
-	
 	
 #### Settings
 
+PHOTOSHOP :
 - In edit / preferences : set unit and rulers as pixels.
 
 
@@ -245,6 +198,8 @@ To improove performances, disable layer thumbnail in the layer option pannel.
 
 
 #### Useful keyboard shortcuts
+
+##### PHOTOSHOP :
 
 - Ctrl + G 			:	group layers (or layersets)
 - Ctrl + Shift + G	: 	ungroup

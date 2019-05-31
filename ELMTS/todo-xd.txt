@@ -325,7 +325,11 @@ height text often too big in browser					+1
 	
 
 	
-
+SASS nesting and UNNAMED item																	OK
+	if *&-name directly inside a unnamed elmt => ERROR
+	OR : every (direct) childrens of a unnamed element => set lvl = -1
+	OR : if parent of &-name is UNNAMED => name it ! (generated, but force display)				OK
+	
 	
 	
 	
@@ -402,7 +406,9 @@ GESTION ERRORS
 
 	if try to set svg-inline on a img => error
 	cannot export a line as an img (maybe shape in general?)
-
+	if ph defined a templateMode==''
+	tplmodel already defined
+	root has to be named (or auto generated)
 
 
 

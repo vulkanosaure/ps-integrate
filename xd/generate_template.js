@@ -65,7 +65,7 @@ async function generate_template(items, tpl_id, config)
 			var data = {"textformat_id" : textformat_id, "textformat_data" : data_str};
 			var str = await imp.convertTemplate(path_tpl + "textformat/textformat.txt", data);
 			
-			imp.tpl_add_block(str, baseIndent);
+			imp.tpl_add_block(null, str, baseIndent);
 			
 		}
 		
@@ -150,8 +150,8 @@ async function generate_template(items, tpl_id, config)
 				var str = await imp.convertTemplate(path_tpl + type + "/separator.txt", {name: item.name});
 				
 				//allow separator for
-				if(type=='main' && level <= 0) imp.tpl_add_block(str, indent);
-				else if(type=='layout' && level <= 1) imp.tpl_add_block(str, indent);
+				if(type=='main' && level <= 0) imp.tpl_add_block(null, str, indent);
+				else if(type=='layout' && level <= 1) imp.tpl_add_block(null, str, indent);
 				
 				//linebreak after (root) comment
 				imp.tpl_br(1, indent, 1);
@@ -180,7 +180,7 @@ async function generate_template(items, tpl_id, config)
 				
 				//define selector type
 				
-				if(item.generatedName && item.countTag <= 2 && configLayout.file.sass_indent){
+				if(item.useTag && item.countTag <= 2 && configLayout.file.sass_indent){
 					item.selectorType = 'tag';
 				}
 				else item.selectorType = 'classname';
@@ -200,24 +200,40 @@ async function generate_template(items, tpl_id, config)
 				
 				//instanciation / integration code
 				
+				var itemCodeObj = {};
+				
 				if(item[imp.OPT_TPL]){
 					
 					var values = imp.getPlaceHolderValues(item, configConfig);
 					itemCode = await getTemplateCode(item, values);
 				}
 				else{
-					itemCode = await getItemCode(item, parent, textFormatFile, layoutFile);
+					itemCodeObj = await getItemCode(item, parent, textFormatFile, layoutFile);
+					itemCode = itemCodeObj.main;
 				}
 				
 				
 				var linebreak = (!closeTags || iscontainer || readMode);
-				imp.tpl_add_block(itemCode, indent, linebreak);
+				imp.tpl_add_content(item, itemCode, indent, linebreak, true, itemCodeObj.tpl);
+				
+				if(item['templateMode'] == 'write'){
+					trace('check library');
+					trace(imp.templateData[item['tplparent']]);
+				}
+				
 				
 				
 				//close tag (one line item, non container)
 				if(closeTags && !iscontainer && !readMode){
-					var str = imp.getCloseTag(closeTagsConfig, itemCode);
-					if(str != "") imp.tpl_add_line(str, 0);
+					
+					var isClosableTag = imp.LIST_TAGS_NOCLOSE.indexOf(item.tag) == -1;
+					if(isClosableTag){
+						var str = imp.getCloseTag(closeTagsConfig, itemCode);
+						if(str != ""){
+							imp.tpl_add_content(item, str, 0, true, false);
+						}
+					}
+					else imp.tpl_add_content(item, '', 0, true, false);
 				}
 				
 			}
@@ -226,7 +242,7 @@ async function generate_template(items, tpl_id, config)
 				//print 1st selector
 				var data = item.layoutData[0];
 				var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
-				imp.tpl_add_block(str, indent);
+				imp.tpl_add_block(null, str, indent);
 			}
 			
 			
@@ -260,12 +276,12 @@ async function generate_template(items, tpl_id, config)
 				
 				var str = imp.getCloseTag(closeTagsConfig, itemCode);
 				if(str != ""){
-					imp.tpl_add_line(str, indent);
+					imp.tpl_add_content(item, str, indent, true, false);
 				}
 			}
 			if(type == "layout" && configLayout.file.sass_indent){
 				var str = "}";
-				imp.tpl_add_line(str, indent);
+				imp.tpl_add_line(null, str, indent);
 			}
 			
 			
@@ -290,7 +306,7 @@ async function generate_template(items, tpl_id, config)
 					
 					var data = item.layoutData[j];
 					var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
-					imp.tpl_add_block(str, indent);
+					imp.tpl_add_block(null, str, indent);
 				}
 			}
 			
@@ -332,7 +348,7 @@ async function generate_template(items, tpl_id, config)
 			item.layoutData = [];
 			var data_str;
 			
-			
+			trace('item : '+item.name);
 			
 			//write (render + position)
 			if(item[imp.OPT_TPLMODEL]){
@@ -377,11 +393,14 @@ async function generate_template(items, tpl_id, config)
 	async function getTemplateCode(item, values)
 	{
 		var idtemplate = item[imp.OPT_TPL];
-		var templateData = await imp.getTemplateData(idtemplate);
+		var templateDataObj = await imp.getTemplateData(idtemplate);
+		var templateData = templateDataObj.output;
+		var type = templateDataObj.type;
 		
 		var layout_id = imp.getLayoutID(item);
 		
 		var classes = [];
+		if(type == 'memory') classes.push(item[imp.OPT_TPL]);
 		if(item.selectorType == 'classname') classes.push(layout_id);
 		
 		var data = {};
@@ -390,15 +409,19 @@ async function generate_template(items, tpl_id, config)
 		data["classes"] = strclasses;
 		data = Object.assign(data, values);
 		
-		var output = await imp.convertTemplateFromStr(templateData, data);
+		var output = await imp.convertTemplateFromStr(templateData, data, false);
 		
 		return output;
 	}
 	
 	
 	
+	
+	
 	async function getItemCode(item, parent, _tffile, _layoutfile)
 	{
+		var output = {};
+		
 		//instanciation + integration
 		
 		
@@ -415,6 +438,7 @@ async function generate_template(items, tpl_id, config)
 		
 		var classes = [];
 		if(item[imp.OPT_TPLMODEL]) classes.push(item[imp.OPT_TPLMODEL]);
+		
 		if(item.selectorType == 'classname') classes.push(layout_id);
 		
 		
@@ -435,8 +459,12 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
-		var str = "";
-		var tplFile = "elmt";
+		//autoclose tag
+		data['autoclose'] = '';
+		if(imp.LIST_TAGS_NOCLOSE.indexOf(item.tag) > -1) data['autoclose'] = ' /';
+		
+		
+		
 		var attributes = [];
 		
 		if(item.type == imp.TYPE_GFX){
@@ -454,20 +482,27 @@ async function generate_template(items, tpl_id, config)
 			var text_align = "text_" + item.textdata.halign;
 			classes.unshift(textformat_id);
 			
-			data["content"] = item.textdata.text;
-			
+			data["content"] = item.textdata.text;	
 		}
 		
 		
-		//maybe deprecated
-		if(item[imp.OPT_CLASS] && classes.indexOf(item[imp.OPT_CLASS]) == -1){
-			classes.push(item[imp.OPT_CLASS]);
+		
+		//add attribute for specific balise
+		//todo : gérer ça plus proprement plus tard
+		
+		if(item.tag == 'a') attributes.push({key: 'href', value: '#'});
+		else if(item.tag == 'button') attributes.push({key: 'type', value: 'button'});
+		else if(item.tag == 'img'){
+			attributes.push({key: 'src', value: configConfig.prefix_images + item.fullpath});
 		}
+		
+		
+		
 		
 		
 		var strclasses = '';
 		if(classes && classes.length > 0){
-			strclasses = ' class="'+classes.join(' ')+'"';
+			strclasses = classes.join(' ');
 		}		
 		data["classes"] = strclasses;
 		
@@ -479,11 +514,54 @@ async function generate_template(items, tpl_id, config)
 		}
 		data["attributes"] = strattributes;
 		
-		var str2 = await imp.convertTemplate(path_tpl + "main/"+tplFile+".txt", data);
-		str += str2;
 		
+		tracerec('item__ : '+item.name, 0);
+		
+		var fileTpl = path_tpl + "main/elmt.txt";
+		var contentMain = await imp.convertTemplate(fileTpl, data);
+		contentMain = contentMain.replace(" class=''", "");
+		output['main'] = contentMain;
+		
+		
+		
+		//override tplmodel root for classname
+		if(item[imp.OPT_TPLMODEL]){
+			data["classes"] = '{{classes}}';
+			output['tpl'] = await imp.convertTemplate(fileTpl, data, true);
+		}
+		
+		
+		
+		//override elmt with placeholder for write tplmodel
+		//(replace real value by {{placeholder}})
+		
+		if(item['templateMode'] == 'write' && item[imp.OPT_PLACEHOLDER]){
 			
-		return str;
+			if(item.type == imp.TYPE_TEXT){
+				data["content"] = '{{'+item[imp.OPT_PLACEHOLDER]+'}}';
+			}
+			else if(item.type == imp.TYPE_GFX && item.tag == 'img'){
+				var attr = attributes.find(function(obj){
+					return obj.key == 'src';
+				});
+				trace('attr : '+attr);
+				attr.value = '{{'+item[imp.OPT_PLACEHOLDER]+'}}';
+			}
+			
+			
+			var strattributes = '';
+			if(attributes && attributes.length > 0){
+				var tabattrs = attributes.map(obj => obj.key+'="'+obj.value+'"');
+				strattributes = ' '+tabattrs.join(' ');
+			}
+			data["attributes"] = strattributes;
+			
+			output['tpl'] = await imp.convertTemplate(fileTpl, data, true);
+		}
+		
+		
+		
+		return output;
 	}
 
 }

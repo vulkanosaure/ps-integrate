@@ -1,1 +1,1 @@
-<{{tag}}{{classes}}{{attributes}}>{{content}}
+<{{tag}} class='{{classes}}'{{attributes}}{{autoclose}}>{{content}}

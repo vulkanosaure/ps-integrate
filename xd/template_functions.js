@@ -61,7 +61,6 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		
-		
 		var data = imp.mapProps(propsModel, textdata);
 		var str = imp.propsToString(data, {multiline : true, separator : ";", quoteProperty:"none", equal:':'});
 		return str;
@@ -74,7 +73,7 @@ TPL_FUNCTIONS["html"] = {
 	
 	getLayoutData : function (item, parent, prevItem, isLayerOfType, config, configLayout)
 	{
-		trace('item.position : '+item.position);
+		// trace('item.position : '+item.position);
 		
 		var x = item.position[0];
 		var y = item.position[1];
@@ -148,7 +147,7 @@ TPL_FUNCTIONS["html"] = {
 		else if(item[imp.OPT_POSITION] == "static"){
 			
 			if(item.positionRelative){
-				propsModel["position"] = { value: "relative", quote: "none" };
+				propsModel["position"] = { value: "relative", quote: "none", filter: "render" };
 			}
 			
 			var direction = parent ? parent[imp.OPT_DIRECTION] : 'col';
@@ -347,9 +346,11 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["width"] = {sufix : "px", br : false};
 			propsModel["height"] = {sufix : "px"};
 			
-			propsModel["background-image"] = {
-				value : config.prefix_images + item.fullpath, prefix : "url('", sufix : "')"
-			};
+			if(item.tag != 'img'){
+				propsModel["background-image"] = {
+					value : config.prefix_images + item.fullpath, prefix : "url('", sufix : "')"
+				};
+			}
 			
 			//retina
 			if(config.retina){

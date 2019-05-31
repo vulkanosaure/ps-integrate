@@ -9,6 +9,7 @@ var trace = file_debug.trace;
 imp = {...imp, ...require('./constantes.js')};
 
 var tpl_content;
+var templateData = {};
 var tpl_indent;
 
 function tpl_reset()
@@ -17,7 +18,29 @@ function tpl_reset()
 	tpl_indent = 0;
 }
 
-function tpl_add_line(content, indent, linebreak)
+
+
+
+function tpl_add_content(item, content, indent, linebreak, isBlock, contentTpl)
+{
+	var func = (isBlock) ? tpl_add_block : tpl_add_line;
+	func(null, content, indent, linebreak);
+	
+	if(item['templateMode'] == 'write'){
+		
+		if(contentTpl == undefined) contentTpl = content;
+		
+		let idtpl = item['tplparent'];
+		indent -= item['tplmodelIndent'];
+		func(idtpl, contentTpl, indent, linebreak);
+	}
+	
+}
+
+
+
+
+function tpl_add_line(idtpl, content, indent, linebreak)
 {
 	if(linebreak == undefined) linebreak= true;
 	if(indent == undefined) indent= 0;
@@ -27,17 +50,22 @@ function tpl_add_line(content, indent, linebreak)
 	str += content;
 	if(linebreak) str += "\n";
 	
-	tpl_content += str;
+	if(!idtpl) tpl_content += str;
+	else{
+		if(templateData[idtpl] == undefined) templateData[idtpl] = "";
+		templateData[idtpl] += str;
+	}
+	
 }
 
-function tpl_add_block(content, indent, linebreak)
+function tpl_add_block(idtpl, content, indent, linebreak)
 {
 	if(linebreak == undefined) linebreak= true;
 	if(indent == undefined) indent= 0;
 	
 	var tab = content.split("\n");
 	var len = tab.length;
-	for(var i = 0; i<len; i++) tpl_add_line(tab[i], indent, linebreak);
+	for(var i = 0; i<len; i++) tpl_add_line(idtpl, tab[i], indent, linebreak);
 }
 
 
@@ -60,17 +88,19 @@ function get_tpl_content()
 }
 
 
-async function convertTemplate(path, params)
+async function convertTemplate(path, params, keepNotFound)
 {
+	if(keepNotFound == undefined) keepNotFound = false;
+	
 	// trace('convertTemplate : '+path);
 	let folderPlugin = await imp.getPluginFolder();
 	var output = await imp.loadFilePath_cache(folderPlugin, path);
-	return convertTemplateFromStr(output, params);
+	return convertTemplateFromStr(output, params, keepNotFound);
 	
 }
 
 
-function convertTemplateFromStr(str, params)
+function convertTemplateFromStr(str, params, keepNotFound)
 {
 	var output = str;
 	for(var k in params){
@@ -78,8 +108,11 @@ function convertTemplateFromStr(str, params)
 		output = output.replace(regexp, params[k]);
 	}
 	
-	var regexp = new RegExp("{{.+?}}", "g");
-	output = output.replace(regexp, "");
+	if(!keepNotFound){
+		var regexp = new RegExp("{{.+?}}", "g");
+		output = output.replace(regexp, "");
+	}
+	
 	return output;
 }
 
@@ -208,7 +241,7 @@ function transformMargins(data, _property, nameItem="")
 		// trace('- data[prop] : '+data[prop]+', .data : '+data[prop].data);
 		if(data[prop] && data[prop].data != 0) countMargin++;
 	}
-	trace('_property : '+_property+', countMargin : '+countMargin);
+	// trace('_property : '+_property+', countMargin : '+countMargin);
 	
 	if(countMargin > 1){
 		
@@ -239,12 +272,6 @@ function transformMargins(data, _property, nameItem="")
 		}
 	}
 	
-	/* 
-	for(let k in data){
-		let obj = data[k];
-		trace(k+' : '+obj.data+', config : '+obj.config);
-	}
-	 */
 	return data;
 }
 
@@ -305,7 +332,7 @@ function propsToString(props, options, closeTag, filter)
 		str += obj.data;
 		
 		
-		if(filterProp(i, filter)){
+		if(filterProp(i, obj.config, filter)){
 			
 			//exception, no line break
 			if(i == 'height' && propsOK.indexOf('width') > -1){
@@ -339,12 +366,19 @@ function propsToString(props, options, closeTag, filter)
 
 
 
-function filterProp(prop, filter)
+function filterProp(prop, config, filter)
 {
 	if(!filter) return true;
 	
 	var isPosition = filterProps['position'].indexOf(prop) > -1;
 	var typeProp = isPosition ? 'position' : 'render';
+	if(config && config.filter) typeProp = config.filter;
+	
+	if(filter == 'position'){
+		trace('config.filter : '+(config && config.filter)+', isPosition : '+isPosition);
+		// trace('typeProp  ')
+	}
+	
 	return typeProp == filter;
 	
 }
@@ -467,19 +501,28 @@ function getSelector(item, parent, sass_indent)
 
 
 
+
+
+
+
 async function getTemplateData(id)
 {
-	//read from filesystem
+	//todo read from memory
+	output = templateData[id];
+	if(output) return {
+		output,
+		type: 'memory',
+	}
 	
+	
+	//read from filesystem
 	var path = 'templates/html/main/tpl/' + id + '.txt';
 	var folderPlugin = await imp.getPluginFolder();
 	var output = await imp.loadFilePath_cache(folderPlugin, path);
-	
-	if(output) return output;
-	
-	
-	//todo read from memory
-	
+	if(output) return{
+		output,
+		type: 'file',
+	}
 	
 	
 	//throw error
@@ -532,6 +575,7 @@ module.exports = {
 	transformMargins,
 	getCloseTag,
 	tpl_reset,
+	tpl_add_content,
 	tpl_add_line,
 	tpl_add_block,
 	tpl_br,
@@ -546,4 +590,5 @@ module.exports = {
 	getSelector,
 	getTemplateData,
 	getPlaceHolderValues,
+	templateData,
 };

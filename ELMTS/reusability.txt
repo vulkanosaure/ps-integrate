@@ -187,18 +187,40 @@ DEFINITION DES INFOS DYNAMIQUES
 __________________________________________________________________
 TODO
 
-img src
-mode write, template data creation
+
+mode creation (tplmodel)												OK
+
+	probleme de nommage interne sur les &-name coté template
+	il prend comme base le name, il devrait prendre le tpl
+
+
+img src																	OK
+	an img with PH passe automatiquement en <img>
+	ou alors message d'erreur
 	
+DELETE DEPRECATED :														OK
+	- class
+	- !export
+	(from doc also)
 	
+METTRE DOC A JOUR														OK
+
+EXEMPLES
+	QUIZZ
+		pourquoi sur quiz1 : flex:0 0 auto;
+		quiz2/3, titre nl2br pas prise en compte
+		si on nomme pas => generated name à l'envers... (comparer avec no tpl)
+		
+	+3 examples (puces, svg-inline, ph sur model)
+
 
 	
 __________________________________________________________________
 EXEMPLES
 tout tester en global puis onpage (boolean pour disable le test d'existence)
 
-______________________
-boutons avec icones
+
+boutons avec icons
 
 <button class="btn {{classes}}">
 	{{text}}
@@ -206,11 +228,6 @@ boutons avec icones
 </button>
 
 => fichier avec plusieurs boutons, mais différentes texts / icons
-
-
-<div class="onpage_btn">
-	<p class="textformat">hello</p>
-</div>
 
 
 linesep (cobra zero)
@@ -228,7 +245,8 @@ masterclass-item
 
 puces de la frise
 
-
+svg-inline
+PH sur tplmodel
 
 
 
