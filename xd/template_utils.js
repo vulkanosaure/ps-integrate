@@ -258,6 +258,9 @@ function transformMargins(data, _property, nameItem="")
 			values = values.splice(0, 2);
 			if(values[0] == values[1]) values = values.splice(0, 1);
 		}
+		else if(values[1] == values[3]){
+			values = values.splice(0, 3);
+		}
 		
 		
 		let marginValue = values.join(' ');

@@ -236,6 +236,8 @@ TPL_FUNCTIONS["html"] = {
 			
 			
 			
+			
+			
 			//substract padding to margin
 			if(parent){
 				if(!isLayerOfType || direction == "col"){		//is first static item
@@ -293,9 +295,12 @@ TPL_FUNCTIONS["html"] = {
 		if(item["p_right"] > 0){
 			
 			//if more padding right than left, 
-			//we consider it's because the content doesn't fill up the line
-			let value = item["p_right"];
-			if(value > item["p_left"]) value = item["p_left"];
+			//consider it's because the content doesn't fill up the line
+			//equalize
+			
+			// let value = item["p_right"];
+			// if(value > item["p_left"]) value = item["p_left"];
+			let value = item["p_left"];
 			propsModel["p_right"] = { name: 'padding-right', value: value, sufix: 'px' };
 		}
 		
@@ -316,15 +321,18 @@ TPL_FUNCTIONS["html"] = {
 			propsModel["width"] = {sufix : "px", comment:true};
 			// propsModel["height"] = {sufix : "px", comment:true};
 			
-			propsModel["halign"] = {name : 'text-align', value : tdata.halign, quote : 'none'};
 			
+			var halign = tdata.halign;
+			propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
 			
-			
-			
+			//change strategy, keep margin auto strategy
+			//text-align oblige à sizer à 100%, et dénature l'info (on peut vouloir centrer un paragraphe aligner à gauche)
+			/* 
 			if(lx == 'center'){
 				delete propsModel["margin_left2"];
 				delete propsModel["margin_right2"];
 			}
+			 */
 			if(ly == 'center'){
 				let value = parent[imp.OPT_HEIGHT] + "px";
 				propsModel["lineHeight"] = {name : 'line-height', value : value, quote : 'none'};

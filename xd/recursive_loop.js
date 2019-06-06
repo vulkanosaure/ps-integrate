@@ -80,6 +80,9 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	var len = layers.length;
 	// trace('layers : '+layers);
 	
+	var allCenterX = true;
+	var allCenterY = true;
+	
 
 	for (var _i = 0; _i < len; _i++) {
 
@@ -143,6 +146,14 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			}
 			
 			
+			//allCenterX/Y for canceling some padding
+			if(item[imp.OPT_POSITION] == 'static' && !item[imp.OPT_BGPARENT]){
+				
+				if(item[imp.OPT_LAYOUT_X] != 'center') allCenterX = false;
+				if(item[imp.OPT_LAYOUT_Y] != 'center') allCenterY = false;
+			}
+			
+			
 			
 
 			if (imp.isItemExport(item, type, item['templateMode'])) {
@@ -176,7 +187,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
 			
 			parentLayer = null;	//never used
-			tracerec("reccc type : " + type, level);
+			tracerec("rec type : " + type, level);
 
 			var newParentItem = parentItem;
 			if (CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
@@ -189,7 +200,24 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	}
 	
 	
+	//if all children (static, !bgparent) are centerx => pas de padding x
+	if(parentItem){
+		if(allCenterX){
+			parentItem["p_left"] = 0;
+			parentItem["p_right"] = 0;
+		}
+		if(allCenterY){	
+			parentItem["p_top"] = 0;
+			parentItem["p_bottom"] = 0;
+		}
+	}
 	
+	
+	
+	
+	
+	
+	//error positionning
 	
 	let isParentTemplate = (imp.getParentsProperty(item, imp.OPT_TPL));
 	tracerec("isParentTemplate : " + isParentTemplate, level);
@@ -596,13 +624,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (type == TYPE_TEXT) {
 		
 		output["textdata"] = imp.getTextData(layer);
-		//if layoutx set (ex centerx), override align
-		
-		if (has_option(name, OPT_LAYOUT_X)) {
-			trace('override halign');
-			output["textdata"].halign = output[OPT_LAYOUT_X];
-		}
-		
 	}
 	
 	if (type == imp.TYPE_SHAPE) {

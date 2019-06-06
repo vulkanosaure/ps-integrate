@@ -315,6 +315,7 @@ DIMENSIONS
 	XD :
 		- btn fb/twitch icon (check en mode tplmodel/tpl)
 		- text multiline
+		- bulle item dans padding.xd, height gerable ?
 
 	remove measured coordinate of root elmt
 	
@@ -364,6 +365,8 @@ DIMENSIONS
 	
 	ptet des contexte ou par defaut, on met la mesure ?
 	
+	autoset :
+		- height px if contain a child centery (overridable if need %)
 	
 	
 	
@@ -416,6 +419,8 @@ paddings																	EN COURS
 	idem pour centery => padding y											TODO
 		voir padding.xd
 		tester both padding.xd et center apres ces 2 modifs
+	
+	if padding-x equals : only 3 values
 	
 	XD :
 		- add square frise
@@ -505,12 +510,13 @@ refactoring tpl & btn/btnc
 
 line spacing (refactoring too)		OK
 
-reusability (plus gros morceaux)	EN COURS
+reusability (plus gros morceaux)	OK
+chapter padding						OK
 chapter center
-chapter padding
----------------------
-style range
 dimensions
+---------------------
+flex center
+style range
 keyboard shorcut
 font formatting
 
