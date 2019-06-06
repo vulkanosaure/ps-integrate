@@ -1,0 +1,8 @@
+<div class='button2 {{classes}}'>
+	<div class='button2-0'>
+		
+		<img class='button2-0-icon' src="{{icon}}" />
+		<p class='googlesans-14-0-bi button2-0-txt'>{{text}}</p>
+		<div></div>
+	</div>
+</div>

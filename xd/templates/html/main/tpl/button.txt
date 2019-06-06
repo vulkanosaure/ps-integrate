@@ -1,3 +1,0 @@
-<a class="button-social {{classes}}" href="#">
-		<img src="{{icon}}"/><span>{{text}}</span>
-</a>

@@ -141,6 +141,10 @@ async function main(settings, rootNode, documentRoot)
 	await recursive_loop(rootNode, null, null, 0, params, paramscopy);
 	
 	
+	for(var i=0; i<10; i++) trace('________________________________');
+	trace('TEMPLATES')
+	
+	
 	
 	
 	//generation des templates

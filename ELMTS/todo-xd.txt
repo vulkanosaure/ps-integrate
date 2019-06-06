@@ -120,6 +120,11 @@ CENTER																							OK
 		=> parent.display = flex
 	centery => no margin auto auto									OK
 	
+	document center.xd : 
+		probleme sur footer "commencer"
+		probleme sur btn fb => justify-content:center ?
+	
+	
 	
 	
 	
@@ -154,7 +159,7 @@ selection
 	selection multiple ?
 	
 	
-linebreak template
+linebreak template												OK
 	add line break after opening
 	only if nbchildren > 1
 	
@@ -204,6 +209,14 @@ font-size : EM / REM
 
 	
 	
+	
+keyboard shorcut
+	voir si dans le plugin
+	on peut mettre des shortcut en place
+	qui réutilise des fonction du logiciel
+	ou alors qui code la manipulation des calques
+	
+	
 
 	
 	
@@ -213,10 +226,7 @@ shorthand: flex: 0 0 auto
 	(sur un container)
 	le mettre avec plus de parcimonie
 	
-property extensible
-	ou qqchose du genre
-	pour flex : 0 0 auto
-	
+	property extensible ?
 	
 	
 	
@@ -250,50 +260,19 @@ text.styleRange
 
 	
 
-GLOBAL REUSABILITY
-
-	REMOVE CLASS (deprecated)
-		
-	template ! (file avec specific sub elemnt)
-	et ce qu'on casse le nesting ? 7
-	de quoi on peut avoir besoin a l'interieur ?
-		text (multiple ?)
-		img
-		etablir un matching entre type / name
-		reporter le tag, 
-		ne pas le styler ds le css
-		text : exception car on veut juste le text
-		
-		available placeholders : text, text_value, img
-		if unavailable : define width, height, dashed red border
-		
-	on continue à récurse dedans 
-		on continue à récurse dedans (on veut extraire les img)
-		par contre on gènere ni HTML ni CSS
-		mais on récupère des propriétés obtenus lors de la recursion
-		
-	mener cette reflexion en parallèle avec "on page reusability"
+REUSABILITY																	EN COURS
+	voir reusability.txt
 	
 	
 	
 	
-ON PAGE REUSABILITY
-	1er bug : same filename export
-	filename permet de contourner, mais ça serait bien d'automatiser
-
-
 	
-	
-	
-placeholder
+placeholder							PLUS D'ACTUALITE
 	border dashed red 1 px
 	correct dimension
 	to seperate internal implementation from external positioning
 	
 	
-	
-	
-
 
 	
 
@@ -306,9 +285,39 @@ paramtres sur border :
 	
 
 
+property placement
+	property can be placed on tpl or item
+	depending of their filter (position, or render)
+	il faudrait pouvoir les placer pas en fct de ce filter
+	mais au cas par cas (lors de l'ajout)
+	=> deja un mecanisme en place (filter), ptet juste renommer pour dire : template or item
 	
 	
-sizing understanding
+	
+file tpl														CONFUS : STAND-BY
+	if(isTemplate && output[imp.OPT_PLACEHOLDER]){
+	debut de cette cond :
+	si itemmodel not defined :
+	on fait du regex pour tenter de le définir 
+		prop type
+		prop imgtype
+		
+	on pourra simplifier l'explication en DOC a la fin de placeholder
+	
+	
+	
+	
+	
+	
+	
+DIMENSIONS
+
+	XD :
+		- btn fb/twitch icon (check en mode tplmodel/tpl)
+		- text multiline
+
+	remove measured coordinate of root elmt
+	
 	size less in height (than in width)
 	what to size
 		parent to child
@@ -316,6 +325,59 @@ sizing understanding
 	remove comments ?
 	understand when 100% is equivalent to nothing ?
 	% ?
+	
+	auto = children size parent
+	% = parent size children
+	default = auto
+	
+	but a display:block always seems to be width:100%
+		or is it just a margin-right added ?
+		
+	display inline : 
+		no width/height
+		no vertical margin / padding (tocheck)
+	
+	tag img => must decide width or height (voir btn fb/twitch icon, reusability.xd)
+	box-sizing property sur * (dependency)
+		make width/height contain the padding (much more predictable)
+		
+	text multiligne : sizer en w
+		
+	width:100%, max-width:x for img
+	
+	todo : réfléchir
+	auto par défaut, donc pas d'interet a le définir auto
+	- height rarement statique, donc pas bien de le définir
+	- background-image, obligé
+	- shape, obligé ? pas forcément
+	
+	proposition : --w / --h => measure in px
+	--fw / --fh => full width/height => 100%
+	
+	width = x% / xpx / xem / rem
+	or just % / px / em / rem => auto measure
+		implement only px ds un 1er tps
+		
+	--w => width=px
+	--fw => width=100%
+	(idem with height)
+	
+	ptet des contexte ou par defaut, on met la mesure ?
+	
+	
+	
+	
+	
+	
+	
+	
+RESET
+	préparer un fichier reset CSS 
+	veiller à ce que les margin before p soit également à 0
+	veiller à ce que box-sizing 
+	placer ce script avec le plugin (ps-integrate.css)
+	mentionner dans la doc
+	
 	
 	
 	
@@ -333,16 +395,30 @@ SASS nesting and UNNAMED item																	OK
 	
 	
 	
-paddings														OK, TOCHECK, VA POSER DES PROBLEMES POUR CERTAINES CONDITIONS
+export inline-svg
+	BUG
+	xd : square frise : crayon et bonhomme
+	export svg (file) contient pas la mm chose (plus complexe)
+	rechercher
+	
+	
+	
+	
+	
+	
+paddings																	EN COURS
 	only for container column
 	only nb children > 1		NO
 	toute les paddings, (horrizontal, top, bottom)
 	tester la collapsing margin, si conflit
 	
-	si all children (static, !bgparent) are centerx => pas de padding x
-		bosser sur les btns facebook google twitch
-		pourquoi ne ce centre ni avec margin:auto, ni avec text-align
-		
+	si all children (static, !bgparent) are centerx => pas de padding x		OK
+	idem pour centery => padding y											TODO
+		voir padding.xd
+		tester both padding.xd et center apres ces 2 modifs
+	
+	XD :
+		- add square frise
 	
 
 
@@ -369,7 +445,7 @@ FLEX CENTER
 	
 	
 	
-Dimensions abs
+bounds abs
 	il faudrait que les item ABS n'influent pas sur les bounds
 	au moment de mesurer (getBounds)
 		il faudrait scanner tous les children (non-recursif)
@@ -382,10 +458,10 @@ Dimensions abs
 	bosser sur xd-paddings
 	
 	
-____________________________
+	
 
-img vs background-image
-	eventuellement géré en tpl ?
+
+img vs background-image										OK
 
 
 refactoring template										OK
@@ -404,17 +480,17 @@ offset negatif sur un item
 ____________________________
 GESTION ERRORS
 
-	if try to set svg-inline on a img => error
+	tplmodel already defined										OK
+	if ph defined and templateMode==''								OK
+	if try to set svg-inline on a (natural ?) img => error
 	cannot export a line as an img (maybe shape in general?)
-	if ph defined a templateMode==''
-	tplmodel already defined
 	root has to be named (or auto generated)
 
 
 
 
 ____________________________
-PRIORITY
+TODO (short-term)
 
 
 padding							OK, TOCHECK
@@ -429,13 +505,13 @@ refactoring tpl & btn/btnc
 
 line spacing (refactoring too)		OK
 
-reusability (plus gros morceaux)
-style range (after)
+reusability (plus gros morceaux)	EN COURS
+chapter center
+chapter padding
+---------------------
+style range
+dimensions
+keyboard shorcut
+font formatting
 
-____________________________
-why masterclass item, no padding side					normal
-remove measured coordinate of root elmt					OK
-masterclass item1 => egaliser le padding right			OK
-linebreak
 
-2 css to put back (components / pages)

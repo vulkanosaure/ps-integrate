@@ -207,14 +207,48 @@ METTRE DOC A JOUR														OK
 
 EXEMPLES
 	QUIZZ
-		pourquoi sur quiz1 : flex:0 0 auto;
-		quiz2/3, titre nl2br pas prise en compte
-		si on nomme pas => generated name à l'envers... (comparer avec no tpl)
+		pourquoi sur quiz1 : flex:0 0 auto;								laisse de coté (va ptet changer)
+		quiz2/3, titre nl2br pas prise en compte						OK
+		si on nomme pas => generated name à l'envers...					OK
 		
-	+3 examples (puces, svg-inline, ph sur model)
-
-
+	check if don't name filename => conflict export ?					OK
 	
+	bug chelou, si on rajoute 'AA' au debut de generateItemName			OK
+		on a un comportement bizarre
+		=> 'AAAA...'
+		investiguer
+		
+	+3 examples
+		puces avec svg-inline			OK
+		puces avec svg					OK
+		ph sur model text				OK
+		ph sur model img				OK
+	
+	tester integration html				OK
+	tester avec file template			OK
+	
+	
+	
+	if ph sur img => <img auto											OK
+		dans tplmodel (l'autre c'est pas util)
+		test sur quizzitem
+		
+	si ph dans tpl														OK
+		et que ph tplmodel défini
+		on peut reprendre le mm type que le ph model
+		bibliotheque d'item stockés 
+		
+	
+	export file
+		si tplmodel
+		genere un dossier tpl avec tous les fichiers par tpl
+		avec " {{classes}}"
+		avec les placeholder la ou il faut
+		avec le bon filename.txt
+		
+		
+		
+		
 __________________________________________________________________
 EXEMPLES
 tout tester en global puis onpage (boolean pour disable le test d'existence)

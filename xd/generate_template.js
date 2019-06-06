@@ -81,12 +81,21 @@ async function generate_template(items, tpl_id, config)
 	
 	if(layoutFile){
 		
+		trace('_____________________________________');
+		trace('recLayoutData');
+		trace('items.length : '+items.length);
 		recLayoutData(items, null);
+		trace('items.length : '+items.length);
 		
 		imp.recTransformLvl(items, null, items);
 		
 		imp.tpl_reset();
 		baseIndent = configLayout.file.base_indent;
+		
+		trace('_____________________________________');
+		trace('rec');
+		trace('items[0].childrens.length : '+items[0].childrens.length);
+		
 		await rec(items, null, 0, "layout");
 		//todo : in rec function
 		
@@ -120,7 +129,8 @@ async function generate_template(items, tpl_id, config)
 		}
 		
 		
-		for(var i=len - 1; i>=0; i--){
+		for(var i=0; i < len; i++){
+		// for(var i=len - 1; i>=0; i--){
 			
 			var item = items[i];
 			
@@ -190,8 +200,7 @@ async function generate_template(items, tpl_id, config)
 				
 				if(item.type == imp.TYPE_TEXT){
 					var text = item.textdata.text;
-					//text = text.replace(/\\n/g, "<br />");	//phothoshop ? (introduire constante/conditions)
-					text = text.replace(/\n/g, "<br />");
+					text = imp.nl2br(text);
 					item.textdata.text = text;
 				}
 				
@@ -215,12 +224,6 @@ async function generate_template(items, tpl_id, config)
 				
 				var linebreak = (!closeTags || iscontainer || readMode);
 				imp.tpl_add_content(item, itemCode, indent, linebreak, true, itemCodeObj.tpl);
-				
-				if(item['templateMode'] == 'write'){
-					trace('check library');
-					trace(imp.templateData[item['tplparent']]);
-				}
-				
 				
 				
 				//close tag (one line item, non container)
@@ -301,8 +304,8 @@ async function generate_template(items, tpl_id, config)
 			
 			if(type == "layout" && item.layoutData != undefined){
 				
-				var len = item.layoutData.length;
-				for(var j=1;j<len;j++){
+				var len2 = item.layoutData.length;
+				for(var j=1;j<len2;j++){
 					
 					var data = item.layoutData[j];
 					var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
@@ -334,7 +337,9 @@ async function generate_template(items, tpl_id, config)
 		var prevItem = null;
 		var prevStaticItem = null;
 		
-		for(var i=len - 1; i>=0; i--){
+		
+		// for(var i=len - 1; i>=0; i--){
+		for(var i=0; i < len; i++){
 			
 			var item = items[i];
 			
@@ -396,6 +401,9 @@ async function generate_template(items, tpl_id, config)
 		var templateDataObj = await imp.getTemplateData(idtemplate);
 		var templateData = templateDataObj.output;
 		var type = templateDataObj.type;
+		
+		trace('templateData : '+templateData);
+		for(var k in values) trace('values '+k+' : '+values[k]);
 		
 		var layout_id = imp.getLayoutID(item);
 		
@@ -540,12 +548,20 @@ async function generate_template(items, tpl_id, config)
 			if(item.type == imp.TYPE_TEXT){
 				data["content"] = '{{'+item[imp.OPT_PLACEHOLDER]+'}}';
 			}
+			//img src
 			else if(item.type == imp.TYPE_GFX && item.tag == 'img'){
-				var attr = attributes.find(function(obj){
-					return obj.key == 'src';
-				});
-				trace('attr : '+attr);
+				var attr = attributes.find(function(obj){ return obj.key == 'src';});
 				attr.value = '{{'+item[imp.OPT_PLACEHOLDER]+'}}';
+			}
+			//svg-inline
+			else if(item.type == imp.TYPE_GFX && item.tag == 'svg'){
+				data["content"] = '{{'+item[imp.OPT_PLACEHOLDER]+'}}';
+				
+				var attrw = attributes.find(function(obj){ return obj.key == 'width';});
+				var attrh = attributes.find(function(obj){ return obj.key == 'height';});
+				attrw.value = '{{'+item[imp.OPT_PLACEHOLDER]+'_width}}';
+				attrh.value = '{{'+item[imp.OPT_PLACEHOLDER]+'_height}}';
+				
 			}
 			
 			
@@ -557,6 +573,7 @@ async function generate_template(items, tpl_id, config)
 			data["attributes"] = strattributes;
 			
 			output['tpl'] = await imp.convertTemplate(fileTpl, data, true);
+			trace('tplmodel : '+output['tpl']);
 		}
 		
 		

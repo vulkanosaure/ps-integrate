@@ -22,7 +22,7 @@ var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
 imp = {...imp, ...require('./platform_export.js')};
 imp = {...imp, ...file_constantes};
 
-
+var list_tplmodel = [];
 
 
 
@@ -97,19 +97,30 @@ function check_error_item(name, item, parent, listitems)
 	// trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);
 	
 	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
-		output.push(getErrorObject("Only containers can set options '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
+		output.push(getErrorObject("Only containers can set option '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
 	}
 	if(item[OPT_ALIGN_ITEMS] && CONTAINERS_TYPE.indexOf(item.type) == -1){
-		output.push(getErrorObject("Only containers can set options '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
+		output.push(getErrorObject("Only containers can set option '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
 	}
 	if(item[OPT_BGPARENT] && [TYPE_GFX, imp.TYPE_SHAPE].indexOf(item.type) == -1){
-		output.push(getErrorObject("Only img and shape can set options '"+OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));
+		output.push(getErrorObject("Only img and shape can set option '"+OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));
 	}
 	
 	if(item.name.charAt(0) == '$'){
 		output.push(getErrorObject("Name property can't start with a $", getItemStructureStr(item), name));
 	}
 	
+	if(item[imp.OPT_TPLMODEL]){
+		var tplmodel = item[imp.OPT_TPLMODEL];
+		if(list_tplmodel.indexOf(tplmodel) > -1){
+			output.push(getErrorObject("tplmodel '"+tplmodel+"' has already been defined", getItemStructureStr(item), name));
+		}
+		list_tplmodel.push(tplmodel);
+	}
+	
+	if(item[imp.OPT_PLACEHOLDER] && item['templateMode'] == ''){
+		output.push(getErrorObject("Only tpl or tplmodel can set option '"+imp.OPT_PLACEHOLDER+"'", getItemStructureStr(item), name));
+	}
 	
 	return output;
 }
@@ -137,7 +148,8 @@ function check_error_item2(parent)
 		let prev_pos;
 		
 		for(let i=0; i<len; i++){
-			var _i = len - 1 - i;
+			// var _i = len - 1 - i;
+			var _i = i;
 			let _item = parent.childrens[_i];
 			let pos = _item.position[index_pos];
 			// trace('-- '+_item.name+', pos : '+pos+', bgparnet : '+_item["bgparent"]);
@@ -147,7 +159,7 @@ function check_error_item2(parent)
 				// trace('----- candidate');
 				if(pos < prev_pos){
 					// trace('----- ok error');
-					output.push(getErrorObject("The order of the layer seems incorrect", getItemStructureStr(_item), ''));
+					output.push(getErrorObject("The order of the layer seems incorrect : "+prev_pos+" / "+pos, getItemStructureStr(_item), ''));
 					
 					// throw new Error('');
 					break;

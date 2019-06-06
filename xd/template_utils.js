@@ -283,7 +283,7 @@ filters can be : "position", "render"
 
 var filterProps = {
 	'position' : [
-		'display',
+		//'display',
 		'position',
 		'margin',
 		'margin-left',
@@ -375,7 +375,7 @@ function filterProp(prop, config, filter)
 	if(config && config.filter) typeProp = config.filter;
 	
 	if(filter == 'position'){
-		trace('config.filter : '+(config && config.filter)+', isPosition : '+isPosition);
+		// trace('config.filter : '+(config && config.filter)+', isPosition : '+isPosition);
 		// trace('typeProp  ')
 	}
 	
@@ -542,28 +542,51 @@ function getPlaceHolderValues(item, config)
 }
 function getPlaceHolderValues_rec(parent, config, values)
 {
+	var item = parent;
+	if(item[imp.OPT_PLACEHOLDER]){
+			
+		var key = item[imp.OPT_PLACEHOLDER];
+		var value;
+		if(item.type == imp.TYPE_TEXT){
+			value = item.textdata.text;
+			value = nl2br(value);
+		}
+		else if(item.type == imp.TYPE_GFX){
+			
+			if(item[imp.OPT_IMGTYPE]=='svg-inline'){
+				value = '<path d="'+ item.pathdata.data +'"/>';
+				values[key + '_width'] = item.width;
+				values[key + '_height'] = item.height;
+			}
+			else{
+				value = config.prefix_images + item.fullpath;
+			}
+			
+		}
+		
+		values[key] = value;
+	}
+	
+	
 	var len = parent.childrens ? parent.childrens.length : 0;
 	for(var i=0; i<len; i++){
 		
 		var item = parent.childrens[i];
+		getPlaceHolderValues_rec(item, config, values);
 		
-		if(item[imp.OPT_PLACEHOLDER]){
-			
-			var key = item[imp.OPT_PLACEHOLDER];
-			var value;
-			if(item.type == imp.TYPE_TEXT) value = item.textdata.text;
-			else if(item.type == imp.TYPE_GFX){
-				value = config.prefix_images + item.fullpath;
-			}
-			
-			values[key] = value;
-		}
-		
-		var iscontainer = imp.CONTAINERS_TYPE.indexOf(item.type) != -1;
-		if(iscontainer) getPlaceHolderValues_rec(item, config, values);
 	}
 }
 
+
+
+
+
+function nl2br(text)
+{
+	//text = text.replace(/\\n/g, "<br />");	//phothoshop ? (introduire constante/conditions)
+	text = text.replace(/\n/g, "<br />");
+	return text;
+}
 
 
 
@@ -591,4 +614,5 @@ module.exports = {
 	getTemplateData,
 	getPlaceHolderValues,
 	templateData,
+	nl2br,
 };

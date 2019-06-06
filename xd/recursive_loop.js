@@ -83,12 +83,9 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 	for (var _i = 0; _i < len; _i++) {
 
-		var i;
-		/* 
-		if (params.settings.indexTpl == 0) i = _i;
-		else i = len - 1 - _i;
-		 */
-		i = _i;
+		// var i = _i;
+		var i =  len - 1 - _i;
+		var i2 = _i;
 		
 		tracerec('_____________________________________ _i : '+_i, level);
 		
@@ -126,34 +123,14 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 		if (type != "") {
 
-			var item = create_item(layer, name, type, parentItem, level, i, params);
+			var item = create_item(layer, name, type, parentItem, level, i2, params);
+			type = item[imp.OPT_TYPE];
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
 			
 			
-			let isTemplate = ((item[imp.OPT_TPL]) || (imp.getParentsProperty(item, imp.OPT_TPL)));
-			let isTemplateModel = ((item[imp.OPT_TPLMODEL]) || (imp.getParentsProperty(item, imp.OPT_TPLMODEL)));
-			
-			let templateMode = '';
-			if(isTemplate){
-				templateMode = 'read';
-				item['tplparent'] = isTemplate;
-			}
-			else if(isTemplateModel){
-				templateMode = 'write';
-				item['tplparent'] = isTemplateModel;
-				if(item[imp.OPT_TPLMODEL]) item['tplmodelIndent'] = item.indent;
-				else item['tplmodelIndent'] = imp.getParentsProperty(item, 'tplmodelIndent');
-				tracerec('tplmodelIndent : '+item.tplmodelIndent, level);
-			}
-			item['templateMode'] = templateMode;
-			
-			
 			var errors = check_error_item(name, item);
-			
-			
 			tracerec('errors.length : '+errors.length, level);
-			tracerec('isTemplate : '+isTemplate+', isTemplateModel : '+isTemplateModel, level);
-			tracerec('templateMode : '+templateMode, level);
+			
 			
 			if (errors.length > 0) {
 				tracerec("errors : " + errors, level);
@@ -168,9 +145,10 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			
 			
 
-			if (imp.isItemExport(item, type, templateMode)) {
+			if (imp.isItemExport(item, type, item['templateMode'])) {
 				
 				item.has_graphic = true;
+				
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if (item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
@@ -268,6 +246,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	output['indent'] = level;
+	output.parent = parentItem;
 	
 	
 	//template
@@ -291,6 +270,59 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
+	//templateMode
+	
+	let isTemplate = ((output[imp.OPT_TPL]) || (imp.getParentsProperty(output, imp.OPT_TPL)));
+	let isTemplateModel = ((output[imp.OPT_TPLMODEL]) || (imp.getParentsProperty(output, imp.OPT_TPLMODEL)));
+	
+	let templateMode = '';
+	if(isTemplate){
+		templateMode = 'read';
+		output['tplparent'] = isTemplate;
+	}
+	else if(isTemplateModel){
+		templateMode = 'write';
+		output['tplparent'] = isTemplateModel;
+		if(output[imp.OPT_TPLMODEL]) output['tplmodelIndent'] = output.indent;
+		else output['tplmodelIndent'] = imp.getParentsProperty(output, 'tplmodelIndent');
+		tracerec('tplmodelIndent : '+output.tplmodelIndent, level);
+	}
+	output['templateMode'] = templateMode;
+	
+	
+	
+	tracerec('isTemplate : '+isTemplate+', isTemplateModel : '+isTemplateModel, level);
+	tracerec('templateMode : '+templateMode, level);
+	
+	
+	
+	if(isTemplateModel && output[imp.OPT_PLACEHOLDER]){
+		
+		imp.saveTemplateItem(isTemplateModel, output[imp.OPT_PLACEHOLDER], output);
+	}
+	else if(isTemplate && output[imp.OPT_PLACEHOLDER]){
+		
+		var itemmodel = imp.getTemplateItem(isTemplate, output[imp.OPT_PLACEHOLDER]);
+		if(itemmodel){
+			output[imp.OPT_TYPE] = itemmodel[imp.OPT_TYPE];
+			output[imp.OPT_IMGTYPE] = itemmodel[imp.OPT_IMGTYPE];
+			trace('model type : '+itemmodel[imp.OPT_TYPE]+', imgtype : '+itemmodel[imp.OPT_IMGTYPE]);
+			type = output[imp.OPT_TYPE];
+		}
+	}
+	
+	
+	
+	
+	
+	/* 
+	if(output[imp.OPT_PLACEHOLDER] && output[imp.OPT_PLACEHOLDER].substr(0, 3) == 'img'){
+		type = imp.TYPE_GFX;
+		output[OPT_TYPE] = type;
+	}
+	 */
+	
+	
 	//lvl
 	if (has_option(name, imp.OPT_LVL)) {
 		var val = get_value_option(name, imp.OPT_LVL);
@@ -311,13 +343,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
+	
 	if (output[OPT_NAME] == "") {
-		if(parentItem){
-			let parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
-			output[OPT_NAME] += parentName;
-		}
-		else output[OPT_NAME] += type;
-		output[OPT_NAME] += '-' + index;
+		output[OPT_NAME] = imp.generateItemName(parentItem, type, index, 'name');
 		output.useTag = true;
 		
 	}
@@ -325,7 +353,10 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, imp.OPT_FILENAME)) {
 		output[imp.OPT_FILENAME] = get_value_option(name, imp.OPT_FILENAME);
 	}
-	else output[OPT_FILENAME] = output[OPT_NAME];
+	else{
+		if(output[imp.OPT_PLACEHOLDER]) output[OPT_FILENAME] = imp.generateItemName(parentItem, type, index, 'filename');
+		else output[OPT_FILENAME] = output[OPT_NAME];
+	}
 	
 
 	var bounds = getBounds(layer, type);
@@ -341,31 +372,12 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	var x2 = Math.round(bounds[2]);
 	var y2 = Math.round(bounds[3]);
 	
-	/* 
-	if(parentItem == null){
-		
-		x1 -= params.boundsRoot[0];
-		y1 -= params.boundsRoot[1];
-		tracerec('boundsRoot : ' + params.boundsRoot.map(item => Math.round(item)).join(', '), level);
-		// throw new Error('');
-	}
-	 */
 	
-	/* 
-	if (x1 < 0) x1 = 0;
-	if (y1 < 0) y1 = 0;
-	*/
-
 	output.position = [x1, y1];
 	
 	output.width = Math.round(bounds[4]);
 	output.height = Math.round(bounds[5]);
 	
-	/* 
-	trace("output.width : " + output.width + ", output.height:  " + output.height);
-	trace("bounds[2] : " + bounds[2] + ", bounds[0]:  " + bounds[0]);
-	trace("bounds[3] : " + bounds[3] + ", bounds[1]:  " + bounds[1]);
-		*/
 	
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
@@ -390,7 +402,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		var val = get_value_option(name, imp.OPT_IMGTYPE);
 		output[imp.OPT_IMGTYPE] = val;
 	}
-	else if(type == imp.TYPE_GFX){
+	else if(type == imp.TYPE_GFX && !output[imp.OPT_IMGTYPE]){
 		output[imp.OPT_IMGTYPE] = imp.get_natural_imgtype(layer);
 		if(!output[imp.OPT_IMGTYPE]) output[imp.OPT_IMGTYPE] = 'png';
 	}
@@ -421,12 +433,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output.position[1] -= params.boundsRoot[1];
 	}
 	
-	/* 
-	if(output[OPT_NAME] == 'zone-dropdown'){
-		
-		throw new Error('item');
-	}
-	 */
 	
 	//position
 	if (has_option(name, OPT_POSITION)) {
@@ -647,9 +653,10 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	let tag;
+	var tag;
 	if(type == imp.TYPE_CONTAINER) tag = 'div';
 	else if(type == imp.TYPE_GFX && output[imp.OPT_IMGTYPE]=='svg-inline') tag = 'svg';
+	else if(type == imp.TYPE_GFX && output[imp.OPT_PLACEHOLDER]) tag = 'img';
 	else if(type == imp.TYPE_GFX) tag = 'div';
 	else if(type == imp.TYPE_SHAPE) tag = 'div';
 	else if(type == imp.TYPE_TEXT) tag = 'p';
@@ -659,7 +666,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, imp.OPT_TAG)) {
 		output[imp.OPT_TAG] = get_value_option(name, imp.OPT_TAG);
 	}
-	
 	
 	
 	
@@ -693,12 +699,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	
-	
-	
-
-	output.parent = parentItem;
-
 	return output;
 }
 

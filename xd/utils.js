@@ -215,6 +215,47 @@ function getParentsProperty(item, prop)
 
 
 
+/*
+typeName = name / filename
+*/
+
+function generateItemName(parentItem, type, index, typeName)
+{
+	let output = '';
+	if(parentItem){
+		let parentName;
+		if(typeName == 'name') parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
+		else if(typeName == 'filename') parentName = parentItem.name;
+		else throw new Error('wrong type for typeName');
+		
+		output += parentName;
+		trace('parent tplmodel : '+parentItem[imp.OPT_TPLMODEL]+', parentName : '+parentItem.name);
+	}
+	else output += type;
+	output += '-' + index;
+	return output;
+}
+
+
+
+let templateItems = {};
+function saveTemplateItem(tplname, ph, item)
+{
+	trace('saveTemplateItem '+tplname+', '+ph);
+	if(!templateItems[tplname]) templateItems[tplname] = {};
+	templateItems[tplname][ph] = item;
+}
+
+function getTemplateItem(tplname, ph)
+{
+	trace('getTemplateItem '+tplname+', '+ph);
+	if(!templateItems[tplname]) return null;
+	return templateItems[tplname][ph];
+}
+
+
+
+
 
 
 module.exports = {
@@ -231,4 +272,7 @@ module.exports = {
 	encodeNameParentRef,
 	isItemExport,
 	getParentsProperty,
+	generateItemName,
+	saveTemplateItem,
+	getTemplateItem,
 };

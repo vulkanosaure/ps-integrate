@@ -107,8 +107,8 @@ must be defined inside  a template (**tpl** or **tplmodel**)
 define a dynamic element to be mapped between the template model and the copy
 it can be used for **txt** or **img** type
 for a file **tplmodel**, the {{placeholder}} with the same name must be present for the mapping
-
-
+*if a placeholder is defined on a img elmt, the tag is automatically set to img*
+*if a placeholder is defined, it's not necessary to define the other options, except the type options for img, in the case of a file template*
 
 
 
