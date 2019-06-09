@@ -125,6 +125,24 @@ CENTER																							OK
 		probleme sur btn fb => justify-content:center ?
 	
 	
+	text
+		si parent block 	=> block s'etend en X 		=> margin marche pas
+		si parent flex 		=> block s'tend pas en X	=> text-align marche pas
+		
+		bizarrement, on a les 2 comportement
+		si flex : s'etend => remove margin, add justify-content
+		
+		si parent block
+			remove margin
+			si item flex 	 	=> justify-content
+				TODO : tester avec un flex column
+				if item.display == 'flex' => item.childrenx = 'center'
+				
+			sinon				=> text-align
+		si parent flex
+			keep margin
+			no text-align
+			OU BIEN : justify-content ?
 	
 	
 	

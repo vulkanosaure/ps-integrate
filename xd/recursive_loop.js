@@ -42,7 +42,6 @@ var OPT_POSITION = file_constantes.OPT_POSITION;
 var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
 var OPT_LAYOUT_X = file_constantes.OPT_LAYOUT_X;
 var OPT_LAYOUT_Y = file_constantes.OPT_LAYOUT_Y;
-var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
 var OPT_POS_X = file_constantes.OPT_POS_X;
 var OPT_POS_Y = file_constantes.OPT_POS_Y;
 var OPT_WIDTH = file_constantes.OPT_WIDTH;
@@ -53,7 +52,6 @@ var TYPE_TEXT = file_constantes.TYPE_TEXT;
 var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
 var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
 var EXPORT_FOLDER_IMG = file_constantes.EXPORT_FOLDER_IMG;
-var DEBUG_MODE = file_constantes.DEBUG_MODE;
 
 const file_platform_layer_utils = require('./platform_layer_utils.js');
 imp = {...imp, ...file_platform_layer_utils};
@@ -200,16 +198,11 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	}
 	
 	
-	//if all children (static, !bgparent) are centerx => pas de padding x
+	//for padding cancelations
 	if(parentItem){
-		if(allCenterX){
-			parentItem["p_left"] = 0;
-			parentItem["p_right"] = 0;
-		}
-		if(allCenterY){	
-			parentItem["p_top"] = 0;
-			parentItem["p_bottom"] = 0;
-		}
+		parentItem['allCenterX'] = allCenterX;
+		parentItem['allCenterY'] = allCenterY;
+		
 	}
 	
 	
@@ -251,7 +244,8 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			}
 		});
 		item.countTag = count;
-		item.positionTag = count - 1 - countBefore;
+		// item.positionTag = count - 1 - countBefore;
+		item.positionTag = countBefore;
 	}
 	
 	
@@ -490,11 +484,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	
 	
-	//align-items
-	if (has_option(name, OPT_ALIGN_ITEMS)) {
-		output[OPT_ALIGN_ITEMS] = get_value_option(name, OPT_ALIGN_ITEMS);
-	}
-	
 	
 	
 
@@ -507,20 +496,13 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		var parentsize = parentItem ? parentItem.width : imp.DOC_WIDTH;
 		if (layout == "right"){
 			output.margin_right = parentsize - (output.position[0] + output.width);
-			output[OPT_POSITION] = "absolute";
+			// output[OPT_POSITION] = "absolute";
 		}
-		else if (layout == "center") {
-			output.center_h = Math.round(output.position[0] / (parentsize - output.width) * 100);
-			if (isNaN(output.center_h)) output.center_h = 0.5;
-		}
-
 		output[OPT_LAYOUT_X] = layout;
-		
 	}
 	else output[OPT_LAYOUT_X] = "left";
 	
 	
-
 	output.margin_top = output.position[1];
 	if (has_option(name, OPT_LAYOUT_Y)) {
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
@@ -528,22 +510,24 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		var parentsize = parentItem ? parentItem.height : imp.DOC_HEIGHT;
 		if (layout == "bottom"){
 			output.margin_bottom = parentsize - (output.position[1] + output.height);
-			output[OPT_POSITION] = "absolute";
+			// output[OPT_POSITION] = "absolute";
 		}
-		else if (layout == "center") {
-			output.center_v = Math.round(output.position[1] / (parentsize - output.height) * 100);
-			if (isNaN(output.center_v)) output.center_v = 0.5;
-		}
-
 		output[OPT_LAYOUT_Y] = layout;
-		
 	}
 	else output[OPT_LAYOUT_Y] = "top";
 	
 	
 	
 	
-
+	//children layout
+	
+	if (has_option(name, imp.OPT_CHILDREN_X)) {
+		output[imp.OPT_CHILDREN_X] = get_value_option(name, imp.OPT_CHILDREN_X);
+	}
+	if (has_option(name, imp.OPT_CHILDREN_Y)) {
+		output[imp.OPT_CHILDREN_Y] = get_value_option(name, imp.OPT_CHILDREN_Y);
+	}
+	
 
 
 	if (type != TYPE_TEXT) {
@@ -648,15 +632,12 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	
 	
-	//if static
-	//if parent dir == col
-	//if ly = center
-	
+	//fait ici car ça concerne le parent, trop tard dans getLayoutData
 	//set parent flex if col / centery
 	if(output[OPT_POSITION] == 'static'){
 		if(parentItem && parentItem[OPT_DIRECTION] == 'col'){
 			if(output[OPT_LAYOUT_Y] == 'center'){
-				parentItem.setFlex = true;
+				parentItem.display = 'flex';
 			}
 		}
 	}
@@ -697,11 +678,15 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		
 		if(output[OPT_POSITION] == 'static' && !output[OPT_BGPARENT]){
 			
-			if(!parentItem.hasOwnProperty("p_left")) parentItem["p_left"] = output.position[0];
-			else if(output.position[0] < parentItem["p_left"]) parentItem["p_left"] = output.position[0];
+			if(output[imp.OPT_LAYOUT_X] != 'right'){
+				if(!parentItem.hasOwnProperty("p_left")) parentItem["p_left"] = output.position[0];
+				else if(output.position[0] < parentItem["p_left"]) parentItem["p_left"] = output.position[0];
+			}
 			
-			if(!parentItem.hasOwnProperty("p_top")) parentItem["p_top"] = output.position[1];
-			else if(output.position[1] < parentItem["p_top"]) parentItem["p_top"] = output.position[1];
+			if(output[imp.OPT_LAYOUT_Y] != 'bottom'){
+				if(!parentItem.hasOwnProperty("p_top")) parentItem["p_top"] = output.position[1];
+				else if(output.position[1] < parentItem["p_top"]) parentItem["p_top"] = output.position[1];
+			}
 			
 			let p_right = parentItem.width - (output.position[0] + output.width);
 			let p_bottom = parentItem.height - (output.position[1] + output.height);

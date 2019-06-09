@@ -1,0 +1,61 @@
+﻿{
+	"main" : {
+		
+		"filename" : "template.html",
+		"base_indent" : 0,
+		"indent" : true,
+		"close_tags" : true,
+		"close_tags_config" : {
+			"start" : "<",
+			"end" : ">",
+			"close" : "/"
+		},
+		
+		"linebreaks" : {
+			"std" : 0,
+			"before" : 1,
+			"after" : 0,
+			"before_closetag" : 0
+		}
+	},
+
+	"textformat" : {
+		
+		"file" : {
+			"filename" : "textformat.css",
+			"base_indent" : 0,
+			
+			"linebreaks" : {
+				"std" : 2
+			}
+		}
+	},
+
+	"layout" : {
+		"file" : {
+			"filename" : "layout.css",
+			"base_indent" : 0,
+			
+			"linebreaks" : {
+				"std" : 1,
+				"before" : 1,
+				"after" : 1
+			}
+		}
+	},
+	
+	
+	"config" : {
+		"font_size_multiplier" : 1.0,
+		"classname_root" : "container_center"
+	},
+	
+	
+	"colors" : {
+		"FFFfff" : "col_light",
+		"fed913" : "col_tonic",
+		"418fde" : "col_blue",
+		"c21c37" : "col_red"
+	}
+
+}

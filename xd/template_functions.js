@@ -79,27 +79,77 @@ TPL_FUNCTIONS["html"] = {
 		var y = item.position[1];
 		var lx = item[imp.OPT_LAYOUT_X];
 		var ly = item[imp.OPT_LAYOUT_Y];
+		var cx = item[imp.OPT_CHILDREN_X];
+		var cy = item[imp.OPT_CHILDREN_Y];
 		
 		var propsModel = {};
 		var name = item[imp.OPT_NAME];
+		var valuedir = item[imp.OPT_DIRECTION] == 'row' ? 'row' : 'column';
 		
-		if(item[imp.OPT_DIRECTION] == 'row' || item[imp.OPT_ALIGN_ITEMS]){
+		if(valuedir == 'row' || cx || cy){
 			
-			var valuedir = item[imp.OPT_DIRECTION] == 'row' ? 'row' : 'column';
-			item.isFlex = true;
+			item.display = 'flex';
+		}
+		
+		
+		
+		trace('item.name : '+item.name + ', cx : '+cx+', cy : '+cy);
+		
+		
+		if(item.display == 'flex'){
 			
 			propsModel["display"] = { value: "flex", quote: "none" };
+			
+			//todo : use 1 line shortcut
 			propsModel["direction"] = { name: "flex-direction", value: valuedir, quote: "none" };
-			propsModel["align_items"] = { name: 'align-items', value: item[imp.OPT_ALIGN_ITEMS], quote: "none" };
+			
+			trace('valuecx : '+valuecx+', valuecy : '+valuecy);
+			
+			if(cx){
+				var valuecx = imp.getFlexAlignValue(cx);
+				if(!valuecx) throw new Error('wrong value '+cx);
+				
+				var prop = valuedir == 'column' ? 'align-items' : 'justify-content';
+				propsModel["childrenx"] = { name: prop, value: valuecx, quote: "none" };
+			}
+			if(cy){
+				var valuecy = imp.getFlexAlignValue(cy);
+				if(!valuecy) throw new Error('wrong value '+cy);
+				
+				var prop = valuedir == 'row' ? 'align-items' : 'justify-content';
+				propsModel["childreny"] = { name: prop, value: valuecy, quote: "none" };
+			}
 			
 		}
 		
-		if(item.setFlex){
-			propsModel["display"] = { value: "flex", quote: "none" };
+		
+		
+		
+		//CANCEL PADDINGS
+		
+		
+		//if all children (static, !bgparent) are centerx => pas de padding x
+		
+		if(item.allCenterX){
+			item["p_left"] = 0;
+			item["p_right"] = 0;
+		}
+		if(item.allCenterY){	
+			item["p_top"] = 0;
+			item["p_bottom"] = 0;
 		}
 		
-		
-		
+		//not if row && childrenx
+		if(/* valuedir == 'row' &&  */cx){
+			item["p_left"] = 0;
+			item["p_right"] = 0;
+		}
+
+		//not if col && childreny
+		if(/* valuedir == 'column' &&  */cy){
+			item["p_top"] = 0;
+			item["p_bottom"] = 0;
+		}
 		
 		
 		
@@ -157,37 +207,84 @@ TPL_FUNCTIONS["html"] = {
 				//relative to prev child
 				var prevPosition = isLayerOfType ? isLayerOfType.position[0] : 0;
 				var prevDim = isLayerOfType ? isLayerOfType[imp.OPT_WIDTH] : 0;
+				
+				var value_flow = x - (prevPosition + prevDim);
+				var value_abs = y;
+				
+				
+				
 				var value = x - (prevPosition + prevDim);
 				var value2 = y;
 				
 				
+				
+				//_________________________________________________
+				//version factorisée
+				
+				var isText = ([imp.TYPE_TEXT].indexOf(item.type) != -1);
+				
+				//todo :  integrer align right/bottom
+				
+				//si le parent a un ccenterx ou cright, et que c'est le premier child
+				if(parent){
+					var pcx = parent[imp.OPT_CHILDREN_X];
+					if(pcx && pcx != 'left' && !isLayerOfType) value_flow = 0;
+					
+					var pcy = parent[imp.OPT_CHILDREN_Y];
+					if(pcy && pcy != 'top') value_abs = 0;
+				}
+				
+				var top = ly != 'top' ? 'auto' : value_abs;
+				var left = lx != 'left' ? 'auto' : value_flow;
+				
+				var bottom = ly == 'center' ? 'auto' : null;
+				var right = lx == 'center' ? 'auto' : null;
+				
+				if(isText && ly == 'center'){
+					var v = parent[imp.OPT_HEIGHT] + "px";
+					propsModel["lineHeight"] = {name : 'line-height', value : v, quote : 'none'};
+					top = null; bottom = null;
+				}
+				
+				
+				
+				
+				imp.setMarginValue(propsModel, 'margin_top2', 'margin-top', top);
+				imp.setMarginValue(propsModel, 'margin_left2', 'margin-left', left);
+				imp.setMarginValue(propsModel, 'margin_right2', 'margin-right', right);
+				imp.setMarginValue(propsModel, 'margin_bottom2', 'margin-bottom', bottom);
+				
+				//_________________________________________________
+				
+				/* 
 				if(lx == "center"){
 					
-					//ce scenario n'a aucun sens
-					throw new Error('ce scenario n\'a aucun sens');
-					
-					propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+					propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
 					propsModel["margin_left2"] = { name: 'margin-left', value: 'auto' };
 					propsModel["margin_right2"] = { name: 'margin-right', value: 'auto' };
 					
 				}
 				else{
-					
-					if(value != 0) propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
-					
-					//define other one as abs (unless cross axis alignement set)
-					let parentCrossAlign = (parent && parent[imp.OPT_ALIGN_ITEMS]);
-					if(!parentCrossAlign && value2 != 0){
-						propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+					if(parent){
+						
+						var pcx = parent[imp.OPT_CHILDREN_X];
+						if(pcx && pcx != 'left' && !isLayerOfType) value = 0;
+						
+						propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
+						
+						//cross align
+						if(!parent || !parent[imp.OPT_CHILDREN_Y]){
+							propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
+						}
+						
 					}
-					
 				}
-				
-				
 				if(ly == "center"){
 					propsModel["margin_top2"] = { name: 'margin-top', value: 'auto' };
 					propsModel["margin_bottom2"] = { name: 'margin-bottom', value: 'auto' };
 				}
+				 */
+				
 				
 			}
 			else if(direction == "col"){
@@ -212,12 +309,18 @@ TPL_FUNCTIONS["html"] = {
 				}
 				else{
 					
-					var alignParent = (parent && parent[imp.OPT_ALIGN_ITEMS]);
-					
 					if(parent){
-						if(value2 != 0 && !alignParent) propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
-						if(value != 0) propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
+						
+						var pcy = parent[imp.OPT_CHILDREN_Y];
+						if(pcy && pcy != 'top' && !isLayerOfType) value = 0;
+						
+						//cross align
+						if(!parent || !parent[imp.OPT_CHILDREN_X]){
+							propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
+						}
+						propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
 					}
+					
 				}
 				
 				
@@ -230,9 +333,6 @@ TPL_FUNCTIONS["html"] = {
 				}
 				
 			}
-			
-			
-			
 			
 			
 			
@@ -289,7 +389,8 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		
-		//paddings
+		//WRITE PADDINGS
+		
 		if(item["p_left"] > 0) propsModel["p_left"] = { name: 'padding-left', sufix: 'px' };
 		if(item["p_top"] > 0) propsModel["p_top"] = { name: 'padding-top', sufix: 'px' };
 		if(item["p_right"] > 0){
@@ -333,6 +434,8 @@ TPL_FUNCTIONS["html"] = {
 				delete propsModel["margin_right2"];
 			}
 			 */
+			
+			 /* 
 			if(ly == 'center'){
 				let value = parent[imp.OPT_HEIGHT] + "px";
 				propsModel["lineHeight"] = {name : 'line-height', value : value, quote : 'none'};
@@ -341,6 +444,8 @@ TPL_FUNCTIONS["html"] = {
 				delete propsModel["padding_top"];
 				delete propsModel["padding_bottom"];
 			}
+			 */
+			
 			
 			// trace('tdata.color : '+tdata.color);
 			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
@@ -384,6 +489,8 @@ TPL_FUNCTIONS["html"] = {
 			
 			propsModel["width"] = {sufix : "px", br: false};
 			if(!isContainer) propsModel["height"] = {sufix : "px"};
+			//temp
+			if(imp.DEBUG_MODE) propsModel["height"] = {sufix : "px"};
 			
 			
 			if(s.bgColor){
@@ -438,7 +545,7 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		
-		if(parent && parent.isFlex){
+		if(parent && parent.display == 'flex'){
 			
 			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? 'width' : 'height';
 			if(propsModel[testdim] && !propsModel[testdim].comment){
@@ -447,6 +554,9 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 		}
+		
+		
+		
 		
 		
 		

@@ -28,6 +28,7 @@ function has_option(name, idoption)
 {
 	var isprefix = (name.substr(0, PREFIX_LENGTH) == PREFIX);
 	if(!isprefix) return false;
+	trace(name+'.indexof('+ ("--" + idoption+"=") +')');
 	var hasoption = (name.indexOf("--" + idoption+"=") != -1);
 	return hasoption;
 }

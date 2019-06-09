@@ -593,6 +593,30 @@ function nl2br(text)
 
 
 
+//left, top, right, bottom...
+//to flex-end, start, center
+function getFlexAlignValue(value)
+{
+	if(value == 'center') return value;
+	if(['left', 'top'].indexOf(value) > -1) return 'flex-start';
+	else if(['right', 'bottom'].indexOf(value) > -1) return 'flex-end';
+	return null;
+}
+
+
+function setMarginValue(model, key, prop, value)
+{
+	if(value){
+		var sufix = '';
+		if(value != 'auto') sufix = 'px';
+		model[key] = { name: prop, value: value, sufix: sufix };
+	}
+}
+
+
+
+
+
 
 
 module.exports = {
@@ -618,4 +642,6 @@ module.exports = {
 	getPlaceHolderValues,
 	templateData,
 	nl2br,
+	getFlexAlignValue,
+	setMarginValue,
 };

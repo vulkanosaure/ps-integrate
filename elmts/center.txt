@@ -1,0 +1,189 @@
+_____________________________________________________________________
+CENTER
+
+1 - analyse what exists
+2 - flex align props
+
+
+
+_____________________________________________________________________
+EXISTANTS
+
+if dir=row || alignitems
+	display=flex
+	set align-items
+	
+recursiveloop :
+if parent dir=col
+	if child centery && static
+		display=flex (setFlex)
+		
+if absolute
+	easy peasy
+	
+else static
+	parent row :
+	
+		if centerx => throw error (?)
+		set margin left => relative to prev static item
+		set margin top => absolute (item.y)
+			sauf si crossAlign (vertical-align)
+			
+		if centery => margin-y auto
+		
+	
+	parent col :
+		
+		if centerx => 
+			margin-x auto
+			set margin-top => relative to prev static item
+		else
+			if !cross-Align (horizontal-align) : set margin-left => absolute
+			set margin-top relative to prev static item
+			
+			
+		if centery
+			set margin-y : auto
+
+
+			
+			
+if text && centery
+	set line-height
+	
+
+	
+_____________________________________________________________________
+on va avoir 2 propriete CHILDREN_X / CHILDREN_Y
+
+on aura des computations intermediaire qui viendront changer ces valeurs
+
+se traduira en 
+	justify-content  	(flex-start / flex-end / center)
+	align-items			(flex-start / flex-end / center)
+
+
+
+delete OPT_ALIGN_ITEMS													OK
+introduire item.display 'block/flex'									OK (empty = block)
+
+isFlex / setFlex :: doivent disparaitre									OK
+supprimer tous les "align_items"										OK
+
+extraire set display à la fin en fct de variable display
+
+
+new rule padding =>
+	not if row && childrenx
+	not if col && childreny
+
+
+																		OK
+rule sur first margin if childrenx
+faire l'equivalent sur verticalité
+	
+	
+ATTENTION																OK
+	je set childrenx/y par defaut to left/top
+	jpense que c'est différent de le défini ou pas
+	
+
+	
+- row ccenter (ligne2)			OK
+- 2 children row				OK
+- 2 children col				OK
+- text centerx
+- cont centerx
+
+
+calcul margin_right/bottom => dans template
+	besoin de l'utiliser pour margin 
+	utiliser pour margin-right (if margin-left auto)
+
+line-height/text-align => dans chapitre centrage
+	voir point suivant
+
+
+ALGO
+	si parent block 	=> block s'etend en X 		=> margin marche pas
+	si parent flex 		=> block s'etend pas en X	=> text-align marche pas
+
+	si parent block
+		remove margin
+		si item flex 	 	=> justify-content
+			TODO : tester avec un flex column
+			if item.display == 'flex' => item.childrenx = 'center'
+			
+		sinon				=> text-align
+	si parent flex
+		keep margin
+		no text-align
+		OU BIEN : justify-content ?
+		
+	voir si line-height ou autre
+
+	
+passer factorisation sur dir==col
+	voir quel degré de dupplication/factorisation
+	
+trouver un exemple ou text est transformé en span
+	et casse layout (margin-top / bottom) ?
+	=> chapter TAGS
+	
+	
+nettoyer les commentaires
+
+_____________________________________________________________________
+FLEX
+
+tout duppliquer avec un prefix "c"
+on ne va pas transformer ça en children.layout_x = y
+	c'est une propriété différente
+
+OPT_LAYOUT_X = "layoutx"
+OPT_CHILDREN_X = "childrenx"
+
+if container row + ccenterx
+	justify-content:center
+	
+if container col + ccenterx
+	align-items:center
+
+
+
+_____________________________________________________________________
+TODO : line-height
+
+ptet pas top
+voir si ya un autre moyen de centrer verticalement
+	margin:auto ?
+	vertical-center ?
+
+
+
+
+_____________________________________________________________________
+TAGS
+
+actuellement, tous les tags par défaut son des display:block
+en mettant certain inline tags (img, span)
+on peut casser des layout ?
+
+il faut un listing des TAGS_INLINE
+fonction de détection getDisplayByTag(tag)
+	
+item['tag_natural_display'] = 'inline' / 'block';
+	
+2 solutions :
+	- on force le display:block (si le tag est inline)
+	- si on peut faire autrement, on trouve un autre moyen
+
+todo XD :
+	- add exemple for with tag=img/span for breaking layout
+
+
+
+	
+
+
+

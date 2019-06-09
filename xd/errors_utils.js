@@ -17,7 +17,6 @@ var OPT_FILENAME = file_constantes.OPT_FILENAME;
 var OPT_BGPARENT = file_constantes.OPT_BGPARENT;
 var OPT_GFX_TYPE = file_constantes.OPT_GFX_TYPE;
 var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
-var OPT_ALIGN_ITEMS = file_constantes.OPT_ALIGN_ITEMS;
 
 imp = {...imp, ...require('./platform_export.js')};
 imp = {...imp, ...file_constantes};
@@ -98,9 +97,6 @@ function check_error_item(name, item, parent, listitems)
 	
 	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
 		output.push(getErrorObject("Only containers can set option '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
-	}
-	if(item[OPT_ALIGN_ITEMS] && CONTAINERS_TYPE.indexOf(item.type) == -1){
-		output.push(getErrorObject("Only containers can set option '"+OPT_ALIGN_ITEMS+"'", getItemStructureStr(item), name));
 	}
 	if(item[OPT_BGPARENT] && [TYPE_GFX, imp.TYPE_SHAPE].indexOf(item.type) == -1){
 		output.push(getErrorObject("Only img and shape can set option '"+OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));

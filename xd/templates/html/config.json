@@ -45,48 +45,12 @@
 		"font_size_multiplier" : 1.0,
 		"classname_root" : null,
 		"retina" : false,
-		"prefix_images" : "/img/",
+		"prefix_images" : "",
 		
 		
 		"sass_variable" : {
 			"colors" : {
-				"color-black": "#000000",
-				"color-black-font": "#181c1f",
-				"color-darker-bckg2": "#13161A",
-				"color-darker-bckg": "#171b22",
-				"color-dark-bckg": "#1e222a",
-				"color-mobile-dark-bckg": "#0d1119",
-				"color-grey-dark-bckg": "#24272e",
-				"color-grey-line": "#2e363b",
-				"color-grey-bckg": "#292d33",
-				"color-mobile-grey-bckg": "#30343a",
-				"color-grey-medium-darker": "#373b43",
-				"color-grey-medium": "#50585f",
-				"color-grey-border": "#707070",
-				"color-grey-border-light": "#4d4646",
-				"color-grey": "#7c7d7e",
-				"color-grey-light": "#8f9ba5",
-				"color-white-light": "#c1c9d0",
-				"color-white-font": "#c7c7c7",
-				"color-purple": "#F35959",
-				"color-purple-light": "#a2a2ea",
-				"color-purple-gradient": "#F39659",
-				"color-purple-casual": "#a18bff",
-				"color-purple-advanced": "#9300ff",
-				"color-blue-grey": "#414191",
-				"color-purple-twitch": "#4B367C",
-				"color-blue-facebook": "#4267b2",
-				"color-red-google": "#df4a32",
-				"color-red": "#fe5c5c",
-				"color-orange": "#f39659",
-				"color-pink-gradient": "#fa7391",
-				"color-orange-gradient": "#ff5f52",
-				"color-green": "#65bf84",
-				"color-white": "#ffffff",
-				"color-btn-white":"#FF5C5C",
-				"color-facebook": "#3A5A97",
-				"color-google": "#FFFFFF",
-				"color-twitch": "#6441A5"
+				
 			}
 			
 		}

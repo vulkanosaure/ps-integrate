@@ -1,0 +1,3 @@
+{{parent_varname}}.addChild({{varname}});
+{{varname}}.idLayout = "{{varname}}";
+LayoutManager.addItem({{varname}}, {{layout_data}});
