@@ -478,8 +478,8 @@ async function generate_template(items, tpl_id, config)
 		if(item.type == imp.TYPE_GFX){
 			if(!item.has_graphic && item[imp.OPT_IMGTYPE] == 'svg-inline'){
 				
-				attributes.push({ key: 'width', value: item.width });
-				attributes.push({ key: 'height', value: item.height });
+				attributes.push({ key: 'width', value: item.widthPx });
+				attributes.push({ key: 'height', value: item.heightPx });
 				data["content"] = '<path d="'+ item.pathdata.data +'"/>';
 			}
 		}

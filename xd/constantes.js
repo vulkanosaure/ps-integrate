@@ -29,8 +29,6 @@ var OPT_CHILDREN_X = "childrenx";
 var OPT_CHILDREN_Y = "childreny";
 var OPT_POS_X = "x";
 var OPT_POS_Y = "y";
-var OPT_WIDTH = "width";
-var OPT_HEIGHT = "height";
 var OPT_EQUALOFFSET = "equaloffset";
 var OPT_IMGTYPE = "imgtype";
 var OPT_LVL = "lvl";
@@ -38,6 +36,8 @@ var OPT_TAG = "tag";
 var OPT_TPL = "tpl";
 var OPT_TPLMODEL = "tplmodel";
 var OPT_PLACEHOLDER = "ph";
+var OPT_WIDTH = "width";
+var OPT_HEIGHT = "height";
 
 
 var list_tags = ["a", "button", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"];
@@ -146,11 +146,11 @@ module.exports = {
 	OPT_CHILDREN_Y,
 	OPT_POS_X,
 	OPT_POS_Y,
-	OPT_WIDTH,
-	OPT_HEIGHT,
 	OPT_EQUALOFFSET,
 	OPT_TAG,
 	OPT_IMGTYPE,
+	OPT_WIDTH,
+	OPT_HEIGHT,
 	OPTIONS_RULES,
 	OPTIONS_SHORCUTS,
 	OPTIONS_SHORCUTS2,

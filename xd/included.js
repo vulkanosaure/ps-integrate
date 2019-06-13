@@ -6,8 +6,6 @@ const { Rectangle, Color } = require("scenegraph");
 function rectangleHandlerFunction(selection) {
   // [3]
   const newElement = new Rectangle();
-  newElement.width = 100;
-  newElement.height = 50;
   newElement.fill = new Color("Green");
 
   // [4]

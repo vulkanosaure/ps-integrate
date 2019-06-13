@@ -558,8 +558,8 @@ function getPlaceHolderValues_rec(parent, config, values)
 			
 			if(item[imp.OPT_IMGTYPE]=='svg-inline'){
 				value = '<path d="'+ item.pathdata.data +'"/>';
-				values[key + '_width'] = item.width;
-				values[key + '_height'] = item.height;
+				values[key + '_width'] = item.widthPx;
+				values[key + '_height'] = item.heightPx;
 			}
 			else{
 				value = config.prefix_images + item.fullpath;

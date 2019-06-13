@@ -123,26 +123,9 @@ CENTER																							OK
 	document center.xd : 
 		probleme sur footer "commencer"
 		probleme sur btn fb => justify-content:center ?
-	
-	
-	text
-		si parent block 	=> block s'etend en X 		=> margin marche pas
-		si parent flex 		=> block s'tend pas en X	=> text-align marche pas
-		
-		bizarrement, on a les 2 comportement
-		si flex : s'etend => remove margin, add justify-content
-		
-		si parent block
-			remove margin
-			si item flex 	 	=> justify-content
-				TODO : tester avec un flex column
-				if item.display == 'flex' => item.childrenx = 'center'
-				
-			sinon				=> text-align
-		si parent flex
-			keep margin
-			no text-align
-			OU BIEN : justify-content ?
+
+
+
 	
 	
 	
@@ -234,17 +217,28 @@ keyboard shorcut
 	qui réutilise des fonction du logiciel
 	ou alors qui code la manipulation des calques
 	
+	arrow up down, ctrl+up, ctrl+down
+	ctrl+right : enter in the next folder
+	ctrl+left : take out of the folder (and put on top)
+	
+	f2 : 
+		renomme en ajoutant prefix "ps--" si absent
+		place le curseur a la fin (et enleve la selection)
+	shortcut : valid name, select next, edit
+	
+	shortcut hide/show (ctrl+H or closer ctrl+D)
+	
+	algo : order layers in each group (vertical puis horizontal)
+	
 	
 
 	
 	
 
 shorthand: flex: 0 0 auto
-	est mis trop souvent
-	(sur un container)
-	le mettre avec plus de parcimonie
-	
+	broken : voir dimensions.xd
 	property extensible ?
+	trouver les lois pour savoir qd le mettre
 	
 	
 	
@@ -280,7 +274,9 @@ text.styleRange
 
 REUSABILITY																	EN COURS
 	voir reusability.txt
-	
+	write tplmodel directly in tpl/ folder (in plugin, not in generation)	TODO
+	placeholder border dashed if tpl not existant
+		and WARNING (no ERROR)
 	
 	
 	
@@ -330,20 +326,16 @@ file tpl														CONFUS : STAND-BY
 	
 DIMENSIONS
 
-	XD :
+	XD :																		OK
 		- btn fb/twitch icon (check en mode tplmodel/tpl)
 		- text multiline
 		- bulle item dans padding.xd, height gerable ?
 
-	remove measured coordinate of root elmt
+	remove measured coordinate of root elmt										OK
+	why root element positionné ?												todo
 	
 	size less in height (than in width)
-	what to size
-		parent to child
-		child to parent
-	remove comments ?
-	understand when 100% is equivalent to nothing ?
-	% ?
+	remove comments
 	
 	auto = children size parent
 	% = parent size children
@@ -356,15 +348,17 @@ DIMENSIONS
 		no width/height
 		no vertical margin / padding (tocheck)
 	
-	tag img => must decide width or height (voir btn fb/twitch icon, reusability.xd)
-	box-sizing property sur * (dependency)
+	tag img => must decide width or height (voir btn fb/twitch icon)			todo
+		add error if forget
+		
+	box-sizing property sur * (dependency)										OK
 		make width/height contain the padding (much more predictable)
 		
 	text multiligne : sizer en w
 		
 	width:100%, max-width:x for img
 	
-	todo : réfléchir
+	
 	auto par défaut, donc pas d'interet a le définir auto
 	- height rarement statique, donc pas bien de le définir
 	- background-image, obligé
@@ -377,18 +371,19 @@ DIMENSIONS
 	or just % / px / em / rem => auto measure
 		implement only px ds un 1er tps
 		
-	--w => width=px
-	--fw => width=100%
+	______________________________________________
+	--w => width=px																todo
+	--fw => width=100%															todo
 	(idem with height)
 	
-	ptet des contexte ou par defaut, on met la mesure ?
 	
-	autoset :
+	autoset :																	todo
 		- height px if contain a child centery (overridable if need %)
 	
+	flex_shorhand, lit propsModel => doit lire item.w
+	bug a venir sur retina size "width/height" (tocheck)
 	
-	
-	
+	problem de collapsing margin ? sur dimensions.xd btn_fb/twitch
 	
 	
 	
@@ -530,8 +525,10 @@ line spacing (refactoring too)		OK
 
 reusability (plus gros morceaux)	OK
 chapter padding						OK
-chapter center
-dimensions
+chapter center						OK
+dimensions							en cours
+reusability (2 pts)
+extensible
 ---------------------
 flex center
 style range

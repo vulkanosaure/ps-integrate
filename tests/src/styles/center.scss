@@ -3,6 +3,7 @@
 .page-center{
 	position:relative;
 	//width:1342px;
+	margin:38px 0 0 35px;
 	
 	&-0{
 		position:absolute;
@@ -137,13 +138,12 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:0 80px;
 		
 		& > div:nth-child(1){
 			height:51px; width:74px;
 			background-color:#871919;
 			flex:0 0 auto;
-			margin:auto 0;
+			margin:auto 0 auto 80px;
 		}
 		
 		& > div:nth-child(2){
@@ -227,13 +227,12 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:0 97px;
 		
 		& > div{
 			height:51px; width:127px;
 			background-color:#871919;
 			flex:0 0 auto;
-			margin:auto 0;
+			margin:auto 0 auto 97px;
 		}
 	}
 	
@@ -243,12 +242,11 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:65px 0;
 		
 		& > div{
 			width:127px; height:51px;
 			background-color:#871919;
-			margin:0 auto;
+			margin:65px auto 0;
 		}
 	}
 	
@@ -262,11 +260,11 @@
 		border:5px solid #000000;
 		
 		& > p{
+			line-height:181px;
 			//width:119px; height:55px;
-			text-align:left;
+			text-align:center;
 			color:#ffffff;
 			flex:0 0 auto;
-			margin:auto;
 		}
 	}
 	
@@ -278,14 +276,57 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:0 101px;
 		
 		& > p{
+			line-height:181px;
+			margin-left:101px;
 			height:55px; //width:119px;
 			text-align:left;
 			color:#ffffff;
 			flex:0 0 auto;
-			margin:auto 0;
+		}
+	}
+	
+	.contcenterx3{
+		display:flex;
+		flex-direction:column;
+		position:absolute;
+		left:972px; top:326px;
+		width:322px; height:181px;
+		background-color:#aa8d00;
+		border:5px solid #000000;
+		
+		& > div{
+			//width:127px; height:51px;
+			flex:0 0 auto;
+			margin:auto;
+			
+			& > div{
+				width:127px; height:51px;
+				background-color:#871919;
+			}
+		}
+	}
+	
+	.contcenterx2{
+		display:flex;
+		flex-direction:column;
+		position:absolute;
+		left:572px; top:326px;
+		width:322px; height:181px;
+		background-color:#aa8d00;
+		border:5px solid #000000;
+		
+		& > div{
+			height:55px; //width:119px;
+			flex:0 0 auto;
+			margin:auto 0 auto 101px;
+			
+			& > p{
+				//width:119px;
+				text-align:left;
+				color:#ffffff;
+			}
 		}
 	}
 	
@@ -295,11 +336,10 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:73px 0 53px;
 		
 		& > div{
 			//width:119px;
-			margin:0 auto;
+			margin:73px auto 0;
 			
 			& > p{
 				//width:119px;
@@ -315,13 +355,12 @@
 		width:322px; height:181px;
 		background-color:#aa8d00;
 		border:5px solid #000000;
-		padding:73px 0 53px;
 		
 		& > p{
+			margin-top:73px;
 			//width:119px;
-			text-align:left;
+			text-align:center;
 			color:#ffffff;
-			margin:0 auto;
 		}
 	}
 	
@@ -361,11 +400,11 @@
 			flex:0 0 auto;
 			
 			& > p{
+				line-height:50px;
 				//width:110px; height:18px;
-				text-align:left;
+				text-align:center;
 				color:#ffffff;
 				flex:0 0 auto;
-				margin:auto;
 			}
 		}
 	}
@@ -469,7 +508,6 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:0 6px 20px 0;
 		
 		&-0{
 			display:flex;
@@ -499,13 +537,12 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:10px 0;
 		
 		&-0{
 			display:flex;
 			flex-direction:row;
 			//width:135px;
-			margin:0 auto;
+			margin:10px auto 0;
 			
 			&-icon{
 				width:9px; height:20px;
@@ -529,14 +566,13 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:0 104px;
 		
 		&-0{
 			display:flex;
 			flex-direction:row;
 			height:24px; //width:135px;
 			flex:0 0 auto;
-			margin:auto 0;
+			margin:auto 0 auto 104px;
 			
 			&-icon{
 				width:9px; height:20px;
@@ -561,13 +597,12 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:0 1px 1px;
 		
 		&-0{
 			display:flex;
 			flex-direction:row;
-			margin-top:auto;
 			height:20px; //width:135px;
+			margin:auto 0 0 1px;
 			
 			&-icon{
 				width:9px; height:20px;
@@ -670,9 +705,9 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:0 119px;
 		
 		&-icon{
+			margin-left:119px;
 			width:9px; height:20px;
 			background-image:url('images/center/btn-fb52-icon.png');
 			flex:0 0 auto;
@@ -695,9 +730,9 @@
 		width:345px; height:40px;
 		background-color:#3a5a97;
 		border-radius:20px;
-		padding:0 119px;
 		
 		&-icon{
+			margin-left:119px;
 			width:9px; height:20px;
 			background-image:url('images/center/btn-fb5-icon.png');
 			flex:0 0 auto;
@@ -745,9 +780,9 @@
 		background-color:#65bf84;
 		border-bottom-right-radius:10px;
 		border-bottom-left-radius:10px;
-		padding:17px 0 15px;
 		
 		& > p{
+			margin-top:17px;
 			//width:110px;
 			text-align:left;
 			color:#ffffff;
@@ -764,9 +799,9 @@
 		background-color:#65bf84;
 		border-bottom-right-radius:10px;
 		border-bottom-left-radius:10px;
-		padding:0 44px;
 		
 		& > p{
+			margin-left:44px;
 			//width:110px;
 			text-align:left;
 			color:#ffffff;

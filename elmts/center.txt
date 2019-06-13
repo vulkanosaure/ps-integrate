@@ -123,7 +123,7 @@ ALGO
 	voir si line-height ou autre
 
 	
-passer factorisation sur dir==col
+passer factorisation sur dir==col													OK
 	voir quel degré de dupplication/factorisation
 	
 trouver un exemple ou text est transformé en span
@@ -131,7 +131,7 @@ trouver un exemple ou text est transformé en span
 	=> chapter TAGS
 	
 	
-nettoyer les commentaires
+nettoyer les commentaires															OK
 
 _____________________________________________________________________
 FLEX

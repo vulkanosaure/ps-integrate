@@ -44,8 +44,6 @@ var OPT_LAYOUT_X = file_constantes.OPT_LAYOUT_X;
 var OPT_LAYOUT_Y = file_constantes.OPT_LAYOUT_Y;
 var OPT_POS_X = file_constantes.OPT_POS_X;
 var OPT_POS_Y = file_constantes.OPT_POS_Y;
-var OPT_WIDTH = file_constantes.OPT_WIDTH;
-var OPT_HEIGHT = file_constantes.OPT_HEIGHT;
 var OPT_EQUALOFFSET = file_constantes.OPT_EQUALOFFSET;
 var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
@@ -126,7 +124,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 			var item = create_item(layer, name, type, parentItem, level, i2, params);
 			type = item[imp.OPT_TYPE];
-			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.width) + ", height : " + Math.round(item.height), level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.height), level);
 			
 			
 			var errors = check_error_item(name, item);
@@ -397,25 +395,14 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	output.position = [x1, y1];
 	
-	output.width = Math.round(bounds[4]);
-	output.height = Math.round(bounds[5]);
+	output.widthPx = Math.round(bounds[4]);
+	output.heightPx = Math.round(bounds[5]);
 	
 	
 	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
 	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
 	
 	
-
-	if (has_option(name, OPT_WIDTH)) {
-		var val = get_value_option(name, OPT_WIDTH);
-		val = getPercentValue(val) / 100;
-		output[OPT_WIDTH] = Math.round(val * imp.DOC_WIDTH);
-	}
-	if (has_option(name, OPT_HEIGHT)) {
-		var val = get_value_option(name, OPT_HEIGHT);
-		val = getPercentValue(val) / 100;
-		output[OPT_HEIGHT] = Math.round(val * imp.DOC_HEIGHT);
-	}
 	
 	
 	
@@ -493,9 +480,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, OPT_LAYOUT_X)) {
 		var layout = get_value_option(name, OPT_LAYOUT_X);
 
-		var parentsize = parentItem ? parentItem.width : imp.DOC_WIDTH;
+		var parentsize = parentItem ? parentItem.widthPx : imp.DOC_WIDTH;
 		if (layout == "right"){
-			output.margin_right = parentsize - (output.position[0] + output.width);
+			output.margin_right = parentsize - (output.position[0] + output.widthPx);
 			// output[OPT_POSITION] = "absolute";
 		}
 		output[OPT_LAYOUT_X] = layout;
@@ -507,9 +494,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, OPT_LAYOUT_Y)) {
 		var layout = get_value_option(name, OPT_LAYOUT_Y);
 
-		var parentsize = parentItem ? parentItem.height : imp.DOC_HEIGHT;
+		var parentsize = parentItem ? parentItem.heightPx : imp.DOC_HEIGHT;
 		if (layout == "bottom"){
-			output.margin_bottom = parentsize - (output.position[1] + output.height);
+			output.margin_bottom = parentsize - (output.position[1] + output.heightPx);
 			// output[OPT_POSITION] = "absolute";
 		}
 		output[OPT_LAYOUT_Y] = layout;
@@ -587,7 +574,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		}
 		
 		//added for : border and radius
-		output["shapedata"] = imp.getShapeData(layer, output.width, output.height, filter);
+		output["shapedata"] = imp.getShapeData(layer, output.widthPx, output.heightPx, filter);
 		
 		var filter = [
 			'bgColor',
@@ -612,7 +599,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	if (type == imp.TYPE_SHAPE) {
 		
-		output["shapedata"] = imp.getShapeData(layer, output.width, output.height);
+		output["shapedata"] = imp.getShapeData(layer, output.widthPx, output.heightPx);
 		
 		if (output[OPT_BGPARENT]) {
 			parentItem.shapedata = output.shapedata;
@@ -688,8 +675,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 				else if(output.position[1] < parentItem["p_top"]) parentItem["p_top"] = output.position[1];
 			}
 			
-			let p_right = parentItem.width - (output.position[0] + output.width);
-			let p_bottom = parentItem.height - (output.position[1] + output.height);
+			let p_right = parentItem.widthPx - (output.position[0] + output.widthPx);
+			let p_bottom = parentItem.heightPx - (output.position[1] + output.heightPx);
 			
 			if(!parentItem.hasOwnProperty("p_right")) parentItem["p_right"] = p_right;
 			else if(p_right < parentItem["p_right"]) parentItem["p_right"] = p_right;

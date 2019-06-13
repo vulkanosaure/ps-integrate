@@ -82,6 +82,9 @@ TPL_FUNCTIONS["html"] = {
 		var cx = item[imp.OPT_CHILDREN_X];
 		var cy = item[imp.OPT_CHILDREN_Y];
 		
+		var isText = ([imp.TYPE_TEXT].indexOf(item.type) != -1);
+		var prevStaticItem = isLayerOfType;
+		
 		var propsModel = {};
 		var name = item[imp.OPT_NAME];
 		var valuedir = item[imp.OPT_DIRECTION] == 'row' ? 'row' : 'column';
@@ -90,7 +93,13 @@ TPL_FUNCTIONS["html"] = {
 			
 			item.display = 'flex';
 		}
+		/* 
+		trace(item.name+', dir : '+valuedir+', cx : '+cx+', cy : '+cy+', display : '+item.display);
 		
+		if(item.name == 'divcentery'){
+			throw new Error('test');
+		}
+		 */
 		
 		
 		trace('item.name : '+item.name + ', cx : '+cx+', cy : '+cy);
@@ -131,26 +140,29 @@ TPL_FUNCTIONS["html"] = {
 		//if all children (static, !bgparent) are centerx => pas de padding x
 		
 		if(item.allCenterX){
-			item["p_left"] = 0;
-			item["p_right"] = 0;
+			item["p_left"] = 0; item["p_right"] = 0;
 		}
 		if(item.allCenterY){	
-			item["p_top"] = 0;
-			item["p_bottom"] = 0;
+			item["p_top"] = 0; item["p_bottom"] = 0;
+		}
+		//if only 1 child
+		if(item.childrens && item.childrens.length == 1){
+			item["p_left"] = 0; item["p_right"] = 0
+			item["p_top"] = 0; item["p_bottom"] = 0;
 		}
 		
 		//not if row && childrenx
 		if(/* valuedir == 'row' &&  */cx){
-			item["p_left"] = 0;
-			item["p_right"] = 0;
+			item["p_left"] = 0; item["p_right"] = 0;
 		}
-
 		//not if col && childreny
 		if(/* valuedir == 'column' &&  */cy){
-			item["p_top"] = 0;
-			item["p_bottom"] = 0;
+			item["p_top"] = 0; item["p_bottom"] = 0;
 		}
 		
+		if(valuedir == 'row'){
+			item["p_left"] = 0; item["p_right"] = 0;
+		}
 		
 		
 		
@@ -202,137 +214,75 @@ TPL_FUNCTIONS["html"] = {
 			
 			var direction = parent ? parent[imp.OPT_DIRECTION] : 'col';
 			
+			
+			//_________________________
 			if(direction == "row"){
 				
-				//relative to prev child
-				var prevPosition = isLayerOfType ? isLayerOfType.position[0] : 0;
-				var prevDim = isLayerOfType ? isLayerOfType[imp.OPT_WIDTH] : 0;
-				
-				var value_flow = x - (prevPosition + prevDim);
-				var value_abs = y;
-				
-				
-				
-				var value = x - (prevPosition + prevDim);
-				var value2 = y;
-				
-				
-				
-				//_________________________________________________
-				//version factorisée
-				
-				var isText = ([imp.TYPE_TEXT].indexOf(item.type) != -1);
-				
-				//todo :  integrer align right/bottom
-				
-				//si le parent a un ccenterx ou cright, et que c'est le premier child
-				if(parent){
-					var pcx = parent[imp.OPT_CHILDREN_X];
-					if(pcx && pcx != 'left' && !isLayerOfType) value_flow = 0;
-					
-					var pcy = parent[imp.OPT_CHILDREN_Y];
-					if(pcy && pcy != 'top') value_abs = 0;
-				}
-				
-				var top = ly != 'top' ? 'auto' : value_abs;
-				var left = lx != 'left' ? 'auto' : value_flow;
-				
-				var bottom = ly == 'center' ? 'auto' : null;
-				var right = lx == 'center' ? 'auto' : null;
-				
-				if(isText && ly == 'center'){
-					var v = parent[imp.OPT_HEIGHT] + "px";
-					propsModel["lineHeight"] = {name : 'line-height', value : v, quote : 'none'};
-					top = null; bottom = null;
-				}
-				
-				
-				
-				
-				imp.setMarginValue(propsModel, 'margin_top2', 'margin-top', top);
-				imp.setMarginValue(propsModel, 'margin_left2', 'margin-left', left);
-				imp.setMarginValue(propsModel, 'margin_right2', 'margin-right', right);
-				imp.setMarginValue(propsModel, 'margin_bottom2', 'margin-bottom', bottom);
-				
-				//_________________________________________________
-				
-				/* 
-				if(lx == "center"){
-					
-					propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
-					propsModel["margin_left2"] = { name: 'margin-left', value: 'auto' };
-					propsModel["margin_right2"] = { name: 'margin-right', value: 'auto' };
-					
-				}
-				else{
-					if(parent){
-						
-						var pcx = parent[imp.OPT_CHILDREN_X];
-						if(pcx && pcx != 'left' && !isLayerOfType) value = 0;
-						
-						propsModel["margin_left2"] = { name: 'margin-left', value: value, sufix: 'px' };
-						
-						//cross align
-						if(!parent || !parent[imp.OPT_CHILDREN_Y]){
-							propsModel["margin_top2"] = { name: 'margin-top', value: value2, sufix: 'px' };
-						}
-						
-					}
-				}
-				if(ly == "center"){
-					propsModel["margin_top2"] = { name: 'margin-top', value: 'auto' };
-					propsModel["margin_bottom2"] = { name: 'margin-bottom', value: 'auto' };
-				}
-				 */
-				
-				
+				var prevPosition = prevStaticItem ? prevStaticItem.position[0] : 0;
+				var prevDim = prevStaticItem ? prevStaticItem.widthPx : 0;
+				var valuex = x - (prevPosition + prevDim);
+				var valuey = y;
 			}
 			else if(direction == "col"){
 				
-				//define other one as abs
-				var value2 = x;
-				
-				//relative to prev child
-				var prevPosition = isLayerOfType ? isLayerOfType.position[1] : 0;
-				var prevDim = isLayerOfType ? isLayerOfType[imp.OPT_HEIGHT] : 0;
-				var value = y - (prevPosition + prevDim);
-				
-				
-				
-				if(lx == "center"){
-					// propsModel["margin_global"] = { name: 'margin', value: value, sufix:'px auto 0 auto' };
-					
-					propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
-					propsModel["margin_left2"] = { name: 'margin-left', value: 'auto' };
-					propsModel["margin_right2"] = { name: 'margin-right', value: 'auto' };
-					
-				}
-				else{
-					
-					if(parent){
-						
-						var pcy = parent[imp.OPT_CHILDREN_Y];
-						if(pcy && pcy != 'top' && !isLayerOfType) value = 0;
-						
-						//cross align
-						if(!parent || !parent[imp.OPT_CHILDREN_X]){
-							propsModel["margin_left2"] = { name: 'margin-left', value: value2, sufix: 'px' };
-						}
-						propsModel["margin_top2"] = { name: 'margin-top', value: value, sufix: 'px' };
-					}
-					
-				}
-				
-				
-				
-				if(ly == "center"){
-					propsModel["margin_top2"] = { name: 'margin-top', value: 'auto' };
-					propsModel["margin_bottom2"] = { name: 'margin-bottom', value: 'auto' };
-					//todo : parent flex
-					
-				}
-				
+				var prevPosition = prevStaticItem ? prevStaticItem.position[1] : 0;
+				var prevDim = prevStaticItem ? prevStaticItem.heightPx : 0;
+				var valuex = x;
+				var valuey = y - (prevPosition + prevDim);
 			}
+			
+			
+			
+			var firstX = direction == 'col' || !prevStaticItem;
+			var firstY = direction == 'row' || !prevStaticItem;
+			
+			if(parent){
+				//si parent align en x, et first child child
+				var pcx = parent[imp.OPT_CHILDREN_X] || 'left';
+				if(pcx != 'left' && firstX) valuex = 0;
+				
+				var pcy = parent[imp.OPT_CHILDREN_Y] || 'top';
+				if(pcy != 'top' && firstY) valuey = 0;
+			}
+			
+			var top = ly != 'top' ? 'auto' : valuey;
+			var left = lx != 'left' ? 'auto' : valuex;
+			
+			var bottom = ly == 'center' ? 'auto' : null;
+			var right = lx == 'center' ? 'auto' : null;
+			
+			
+			if(isText){
+				if(lx != 'left'){
+					item.textdata.halign = lx;
+					left = null; right = null;
+				}
+				if(ly == 'center'){
+					var v = parent.heightPx + "px";
+					propsModel["lineHeight"] = {name : 'line-height', value : v, quote : 'none'};
+					top = null; bottom = null;
+				}
+			}
+			
+			
+			//todo later 
+			//if item no width and lx != left
+			//item.display = inline-block
+			//parent.text-align = 'center'
+			//a faire dans recursive loop
+			
+			
+			
+			if(!parent){
+				top = null;
+				if(left != 'auto') left = null;
+			}
+			
+			
+			imp.setMarginValue(propsModel, 'margin_top2', 'margin-top', top);
+			imp.setMarginValue(propsModel, 'margin_left2', 'margin-left', left);
+			imp.setMarginValue(propsModel, 'margin_right2', 'margin-right', right);
+			imp.setMarginValue(propsModel, 'margin_bottom2', 'margin-bottom', bottom);
 			
 			
 			
@@ -340,7 +290,7 @@ TPL_FUNCTIONS["html"] = {
 			
 			//substract padding to margin
 			if(parent){
-				if(!isLayerOfType || direction == "col"){		//is first static item
+				if(!prevStaticItem || direction == "col"){		//is first static item
 					if(parent["p_left"] > 0){
 						if(propsModel["margin_left2"] && propsModel["margin_left2"].value != 'auto'){
 							propsModel["margin_left2"].value -= parent["p_left"];
@@ -348,7 +298,7 @@ TPL_FUNCTIONS["html"] = {
 					}
 				}
 				
-				if(!isLayerOfType || direction == "row"){		//is first static item
+				if(!prevStaticItem || direction == "row"){		//is first static item
 					if(parent["p_top"] > 0){
 						if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 'auto'){
 							propsModel["margin_top2"].value -= parent["p_top"];
@@ -367,7 +317,7 @@ TPL_FUNCTIONS["html"] = {
 			/* 
 			if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 0){
 				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
-					if(!isLayerOfType){		//is first static item
+					if(!prevStaticItem){		//is first static item
 						if(!parent.shapedata || !parent.shapedata.borderWidth){
 							
 							var marginValue = propsModel["margin_top2"].value;
@@ -394,13 +344,7 @@ TPL_FUNCTIONS["html"] = {
 		if(item["p_left"] > 0) propsModel["p_left"] = { name: 'padding-left', sufix: 'px' };
 		if(item["p_top"] > 0) propsModel["p_top"] = { name: 'padding-top', sufix: 'px' };
 		if(item["p_right"] > 0){
-			
-			//if more padding right than left, 
-			//consider it's because the content doesn't fill up the line
-			//equalize
-			
-			// let value = item["p_right"];
-			// if(value > item["p_left"]) value = item["p_left"];
+			//if more padding right than left, equalize
 			let value = item["p_left"];
 			propsModel["p_right"] = { name: 'padding-right', value: value, sufix: 'px' };
 		}
@@ -411,53 +355,26 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		
+		/* 
+		if(lx != "left") item[imp.OPT_WIDTH] = 'px';
+		if(ly != "top") item[imp.OPT_HEIGHT] = 'px';
+		*/
 		
-		if(lx != "left") propsModel["width"] = {sufix : "px"};
-		if(ly != "top") propsModel["height"] = {sufix : "px"};
-		
-		if([imp.TYPE_TEXT].indexOf(item.type) != -1){
+		if(isText){
 			
 			let tdata = item.textdata;
-			
-			propsModel["width"] = {sufix : "px", comment:true};
-			// propsModel["height"] = {sufix : "px", comment:true};
-			
-			
 			var halign = tdata.halign;
 			propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
 			
-			//change strategy, keep margin auto strategy
-			//text-align oblige à sizer à 100%, et dénature l'info (on peut vouloir centrer un paragraphe aligner à gauche)
-			/* 
-			if(lx == 'center'){
-				delete propsModel["margin_left2"];
-				delete propsModel["margin_right2"];
-			}
-			 */
-			
-			 /* 
-			if(ly == 'center'){
-				let value = parent[imp.OPT_HEIGHT] + "px";
-				propsModel["lineHeight"] = {name : 'line-height', value : value, quote : 'none'};
-				delete propsModel["margin_top2"];
-				delete propsModel["margin_bottom2"];
-				delete propsModel["padding_top"];
-				delete propsModel["padding_bottom"];
-			}
-			 */
-			
-			
-			// trace('tdata.color : '+tdata.color);
 			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
 			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};
-			
 			
 		}
 		
 		if(item.has_graphic){
 			
-			propsModel["width"] = {sufix : "px", br : false};
-			propsModel["height"] = {sufix : "px"};
+			item[imp.OPT_WIDTH] = 'px';
+			item[imp.OPT_HEIGHT] = 'px';
 			
 			if(item.tag != 'img'){
 				propsModel["background-image"] = {
@@ -467,8 +384,8 @@ TPL_FUNCTIONS["html"] = {
 			
 			//retina
 			if(config.retina){
-				var w = Math.round(item['width'] * 0.5);
-				var h = Math.round(item['height'] * 0.5);
+				var w = Math.round(item.widthPx * 0.5);
+				var h = Math.round(item.heightPx * 0.5);
 				
 				propsModel["retinaBG"] = {
 					value : "@include retinaBg('"+config.prefix_images + item.fullpath_noext+"', "+w+"px, "+h+"px)", raw:true, comment:true
@@ -478,7 +395,7 @@ TPL_FUNCTIONS["html"] = {
 		}
 		else if(item.type == imp.TYPE_CONTAINER){
 			//ajoute qd mm la width en comment
-			propsModel["width"] = {sufix : "px", comment:true};
+			item[imp.OPT_WIDTH] = 'px';
 		}
 		
 		//no else, can be cumulative
@@ -487,10 +404,10 @@ TPL_FUNCTIONS["html"] = {
 			let s = item.shapedata;
 			let isContainer = (imp.CONTAINERS_TYPE.indexOf(item.type) != -1);
 			
-			propsModel["width"] = {sufix : "px", br: false};
-			if(!isContainer) propsModel["height"] = {sufix : "px"};
+			item[imp.OPT_WIDTH] = 'px';
+			if(!isContainer) item[imp.OPT_HEIGHT] = 'px';
 			//temp
-			if(imp.DEBUG_MODE) propsModel["height"] = {sufix : "px"};
+			// if(imp.DEBUG_MODE) item[imp.OPT_HEIGHT] = 'px';
 			
 			
 			if(s.bgColor){
@@ -547,12 +464,43 @@ TPL_FUNCTIONS["html"] = {
 		
 		if(parent && parent.display == 'flex'){
 			
-			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? 'width' : 'height';
-			if(propsModel[testdim] && !propsModel[testdim].comment){
+			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? imp.OPT_WIDTH : imp.OPT_HEIGHT;
+			if(item[testdim]){
 				let value = '0 0 auto';
 				propsModel['flex_shorhand'] = {name: "flex", value: value};
 			}
 			
+		}
+		
+		
+		
+		//write dimensions
+		
+		if(item[imp.OPT_WIDTH]){
+			
+			var width = item[imp.OPT_WIDTH];
+			var value;
+			var suffix;
+			if(width == 'px'){
+				value = item.widthPx;
+				suffix = 'px';
+			}
+			else throw new Error('todo');
+			
+			propsModel["width"] = { value: value, sufix : suffix };
+		}
+		if(item[imp.OPT_HEIGHT]){
+			
+			var height = item[imp.OPT_HEIGHT];
+			var value;
+			var suffix;
+			if(height == 'px'){
+				value = item.heightPx;
+				suffix = 'px';
+			}
+			else throw new Error('todo');
+			
+			propsModel["height"] = { value: value, sufix : suffix };
 		}
 		
 		
