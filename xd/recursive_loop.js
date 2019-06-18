@@ -94,7 +94,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 		if (!enable) continue;
 
 		var isContainer = isLayerContainer(layer);
-		var name = getLayerName(layer,);
+		var name = getLayerName(layer);
 		tracerec('name : '+name, level);
 		
 		
@@ -380,7 +380,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 
 	var bounds = getBounds(layer, type);
-	var bounds_l = imp.getBoundsLocal(layer, type);
+	// var bounds_l = imp.getBoundsLocal(layer, type);
 	output.bounds = bounds;
 	
 	// tracerec('bounds l : '+bounds_l.map(item => Math.round(item)).join(', '), level);

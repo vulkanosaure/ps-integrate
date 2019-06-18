@@ -614,6 +614,29 @@ function setMarginValue(model, key, prop, value)
 }
 
 
+function getDimensionValue(parent, item, prop, propPx)
+{
+	var dim = item[prop];
+	var value;
+	var suffix;
+	if(dim == 'px'){
+		value = item[propPx];
+		suffix = 'px';
+	}
+	else if(dim == '%'){
+		let parentDim = parent ? parent[propPx] : 0;
+		let percent;
+		if(parent) percent = Math.round(item[propPx] / parent[propPx] * 100);
+		else percent = 100;
+		value = percent;
+		suffix = '%';
+	}
+	else throw new Error('todo');
+	
+	return { value: value, sufix : suffix };
+}
+
+
 
 
 
@@ -644,4 +667,5 @@ module.exports = {
 	nl2br,
 	getFlexAlignValue,
 	setMarginValue,
+	getDimensionValue,
 };

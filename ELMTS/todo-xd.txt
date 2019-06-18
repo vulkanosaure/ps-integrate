@@ -228,7 +228,9 @@ keyboard shorcut
 	
 	shortcut hide/show (ctrl+H or closer ctrl+D)
 	
-	algo : order layers in each group (vertical puis horizontal)
+	algo : 
+		order layers in each group (vertical puis horizontal)
+		group container if bgparent (easy)
 	
 	
 
@@ -332,7 +334,7 @@ DIMENSIONS
 		- bulle item dans padding.xd, height gerable ?
 
 	remove measured coordinate of root elmt										OK
-	why root element positionné ?												todo
+	why root element positionné ?												OK
 	
 	size less in height (than in width)
 	remove comments
@@ -348,13 +350,10 @@ DIMENSIONS
 		no width/height
 		no vertical margin / padding (tocheck)
 	
-	tag img => must decide width or height (voir btn fb/twitch icon)			todo
-		add error if forget
 		
 	box-sizing property sur * (dependency)										OK
 		make width/height contain the padding (much more predictable)
 		
-	text multiligne : sizer en w
 		
 	width:100%, max-width:x for img
 	
@@ -377,14 +376,29 @@ DIMENSIONS
 	(idem with height)
 	
 	
-	autoset :																	todo
+	autoset :																	OK
 		- height px if contain a child centery (overridable if need %)
+		si child set width px => et parent DIRECT has same width px => set 100%
+			voir dimensions.xd => quiz-footer
+			
+			
+	
+	si remove padding y => set height											OK
 	
 	flex_shorhand, lit propsModel => doit lire item.w
 	bug a venir sur retina size "width/height" (tocheck)
 	
-	problem de collapsing margin ? sur dimensions.xd btn_fb/twitch
+	bug btn fb/twitch (centery)													OK
+	bug pointe bulle bottom
+	bug center rate row (star)
+	bug padding top quiz
 	
+	tester de disable des height/widht, voir ou on peut en eliminer				OK
+	
+	tag img => must decide width or height (voir btn fb/twitch icon)			todo
+		add error if forget
+	
+	text multiligne : sizer en w
 	
 	
 RESET
@@ -422,7 +436,7 @@ export inline-svg
 	
 	
 	
-paddings																	EN COURS
+paddings																	OK
 	only for container column
 	only nb children > 1		NO
 	toute les paddings, (horrizontal, top, bottom)
@@ -440,7 +454,7 @@ paddings																	EN COURS
 	
 
 
-FLEX CENTER
+FLEX CENTER																	OK
 
 	maybe reformat alignitems into cross-align (align-items)
 	
@@ -463,7 +477,7 @@ FLEX CENTER
 	
 	
 	
-bounds abs
+bounds abs																	OK
 	il faudrait que les item ABS n'influent pas sur les bounds
 	au moment de mesurer (getBounds)
 		il faudrait scanner tous les children (non-recursif)

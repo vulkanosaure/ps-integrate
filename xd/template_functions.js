@@ -117,17 +117,39 @@ TPL_FUNCTIONS["html"] = {
 			if(cx){
 				var valuecx = imp.getFlexAlignValue(cx);
 				if(!valuecx) throw new Error('wrong value '+cx);
-				
 				var prop = valuedir == 'column' ? 'align-items' : 'justify-content';
 				propsModel["childrenx"] = { name: prop, value: valuecx, quote: "none" };
 			}
 			if(cy){
 				var valuecy = imp.getFlexAlignValue(cy);
 				if(!valuecy) throw new Error('wrong value '+cy);
-				
 				var prop = valuedir == 'row' ? 'align-items' : 'justify-content';
 				propsModel["childreny"] = { name: prop, value: valuecy, quote: "none" };
 			}
+			
+			if(item[imp.OPT_POSITION] != "absolute" && parent && parent.display != 'flex'){
+				if(lx != 'left'){
+					//if text => text align
+					if(isText){
+						item.halignLayout = lx;
+					}
+					else{
+						var valuecx = imp.getFlexAlignValue(lx);
+						if(!valuecx) throw new Error('wrong value '+lx);
+						var prop = valuedir == 'column' ? 'align-items' : 'justify-content';
+						propsModel["layoutx"] = { name: prop, value: valuecx, quote: "none" };
+					}
+					
+				}
+				if(ly != 'top'){
+					var valuecy = imp.getFlexAlignValue(ly);
+					if(!valuecy) throw new Error('wrong value '+ly);
+					var prop = valuedir == 'row' ? 'align-items' : 'justify-content';
+					propsModel["layouty"] = { name: prop, value: valuecy, quote: "none" };
+				}
+			}
+			
+			
 			
 		}
 		
@@ -144,11 +166,13 @@ TPL_FUNCTIONS["html"] = {
 		}
 		if(item.allCenterY){	
 			item["p_top"] = 0; item["p_bottom"] = 0;
+			item[imp.OPT_HEIGHT] = 'px';
 		}
 		//if only 1 child
 		if(item.childrens && item.childrens.length == 1){
 			item["p_left"] = 0; item["p_right"] = 0
 			item["p_top"] = 0; item["p_bottom"] = 0;
+			item[imp.OPT_HEIGHT] = 'px';
 		}
 		
 		//not if row && childrenx
@@ -272,10 +296,45 @@ TPL_FUNCTIONS["html"] = {
 			//a faire dans recursive loop
 			
 			
-			
+			//root element, remove margin (except auto)
 			if(!parent){
 				top = null;
 				if(left != 'auto') left = null;
+			}
+			
+			
+			
+			
+			
+			
+			//substract padding parent to margin item
+			if(parent){
+				if(!prevStaticItem || direction == "col"){		//is first static item
+					if(parent["p_left"] > 0){
+						if(left && left != 'auto') left -= parent["p_left"];
+					}
+				}
+				
+				if(!prevStaticItem || direction == "row"){		//is first static item
+					if(parent["p_top"] > 0){
+						if(top && top != 'auto') top -= parent["p_top"];
+					}
+				}
+			}
+			
+			
+			
+			// collapsed margin
+			
+			if(top && top != 0 && top != 'auto'){
+				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
+					if(!prevStaticItem){		//is first static item
+						if(!parent.shapedata || !parent.shapedata.borderWidth){
+							item["p_top"] = top;
+							top = null;
+						}
+					}
+				}
 			}
 			
 			
@@ -283,52 +342,6 @@ TPL_FUNCTIONS["html"] = {
 			imp.setMarginValue(propsModel, 'margin_left2', 'margin-left', left);
 			imp.setMarginValue(propsModel, 'margin_right2', 'margin-right', right);
 			imp.setMarginValue(propsModel, 'margin_bottom2', 'margin-bottom', bottom);
-			
-			
-			
-			
-			
-			//substract padding to margin
-			if(parent){
-				if(!prevStaticItem || direction == "col"){		//is first static item
-					if(parent["p_left"] > 0){
-						if(propsModel["margin_left2"] && propsModel["margin_left2"].value != 'auto'){
-							propsModel["margin_left2"].value -= parent["p_left"];
-						}
-					}
-				}
-				
-				if(!prevStaticItem || direction == "row"){		//is first static item
-					if(parent["p_top"] > 0){
-						if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 'auto'){
-							propsModel["margin_top2"].value -= parent["p_top"];
-						}
-					}
-				}
-				
-			}
-			
-			
-			
-			//PROBABLY USELESS NOW (tocheck)
-			
-			//collapsed margin 
-			//(top only, voir si left necessary)
-			/* 
-			if(propsModel["margin_top2"] && propsModel["margin_top2"].value != 0){
-				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
-					if(!prevStaticItem){		//is first static item
-						if(!parent.shapedata || !parent.shapedata.borderWidth){
-							
-							var marginValue = propsModel["margin_top2"].value;
-							delete propsModel["margin_top2"];
-							propsModel["padding_top"] = { name: 'padding-top', value: marginValue, sufix: 'px' };
-						}
-					}
-				}
-			}
-			*/
-			
 			
 			
 			
@@ -371,6 +384,11 @@ TPL_FUNCTIONS["html"] = {
 			
 		}
 		
+		if(item.halignLayout){
+			propsModel["halign"] = {name : 'text-align', value : item.halignLayout, quote : 'none'};
+		}
+		
+		
 		if(item.has_graphic){
 			
 			item[imp.OPT_WIDTH] = 'px';
@@ -395,7 +413,7 @@ TPL_FUNCTIONS["html"] = {
 		}
 		else if(item.type == imp.TYPE_CONTAINER){
 			//ajoute qd mm la width en comment
-			item[imp.OPT_WIDTH] = 'px';
+			// item[imp.OPT_WIDTH] = 'px';
 		}
 		
 		//no else, can be cumulative
@@ -474,33 +492,21 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		
+		//si child set width px => et parent DIRECT has same width px => set 100%
+		if(item[imp.OPT_WIDTH] == 'px' && parent && parent[imp.OPT_WIDTH] == 'px'){
+			if(item.widthPx == parent.widthPx) item[imp.OPT_WIDTH] = '%';
+		}
+		if(item[imp.OPT_HEIGHT] == 'px' && parent && parent[imp.OPT_HEIGHT] == 'px'){
+			if(item.heightPx == parent.heightPx) item[imp.OPT_HEIGHT] = '%';
+		}
+		
 		//write dimensions
 		
 		if(item[imp.OPT_WIDTH]){
-			
-			var width = item[imp.OPT_WIDTH];
-			var value;
-			var suffix;
-			if(width == 'px'){
-				value = item.widthPx;
-				suffix = 'px';
-			}
-			else throw new Error('todo');
-			
-			propsModel["width"] = { value: value, sufix : suffix };
+			propsModel["width"] = imp.getDimensionValue(parent, item, imp.OPT_WIDTH, 'widthPx');
 		}
 		if(item[imp.OPT_HEIGHT]){
-			
-			var height = item[imp.OPT_HEIGHT];
-			var value;
-			var suffix;
-			if(height == 'px'){
-				value = item.heightPx;
-				suffix = 'px';
-			}
-			else throw new Error('todo');
-			
-			propsModel["height"] = { value: value, sufix : suffix };
+			propsModel["height"] = imp.getDimensionValue(parent, item, imp.OPT_HEIGHT, 'heightPx');
 		}
 		
 		

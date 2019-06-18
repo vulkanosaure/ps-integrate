@@ -1,5 +1,17 @@
+var imp = {};
+
 const file_debug = require('./debug.js');
 var trace = file_debug.trace;
+
+const file_platform_layer_logic = require('./platform_layer_logic.js');
+imp = {...imp, ...file_platform_layer_logic};
+
+const file_utils = require('./utils.js');
+imp = {...imp, ...file_utils};
+
+const file_constantes = require('./constantes.js');
+imp = {...imp, ...file_constantes};
+
 
 //For code readability  
 function cTID(s){return charIDToTypeID(s)}  
@@ -292,17 +304,39 @@ function undoHistory()
 //return array of 4
 function getBounds(layer, type)
 {
-	//{x:number, y:number, width:number, height:number}
+    //hide abs item for bounds
+    
+    var tohide = [];
+    var layers = imp.getLayersArray(layer);
+    var len = layers.length;
+    for (var i = 0; i < len; i++) {
+        var l = layers[i];
+        var name = imp.getLayerName(l);
+        
+        if (imp.has_prefix(name)) {
+            name = imp.handleShorcuts(name);
+            var position = imp.get_value_option(name, imp.OPT_POSITION);
+            if(position == 'absolute') tohide.push(l);
+        }
+    }
+    
+    tohide.forEach(function(l){ l.visible = false; });
+    
     let b = layer.globalBounds;
+    
+    tohide.forEach(function(l){ l.visible = true; });
+    
 	return [b.x, b.y, b.x + b.width, b.y + b.height, b.width, b.height];
 }
+
+/* 
 function getBoundsLocal(layer, type)
 {
 	//{x:number, y:number, width:number, height:number}
 	let b = layer.localBounds;
 	return [b.x, b.y, b.x + b.width, b.y + b.height, b.width, b.height];
 }
-
+ */
 
 
 function getLayerWidth(layer)
@@ -363,6 +397,6 @@ function rasterizeLayerStyle(layer)
 module.exports = {
 	getFontSize,
 	getBounds,
-	getBoundsLocal,
+	// getBoundsLocal,
 };
 
