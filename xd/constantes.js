@@ -27,8 +27,6 @@ var OPT_LAYOUT_X = "layoutx";
 var OPT_LAYOUT_Y = "layouty";
 var OPT_CHILDREN_X = "childrenx";
 var OPT_CHILDREN_Y = "childreny";
-var OPT_POS_X = "x";
-var OPT_POS_Y = "y";
 var OPT_EQUALOFFSET = "equaloffset";
 var OPT_IMGTYPE = "imgtype";
 var OPT_LVL = "lvl";
@@ -57,6 +55,8 @@ OPTIONS_RULES[OPT_TAG] = list_tags;
 OPTIONS_RULES[OPT_TPL] = ["*"];
 OPTIONS_RULES[OPT_TPLMODEL] = ["*"];
 OPTIONS_RULES[OPT_PLACEHOLDER] = ["*"];
+OPTIONS_RULES[OPT_WIDTH] = ["px", "%"];
+OPTIONS_RULES[OPT_HEIGHT] = ["px", "%"];
 
 OPTIONS_RULES[OPT_POSITION] = ["static", "absolute"];
 OPTIONS_RULES[OPT_DIRECTION] = ["col", "row"];
@@ -99,6 +99,9 @@ OPTIONS_SHORCUTS2["cbottom"] = OPT_CHILDREN_Y + "=bottom";
 
 OPTIONS_SHORCUTS2["bg"] = OPT_BGPARENT + "=1";
 OPTIONS_SHORCUTS2["abs"] = OPT_POSITION + "=absolute";
+
+OPTIONS_SHORCUTS2["w"] = OPT_WIDTH + "=px";
+OPTIONS_SHORCUTS2["h"] = OPT_HEIGHT + "=px";
 
 //if found, add =1 behind
 var OPTIONS_SHORCUTS3 = [OPT_BGPARENT, OPT_EQUALOFFSET];
@@ -144,8 +147,6 @@ module.exports = {
 	OPT_LAYOUT_Y,
 	OPT_CHILDREN_X,
 	OPT_CHILDREN_Y,
-	OPT_POS_X,
-	OPT_POS_Y,
 	OPT_EQUALOFFSET,
 	OPT_TAG,
 	OPT_IMGTYPE,

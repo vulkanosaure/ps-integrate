@@ -28,7 +28,6 @@ function has_option(name, idoption)
 {
 	var isprefix = (name.substr(0, PREFIX_LENGTH) == PREFIX);
 	if(!isprefix) return false;
-	trace(name+'.indexof('+ ("--" + idoption+"=") +')');
 	var hasoption = (name.indexOf("--" + idoption+"=") != -1);
 	return hasoption;
 }
@@ -230,7 +229,6 @@ function generateItemName(parentItem, type, index, typeName)
 		else throw new Error('wrong type for typeName');
 		
 		output += parentName;
-		trace('parent tplmodel : '+parentItem[imp.OPT_TPLMODEL]+', parentName : '+parentItem.name);
 	}
 	else output += type;
 	output += '-' + index;
@@ -242,14 +240,12 @@ function generateItemName(parentItem, type, index, typeName)
 let templateItems = {};
 function saveTemplateItem(tplname, ph, item)
 {
-	trace('saveTemplateItem '+tplname+', '+ph);
 	if(!templateItems[tplname]) templateItems[tplname] = {};
 	templateItems[tplname][ph] = item;
 }
 
 function getTemplateItem(tplname, ph)
 {
-	trace('getTemplateItem '+tplname+', '+ph);
 	if(!templateItems[tplname]) return null;
 	return templateItems[tplname][ph];
 }

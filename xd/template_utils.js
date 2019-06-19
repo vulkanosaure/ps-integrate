@@ -505,9 +505,6 @@ function getSelector(item, parent, sass_indent)
 
 
 
-
-
-
 async function getTemplateData(id)
 {
 	//todo read from memory
@@ -519,9 +516,9 @@ async function getTemplateData(id)
 	
 	
 	//read from filesystem
-	var path = 'templates/html/main/tpl/' + id + '.txt';
-	var folderPlugin = await imp.getPluginFolder();
-	var output = await imp.loadFilePath_cache(folderPlugin, path);
+	var path = 'tpl/' + id + '.txt';
+	var exportFolder = await imp.getDataFolder();
+	var output = await imp.loadFilePath_cache(exportFolder, path);
 	if(output) return{
 		output,
 		type: 'file',
@@ -529,7 +526,7 @@ async function getTemplateData(id)
 	
 	
 	//throw error
-	throw new Error('template "'+id+'" wasnt found');
+	throw new Error('template "'+id+'" wasn\'t found');
 	
 	return null;
 }

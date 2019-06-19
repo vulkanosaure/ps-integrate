@@ -42,8 +42,6 @@ var OPT_POSITION = file_constantes.OPT_POSITION;
 var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
 var OPT_LAYOUT_X = file_constantes.OPT_LAYOUT_X;
 var OPT_LAYOUT_Y = file_constantes.OPT_LAYOUT_Y;
-var OPT_POS_X = file_constantes.OPT_POS_X;
-var OPT_POS_Y = file_constantes.OPT_POS_Y;
 var OPT_EQUALOFFSET = file_constantes.OPT_EQUALOFFSET;
 var TYPE_GFX = file_constantes.TYPE_GFX;
 var TYPE_TEXT = file_constantes.TYPE_TEXT;
@@ -67,11 +65,8 @@ var saveLayer = file_platform_export.saveLayer;
 
 
 
-async function recursive_loop(container, parentItem, parentLayer, level, params, paramscopy) {
-	
-	tracerec("recursive_loop", level);
-	
-
+async function recursive_loop(container, parentItem, parentLayer, level, params, paramscopy) 
+{	
 	var layers = getLayersArray(container);
 	var len = layers.length;
 	// trace('layers : '+layers);
@@ -95,7 +90,6 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 		var isContainer = isLayerContainer(layer);
 		var name = getLayerName(layer);
-		tracerec('name : '+name, level);
 		
 		
 
@@ -128,7 +122,6 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			
 			
 			var errors = check_error_item(name, item);
-			tracerec('errors.length : '+errors.length, level);
 			
 			
 			if (errors.length > 0) {
@@ -159,10 +152,10 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 				var path = EXPORT_FOLDER + "/" + EXPORT_FOLDER_IMG + "/";
 				if (item.path != "") path += item.path + "/";
 				path += item[OPT_FILENAME];
-				tracerec("path : "+path, level);
 				
+				var hasError = params.listErrors.length >= 1;
 				
-				if ((params.overwrite || !fileExist(path, params.exportPath)) && imp.ENABLE_EXPORT) {
+				if ((params.overwrite || !fileExist(path, params.exportPath)) && imp.ENABLE_EXPORT && !hasError) {
 					
 					var bounds = null;
 					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
@@ -183,7 +176,6 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 		if (isContainer && CONTAINERS_TYPE.indexOf(type) != -1) {
 			
 			parentLayer = null;	//never used
-			tracerec("rec type : " + type, level);
 
 			var newParentItem = parentItem;
 			if (CONTAINERS_TYPE.indexOf(type) != -1) newParentItem = item;
@@ -211,7 +203,6 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	//error positionning
 	
 	let isParentTemplate = (imp.getParentsProperty(item, imp.OPT_TPL));
-	tracerec("isParentTemplate : " + isParentTemplate, level);
 	
 	if(!isParentTemplate){
 		let errors2 = imp.check_error_item2(parentItem);
@@ -305,14 +296,14 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output['tplparent'] = isTemplateModel;
 		if(output[imp.OPT_TPLMODEL]) output['tplmodelIndent'] = output.indent;
 		else output['tplmodelIndent'] = imp.getParentsProperty(output, 'tplmodelIndent');
-		tracerec('tplmodelIndent : '+output.tplmodelIndent, level);
+		// tracerec('tplmodelIndent : '+output.tplmodelIndent, level);
 	}
 	output['templateMode'] = templateMode;
 	
 	
 	
-	tracerec('isTemplate : '+isTemplate+', isTemplateModel : '+isTemplateModel, level);
-	tracerec('templateMode : '+templateMode, level);
+	// tracerec('isTemplate : '+isTemplate+', isTemplateModel : '+isTemplateModel, level);
+	// tracerec('templateMode : '+templateMode, level);
 	
 	
 	
@@ -326,7 +317,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		if(itemmodel){
 			output[imp.OPT_TYPE] = itemmodel[imp.OPT_TYPE];
 			output[imp.OPT_IMGTYPE] = itemmodel[imp.OPT_IMGTYPE];
-			trace('model type : '+itemmodel[imp.OPT_TYPE]+', imgtype : '+itemmodel[imp.OPT_IMGTYPE]);
 			type = output[imp.OPT_TYPE];
 		}
 	}
@@ -354,7 +344,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	output[OPT_NAME] = get_value_option_safe(name, OPT_NAME);
 	
 	//if &-name and parent.useTag => parent.useTag = false
-	tracerec('useTag : '+(parentItem && parentItem.useTag)+',  : charAt : "'+output[OPT_NAME].charAt(0)+'"');
 	if(parentItem && parentItem.useTag && output[OPT_NAME].charAt(0) == "&"){
 		parentItem.useTag = false;
 	}
@@ -399,8 +388,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	output.heightPx = Math.round(bounds[5]);
 	
 	
-	if (has_option(name, OPT_POS_X)) output.position[0] = get_value_option(name, OPT_POS_X);
-	if (has_option(name, OPT_POS_Y)) output.position[1] = get_value_option(name, OPT_POS_Y);
+	
+	if (has_option(name, imp.OPT_WIDTH)) output[imp.OPT_WIDTH] = get_value_option(name, imp.OPT_WIDTH);
+	if (has_option(name, imp.OPT_HEIGHT)) output[imp.OPT_HEIGHT] = get_value_option(name, imp.OPT_HEIGHT);
 	
 	
 	

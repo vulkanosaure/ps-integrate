@@ -11,7 +11,6 @@ async function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, co
 	// trace('createFolderStructure basepath : '+basepath+', path : '+path);
 	let folder = await createFolderStructure(basepath, path);
 	
-	trace('saveLayer path : '+path+', imgtype : '+imgtype);
 	if(!imgtype) imgtype = 'png';
 	
 	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png
@@ -167,15 +166,36 @@ function SavePNG(saveFile) {
 }
 
 
-async function createFile(folderBaseObj, path, filename, content) {
+
+var exportFolder;
+var pluginFolder;
+
+async function createFile(folderType, path, filename, content) 
+{
+	// trace('createFile : '+folderType+', '+path+', '+filename);
 	
-	let folder = await createFolderStructure(folderBaseObj, path);
+	var base;
+	if(folderType == 'export'){
+		if(!exportFolder) exportFolder = await getDataFolder();
+		base = exportFolder;
+	}
+	else if(folderType == 'plugin'){
+		if(!pluginFolder) pluginFolder = await getPluginFolder();
+		base = pluginFolder;
+	}
+	else throw new Error('wrong folder type '+folderType);
+	
+	
+	let folder = await createFolderStructure(base, path);
 	// trace('folder : '+folder);
 	// trace('filename : '+filename);
-	let file = await folder.createFile(filename);
+	let file = await folder.createFile(filename, {
+		overwrite: true,
+	});
 	file.write(content);
 	
 }
+
 
 
 async function deleteFolder(folderBaseObj, folderRelativePath) {

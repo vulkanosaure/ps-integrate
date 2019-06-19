@@ -153,7 +153,7 @@ async function main(settings, rootNode, documentRoot)
 	if (params.listErrors.length > 0) {
 		trace('errors');
 		imp.showDialogError(params.listErrors);
-		await imp.createErrorFile(exportPath, params.listErrors);
+		await imp.createErrorFile(params.listErrors);
 		
 	}
 	else{
@@ -167,8 +167,9 @@ async function main(settings, rootNode, documentRoot)
 		for (var i = 0; i < templates.length; i++) {
 
 			var tpl = templates[i];
-			var path2 = EXPORT_FOLDER + "/" + tpl_id + "/";
-			await imp.createFile(exportPath, path2, tpl.filename, tpl.content);
+			var path = tpl.path || EXPORT_FOLDER + "/" + tpl_id + "/";
+			var folder = tpl.folder || 'export';
+			await imp.createFile(folder, path, tpl.filename, tpl.content);
 
 		}
 		

@@ -25,7 +25,7 @@ async function generate_template(items, tpl_id, config)
 	var configConfig = config.config;
 	
 	var baseIndent = configMain.base_indent;
-	var path_tpl = "templates/"+tpl_id+"/";
+	var path_tpl = "templates/" + tpl_id + "/";
 	
 	var textFormatFile= (configTextformat.file != undefined);
 	var layoutFile= (configLayout.file != undefined);
@@ -55,7 +55,7 @@ async function generate_template(items, tpl_id, config)
 		
 		baseIndent = configTextformat.file.base_indent;
 		
-		var len = listTextFormat .length;
+		var len = listTextFormat.length;
 		for(var i = 0; i < len; i++){
 				
 			var textdata = listTextFormat[i];
@@ -83,9 +83,7 @@ async function generate_template(items, tpl_id, config)
 		
 		trace('_____________________________________');
 		trace('recLayoutData');
-		trace('items.length : '+items.length);
 		recLayoutData(items, null);
-		trace('items.length : '+items.length);
 		
 		imp.recTransformLvl(items, null, items);
 		
@@ -94,13 +92,28 @@ async function generate_template(items, tpl_id, config)
 		
 		trace('_____________________________________');
 		trace('rec');
-		trace('items[0].childrens.length : '+items[0].childrens.length);
 		
 		await rec(items, null, 0, "layout");
 		//todo : in rec function
 		
 		var filename = configLayout.file.filename;
 		output.push({filename : filename,  content : imp.get_tpl_content()});
+		
+		
+		
+		for(var idtpl in imp.templateData){
+			var filename = idtpl + '.txt';
+			let data = await imp.getTemplateData(idtpl);
+			
+			if(data.type == 'file') throw new Error('why ?');
+			
+			output.push({
+				filename : filename,  
+				content : data.output,
+				path : 'tpl/',
+			});
+		}
+		
 	}
 	
 	
@@ -246,6 +259,10 @@ async function generate_template(items, tpl_id, config)
 				var data = item.layoutData[0];
 				var str = await imp.convertTemplate(path_tpl + "layout/layout.txt", data);
 				imp.tpl_add_block(null, str, indent);
+				
+				if(item[imp.OPT_TPLMODEL]){
+					
+				}
 			}
 			
 			
@@ -353,8 +370,6 @@ async function generate_template(items, tpl_id, config)
 			item.layoutData = [];
 			var data_str;
 			
-			trace('item : '+item.name);
-			
 			//write (render + position)
 			if(item[imp.OPT_TPLMODEL]){
 				
@@ -402,13 +417,11 @@ async function generate_template(items, tpl_id, config)
 		var templateData = templateDataObj.output;
 		var type = templateDataObj.type;
 		
-		trace('templateData : '+templateData);
-		for(var k in values) trace('values '+k+' : '+values[k]);
-		
 		var layout_id = imp.getLayoutID(item);
 		
 		var classes = [];
-		if(type == 'memory') classes.push(item[imp.OPT_TPL]);
+		// if(type == 'memory') classes.push(item[imp.OPT_TPL]);
+		classes.push(item[imp.OPT_TPL]);
 		if(item.selectorType == 'classname') classes.push(layout_id);
 		
 		var data = {};
@@ -523,7 +536,6 @@ async function generate_template(items, tpl_id, config)
 		data["attributes"] = strattributes;
 		
 		
-		tracerec('item__ : '+item.name, 0);
 		
 		var fileTpl = path_tpl + "main/elmt.txt";
 		var contentMain = await imp.convertTemplate(fileTpl, data);
@@ -573,7 +585,6 @@ async function generate_template(items, tpl_id, config)
 			data["attributes"] = strattributes;
 			
 			output['tpl'] = await imp.convertTemplate(fileTpl, data, true);
-			trace('tplmodel : '+output['tpl']);
 		}
 		
 		

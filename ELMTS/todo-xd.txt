@@ -276,14 +276,33 @@ text.styleRange
 
 REUSABILITY																	EN COURS
 	voir reusability.txt
-	write tplmodel directly in tpl/ folder (in plugin, not in generation)	TODO
-	placeholder border dashed if tpl not existant
-		and WARNING (no ERROR)
+	
+	export file tplmodel													OK
+	path plugin																OK
+	subdir tpl																OK
+		
+	test : si mal géré 1ere fois => file written							OK
+		
+	rewrite file															OK
+	
+	if img inside tpl without any tplmodel in memory => specify image type
+	erreur deroutante : layer folder : img inside
+		img in folder
+		tpl file
+		ph = imgx
+		no set type / imgtype
+			
+		si ph contains "img" et !type et !img_type							TODO
+			si read et tpl not in memory
+			recursive loop stock in list des tplmodel pour savoir
+			=> erreur
+		
+	Plugin made a change outside the current edit context					TOCHECK
+
 	
 	
 	
-	
-placeholder							PLUS D'ACTUALITE
+placeholder																	PLUS D'ACTUALITE
 	border dashed red 1 px
 	correct dimension
 	to seperate internal implementation from external positioning
@@ -320,6 +339,12 @@ file tpl														CONFUS : STAND-BY
 		
 	on pourra simplifier l'explication en DOC a la fin de placeholder
 	
+	
+	
+	
+DOCUMENTATION
+
+	childrenx, childreny + shortcut
 	
 	
 	
@@ -371,7 +396,7 @@ DIMENSIONS
 		implement only px ds un 1er tps
 		
 	______________________________________________
-	--w => width=px																todo
+	--w => width=px																OK
 	--fw => width=100%															todo
 	(idem with height)
 	
@@ -389,22 +414,29 @@ DIMENSIONS
 	bug a venir sur retina size "width/height" (tocheck)
 	
 	bug btn fb/twitch (centery)													OK
-	bug pointe bulle bottom
-	bug center rate row (star)
-	bug padding top quiz
+	bug pointe bulle bottom														OK
+	bug padding top quiz														OK?
+	bug center rate row (star)													OK
 	
 	tester de disable des height/widht, voir ou on peut en eliminer				OK
 	
-	tag img => must decide width or height (voir btn fb/twitch icon)			todo
+	tag img => must decide width or height (voir btn fb/twitch icon)			OK
 		add error if forget
 	
 	text multiligne : sizer en w
 	
-	
-RESET
-	préparer un fichier reset CSS 
-	veiller à ce que les margin before p soit également à 0
-	veiller à ce que box-sizing 
+
+
+
+
+
+
+
+
+RESET																			OK
+	préparer un fichier reset CSS 												OK
+	veiller à ce que les margin before p soit également à 0						OK
+	veiller à ce que box-sizing 												OK
 	placer ce script avec le plugin (ps-integrate.css)
 	mentionner dans la doc
 	
@@ -455,8 +487,6 @@ paddings																	OK
 
 
 FLEX CENTER																	OK
-
-	maybe reformat alignitems into cross-align (align-items)
 	
 	cross-align=x
 	scross-align=x
@@ -470,8 +500,6 @@ FLEX CENTER																	OK
 	
 	reflechir aux autres valeurs de justify-content (space-between...)
 	
-	addition : if item flex row & centerx => axis-align=center
-	
 		
 
 	
@@ -484,9 +512,7 @@ bounds abs																	OK
 		hide ceux qui sont en position abs
 		prendre la mesure
 		les redisplay
-	l'ennui c'est qu'à ce stade, on a pas encore analyser l'objet, alors il faut le réanalyser... 
-	pas de hack, c'est simple à réanalyser, avec les fonction
-	
+	analyser le name
 	bosser sur xd-paddings
 	
 	
@@ -540,11 +566,12 @@ line spacing (refactoring too)		OK
 reusability (plus gros morceaux)	OK
 chapter padding						OK
 chapter center						OK
-dimensions							en cours
-reusability (2 pts)
-extensible
+dimensions							OK
+flex center							OK
+reusability							EN COURS
+retest center.xd
+ps conversion
 ---------------------
-flex center
 style range
 keyboard shorcut
 font formatting

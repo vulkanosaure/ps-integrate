@@ -4,32 +4,26 @@
 	
 	
 	.btn-socials{
-		
+		margin-left:4px;
 		
 		
 		.button2{
+			display:flex;
+			flex-direction:row;
+			justify-content:center;
+			align-items:center;
 			background-color:#3a5a97;
 			border-radius:20px;
 			width:345px; height:40px;
 			
-			&-0{
-				display:flex;
-				flex-direction:row;
-				align-items:center;
-				justify-content:center;
-				padding-top:10px;
-				margin:0 auto;
-				
-				&-icon{
-					flex:0 0 auto;
-					width:9px; height:20px;
-				}
-				
-				&-txt{
-					margin-left:12px;
-					text-align:center;
-					color:#ffffff;
-				}
+			&-icon{
+				height:20px;
+			}
+			
+			&-txt{
+				margin-left:12px;
+				text-align:center;
+				color:#ffffff;
 			}
 		}
 		
@@ -48,7 +42,7 @@
 		background-color:#3a5a97;
 		border-radius:20px;
 		width:345px; height:40px;
-		margin:-100px 0 0 480px;
+		margin:-40px 0 0 484px;
 		
 		&-0{
 			display:flex;
@@ -57,8 +51,7 @@
 			margin:auto;
 			
 			&-icon{
-				flex:0 0 auto;
-				width:9px; height:20px;
+				height:20px;
 			}
 			
 			&-txt{
@@ -72,7 +65,7 @@
 	.quizzes{
 		display:flex;
 		flex-direction:row;
-		margin:94px 0 0 1px;
+		margin:94px 0 0 5px;
 		
 		
 		.quiz{
@@ -86,7 +79,7 @@
 				position:absolute;
 				left:5px; top:6px;
 				border-radius:25px;
-				width:50px; height:50px;
+				width:50px;
 			}
 			
 			&-title{
@@ -133,7 +126,7 @@
 	.frise-svg{
 		display:flex;
 		flex-direction:row;
-		margin:49px 0 0 1px;
+		margin:49px 0 0 5px;
 		
 		
 		.frisesquare{
@@ -145,7 +138,7 @@
 			
 			&-icon{
 				flex:0 0 auto;
-				width:11px; height:11px;
+				height:11px;
 				margin:auto;
 			}
 		}
@@ -166,11 +159,11 @@
 	
 	&-bulle{
 		position:relative;
-		margin-top:30px;
 		background-color:#1e222a;
 		border-top-left-radius:10px;
 		border-top-right-radius:10px;
 		width:370px;
+		margin:30px 0 0 4px;
 		padding:23px 20px 22px;
 		
 		&-header{
@@ -211,7 +204,7 @@
 			margin-top:6px;
 			
 			.star{
-				padding-top:6px;
+				margin-top:6px;
 				background-image:url('images/dimensions/star.svg');
 				flex:0 0 auto;
 				width:12px; height:11px;
@@ -253,10 +246,10 @@
 		flex-direction:column;
 		align-items:center;
 		position:relative;
-		margin-top:96px;
 		background-color:#18191f;
 		border-radius:10px;
 		width:198px;
+		margin:96px 0 0 4px;
 		padding:28px 0 103px;
 		
 		&-title{
@@ -280,6 +273,81 @@
 			.start{
 				text-align:center;
 				color:#ffffff;
+			}
+		}
+	}
+	
+	.bloc-quiz{
+		position:relative;
+		margin-top:131px;
+		background-color:#191919;
+		border-radius:20px;
+		width:837px;
+		padding:95px 0 36px;
+		
+		&-score{
+			display:flex;
+			flex-direction:column;
+			position:absolute; top:-62px;
+			left:50%;
+			transform:translateX(-50%);
+			background-color:#ffffff;
+			border-radius:62px;
+			width:124px; height:124px;
+			
+			&-label{
+				line-height:124px;
+				text-align:center;
+				color:#ff5c5c;
+			}
+		}
+		
+		&-question{
+			text-align:center;
+			color:#ffffff;
+		}
+		
+		&-answers{
+			display:flex;
+			flex-direction:row;
+			justify-content:center;
+			width:770px;
+			margin:26px auto 0;
+			
+			
+			.answersitem{
+				display:flex;
+				flex-direction:row;
+				background-color:#ff5c5c;
+				border-radius:5px;
+				width:370px; height:69px;
+				padding:19px 0 23px;
+				
+				&-id{
+					margin-left:22px;
+					text-align:left;
+					color:#ffffff;
+				}
+				
+				&-label{
+					text-align:left;
+					color:#ffffff;
+					margin:6px 0 0 22px;
+				}
+			}
+			
+			
+			&-0{
+				flex:0 0 auto;
+			}
+			&-1{
+				margin-left:30px;
+			}
+			&-2{
+				margin:99px 0 0 -770px;
+			}
+			&-3{
+				margin:99px 0 0 30px;
 			}
 		}
 	}

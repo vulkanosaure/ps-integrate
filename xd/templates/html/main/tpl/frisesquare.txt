@@ -1,3 +1,0 @@
-<div class='frisesquare {{classes}}'>
-	<img class='frisesquare-icon' src="{{imgicon}}" />
-</div>

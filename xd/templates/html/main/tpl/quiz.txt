@@ -1,9 +1,0 @@
-<div class='quiz {{classes}}'>
-	
-	<img class='avatar' src="{{img}}" />
-	<p class='montserrat-18-0-b quiz-title'>{{title}}</p>
-	<p class='montserrat-18-0 quiz-desc'>{{desc}}</p>
-	<div class='quiz-footer'>
-		<p class='montserrat-14-100-b'>COMMENCER</p>
-	</div>
-</div>

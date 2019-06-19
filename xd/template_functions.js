@@ -102,8 +102,6 @@ TPL_FUNCTIONS["html"] = {
 		 */
 		
 		
-		trace('item.name : '+item.name + ', cx : '+cx+', cy : '+cy);
-		
 		
 		if(item.display == 'flex'){
 			
@@ -112,7 +110,6 @@ TPL_FUNCTIONS["html"] = {
 			//todo : use 1 line shortcut
 			propsModel["direction"] = { name: "flex-direction", value: valuedir, quote: "none" };
 			
-			trace('valuecx : '+valuecx+', valuecy : '+valuecy);
 			
 			if(cx){
 				var valuecx = imp.getFlexAlignValue(cx);
@@ -327,7 +324,7 @@ TPL_FUNCTIONS["html"] = {
 			// collapsed margin
 			
 			if(top && top != 0 && top != 'auto'){
-				if(parent && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
+				if(parent && parent.display != 'flex' && parent[imp.OPT_POSITION]=="static" && item[imp.OPT_POSITION]=="static"){
 					if(!prevStaticItem){		//is first static item
 						if(!parent.shapedata || !parent.shapedata.borderWidth){
 							item["p_top"] = top;
@@ -391,10 +388,11 @@ TPL_FUNCTIONS["html"] = {
 		
 		if(item.has_graphic){
 			
-			item[imp.OPT_WIDTH] = 'px';
-			item[imp.OPT_HEIGHT] = 'px';
-			
 			if(item.tag != 'img'){
+				
+				item[imp.OPT_WIDTH] = 'px';
+				item[imp.OPT_HEIGHT] = 'px';
+				
 				propsModel["background-image"] = {
 					value : config.prefix_images + item.fullpath, prefix : "url('", sufix : "')"
 				};
@@ -411,10 +409,7 @@ TPL_FUNCTIONS["html"] = {
 			}
 			
 		}
-		else if(item.type == imp.TYPE_CONTAINER){
-			//ajoute qd mm la width en comment
-			// item[imp.OPT_WIDTH] = 'px';
-		}
+		
 		
 		//no else, can be cumulative
 		if(item.shapedata){
@@ -422,8 +417,12 @@ TPL_FUNCTIONS["html"] = {
 			let s = item.shapedata;
 			let isContainer = (imp.CONTAINERS_TYPE.indexOf(item.type) != -1);
 			
-			item[imp.OPT_WIDTH] = 'px';
-			if(!isContainer) item[imp.OPT_HEIGHT] = 'px';
+			//if type img : can have shapedata too
+			if(item[imp.OPT_TAG] != 'img'){
+				item[imp.OPT_WIDTH] = 'px';
+				if(!isContainer || item[imp.OPT_DIRECTION] == 'row') item[imp.OPT_HEIGHT] = 'px';
+			}
+			
 			//temp
 			// if(imp.DEBUG_MODE) item[imp.OPT_HEIGHT] = 'px';
 			

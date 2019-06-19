@@ -1,1 +1,0 @@
-<img class='avatarself {{classes}}' src="{{img}}" />

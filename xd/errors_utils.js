@@ -118,6 +118,17 @@ function check_error_item(name, item, parent, listitems)
 		output.push(getErrorObject("Only tpl or tplmodel can set option '"+imp.OPT_PLACEHOLDER+"'", getItemStructureStr(item), name));
 	}
 	
+	
+	//if read mode
+	//tocheck
+	if(item['templateMode'] != 'read'){
+		if(item[imp.OPT_TAG] == 'img' && !item[imp.OPT_WIDTH] && !item[imp.OPT_HEIGHT]){
+			output.push(getErrorObject("You must define width or height option for 'img' tag", getItemStructureStr(item), name));
+		}
+	}
+	
+	
+	
 	return output;
 }
 
@@ -143,6 +154,17 @@ function check_error_item2(parent)
 		var len = parent.childrens.length;
 		let prev_pos;
 		
+		//wrapping
+		if(parent[imp.OPT_DIRECTION] == 'row' && parent[imp.OPT_WIDTH]){
+			return output;
+		}
+		if(parent[imp.OPT_NAME] == 'bloc-quiz-answers'){
+			
+			trace(parent[imp.OPT_DIRECTION]);
+			trace(parent[imp.OPT_WIDTH]);
+			throw new Error('name');
+		}
+		
 		for(let i=0; i<len; i++){
 			// var _i = len - 1 - i;
 			var _i = i;
@@ -151,13 +173,9 @@ function check_error_item2(parent)
 			// trace('-- '+_item.name+', pos : '+pos+', bgparnet : '+_item["bgparent"]);
 			
 			if(i > 0 && _item["pos"] == "static" && !_item["bgparent"]){
-				// if(pos > cur_pos){
-				// trace('----- candidate');
 				if(pos < prev_pos){
-					// trace('----- ok error');
 					output.push(getErrorObject("The order of the layer seems incorrect : "+prev_pos+" / "+pos, getItemStructureStr(_item), ''));
 					
-					// throw new Error('');
 					break;
 				}
 			}
@@ -213,7 +231,7 @@ function getItemStructureStr(item)
 }
 
 
-async function createErrorFile(exportPath, listErrors)
+async function createErrorFile(listErrors)
 {
 	var path2 = EXPORT_FOLDER + "/";
 	
@@ -230,7 +248,7 @@ async function createErrorFile(exportPath, listErrors)
 		str += "Layer name : "+obj.name+"\n";
 		content += str + "\n";
 	}
-	await imp.createFile(exportPath, path2, "errors.log", content);
+	await imp.createFile('export', path2, "errors.log", content);
 	
 }
 
