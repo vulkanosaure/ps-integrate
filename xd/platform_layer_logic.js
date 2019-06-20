@@ -59,6 +59,11 @@ function getUnitValue(unitvalue)
 	return unitvalue.value;
 }
 
+function getLayerParent(item)
+{
+	return item.parent;
+}
+
 
 function getLayersArray(container)
 {
@@ -66,6 +71,11 @@ function getLayersArray(container)
 	let output = [];
 	list.forEach(item => output.push(item));
 	return output;
+}
+
+function setSelectedLayer(selection, layer)
+{
+	selection.items = layer;
 }
 
 function isLayerVisible(layer)
@@ -81,6 +91,12 @@ function isLayerContainer(layer)
 function getLayerName(layer)
 {
 	return layer.name;
+}
+
+function setLayerName(layer, name)
+{
+	trace('setLayerName('+name+')');
+	layer.name = name;
 }
 
 
@@ -391,7 +407,10 @@ module.exports = {
 	getShapeData,
 	getPathData,
 	getLayerName,
+	setLayerName,
 	getLayersArray,
+	getLayerParent,
+	setSelectedLayer,
 	isLayerVisible,
 	isLayerContainer,
 	get_natural_type,

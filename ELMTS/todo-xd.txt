@@ -211,7 +211,7 @@ font-size : EM / REM
 	
 	
 	
-keyboard shorcut
+keyboard shorcut													EN COURS
 	voir si dans le plugin
 	on peut mettre des shortcut en place
 	qui réutilise des fonction du logiciel
@@ -221,16 +221,22 @@ keyboard shorcut
 	ctrl+right : enter in the next folder
 	ctrl+left : take out of the folder (and put on top)
 	
-	f2 : 
-		renomme en ajoutant prefix "ps--" si absent
-		place le curseur a la fin (et enleve la selection)
-	shortcut : valid name, select next, edit
 	
-	shortcut hide/show (ctrl+H or closer ctrl+D)
+	rename
+		place curseur a lafin et remove selection
+		rename layer (promise bug)
+		other validation (button et keyboard) : select next
 	
-	algo : 
-		order layers in each group (vertical puis horizontal)
-		group container if bgparent (easy)
+	select left => 															bug, parent not in edit context	
+	root																	bug, not in edit context)
+	move layer
+	test parent (new version)
+	shorcut menu item (submenu)												OK
+	
+
+algo pre-editing : 
+	order layers in each group (vertical puis horizontal)
+	group container if bgparent (easy)
 	
 	
 

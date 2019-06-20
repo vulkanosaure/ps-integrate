@@ -17,6 +17,26 @@
       "label": "Export",
 			"commandId": "export",
 			"shortcut": { "mac": "Cmd+Shift+Q", "win": "Ctrl+Shift+Q" }
+    },
+    {
+      "type": "menu", "label": "select up", "commandId": "selectUp",
+			"shortcut": { "mac": "", "win": "Ctrl+7" }
+    },
+    {
+      "type": "menu", "label": "select down", "commandId": "selectDown",
+			"shortcut": { "mac": "", "win": "Ctrl+4" }
+    },
+    {
+      "type": "menu", "label": "select right", "commandId": "selectRight",
+			"shortcut": { "mac": "", "win": "Ctrl+6" }
+    },
+    {
+      "type": "menu", "label": "select left", "commandId": "selectLeft",
+			"shortcut": { "mac": "", "win": "Ctrl+5" }
+    },
+    {
+      "type": "menu", "label": "rename", "commandId": "rename",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+R" }
     }
   ]
 }
