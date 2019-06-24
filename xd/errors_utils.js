@@ -19,6 +19,7 @@ var OPT_GFX_TYPE = file_constantes.OPT_GFX_TYPE;
 var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
 
 imp = {...imp, ...require('./platform_export.js')};
+imp = {...imp, ...require('./utils.js')};
 imp = {...imp, ...file_constantes};
 
 var list_tplmodel = [];
@@ -88,7 +89,7 @@ function check_error_layername(name, parentItem)
 
 
 
-function check_error_item(name, item, parent, listitems)
+function check_error_item(name, item, tplmodels)
 {
 	var output = [];
 	
@@ -119,11 +120,27 @@ function check_error_item(name, item, parent, listitems)
 	}
 	
 	
-	//if read mode
-	//tocheck
+	//define w or h for natural img
 	if(item['templateMode'] != 'read'){
 		if(item[imp.OPT_TAG] == 'img' && !item[imp.OPT_WIDTH] && !item[imp.OPT_HEIGHT]){
 			output.push(getErrorObject("You must define width or height option for 'img' tag", getItemStructureStr(item), name));
+		}
+	}
+	
+	
+	//ph 'img...' in tpl file : must set type or imgtype
+	
+	if(item[imp.OPT_PLACEHOLDER]){
+		var ph = item[imp.OPT_PLACEHOLDER];
+		if(ph.substr(0, 3) == 'img'){
+			if(item['templateMode'] == 'read'){
+				var idtpl = item['tplparent'];
+				if(tplmodels.indexOf(idtpl) == -1){
+					if(!imp.has_option(name, imp.OPT_TYPE) && !item[imp.OPT_IMGTYPE]){
+						output.push(getErrorObject("You must define option '"+imp.OPT_TYPE+"' or '"+imp.OPT_IMGTYPE+"' for a placeholder named 'img...' in a file tpl", getItemStructureStr(item), name));
+					}	
+				}
+			}
 		}
 	}
 	

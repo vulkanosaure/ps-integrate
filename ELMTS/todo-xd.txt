@@ -223,20 +223,88 @@ keyboard shorcut													EN COURS
 	
 	
 	rename
-		place curseur a lafin et remove selection
-		rename layer (promise bug)
-		other validation (button et keyboard) : select next
+		place curseur a lafin et remove selection					impossible
+		rename layer (promise bug)									OK
+		other validation (button et keyboard) : select next			pb async
 	
 	select left => 															bug, parent not in edit context	
-	root																	bug, not in edit context)
-	move layer
+		tester delete node / re-create
+	root																	bug, not in edit context
+	move layer																EN COURS
+		children.add (read doc)
+		move multiple (obligatoire)
+		check selection after
+	
+	move layer right ?
+		prob : pas très interessant si pas de move left
 	test parent (new version)
 	shorcut menu item (submenu)												OK
+	select multiple															OK
+	
+	order group
+		voir si on peut ordre tous les child group aussi
+		par contre, si ça a déja été manuellement corrigé
+		ptet si contient des ps-- => considère que c'est trié
+		
+		on essaye qd mm de le faire sur tous les child pour voir
+	
+	
+	available key :
+		ctrl : 			45679
+		ctrl+Alt : 		456789		
+		ctrl+Shift : 	AUCUN
+		ctrl+Alt+Shift:	69
+	
+	11 key + 2
+	on evite le Alt+Shift car ça active le clavier americain
+	
+	4 select
+	4 move
+	2 add
+	1 rename
+	
+	le move doit etre parallele au select, car nb de move identique
+		4567
+	c'est le add qui va décaller : 
+		add : alt+89 ou bien alt+PM
+		(PM vertical, mais plus loin)
+		
+	on peut ptet retirer 2 commands :
+		select left / move left
+		
+	rename : Ctrl+9
+	
+	
+	
 	
 
-algo pre-editing : 
+ALGO PRE-EDITING : 
+
 	order layers in each group (vertical puis horizontal)
 	group container if bgparent (easy)
+	
+	try commands.group
+	try change selection before command
+	
+	seems like 
+	delete all children pops up a level from editContext BUT it takes effect async and after : no change in the background possible
+		promess block execution so blocks level pop up
+		
+	sel.items can be modified for use with commands
+	
+	TODO :
+		test group between items from different group
+		maybe : selection won't even work
+		
+		test addChild
+		
+	
+	bgfootyer est grouped
+	on refuse comme itemtest
+	
+	within ybox :
+		
+	
 	
 	
 
@@ -280,7 +348,7 @@ text.styleRange
 
 	
 
-REUSABILITY																	EN COURS
+REUSABILITY																	OK
 	voir reusability.txt
 	
 	export file tplmodel													OK
@@ -298,10 +366,7 @@ REUSABILITY																	EN COURS
 		ph = imgx
 		no set type / imgtype
 			
-		si ph contains "img" et !type et !img_type							TODO
-			si read et tpl not in memory
-			recursive loop stock in list des tplmodel pour savoir
-			=> erreur
+	ph 'img...' in tpl file : must set type or imgtype						OK
 		
 	Plugin made a change outside the current edit context					TOCHECK
 
@@ -313,6 +378,17 @@ placeholder																	PLUS D'ACTUALITE
 	correct dimension
 	to seperate internal implementation from external positioning
 	
+
+
+CLASSNAME																	OK
+	on réinsere les classname (motivation : bootstrap)
+	prefix .
+	if tplmodel defined with class
+		add to tpl copy
+		add to file template
+		
+
+
 	
 
 	
@@ -351,8 +427,8 @@ file tpl														CONFUS : STAND-BY
 DOCUMENTATION
 
 	childrenx, childreny + shortcut
-	
-	
+	error ph 'img...' in tpl file : set type or imgtype
+	class (prefix ., separator /)
 	
 	
 	
@@ -536,12 +612,12 @@ override markup												OK
 	OPT_TAG = 'tag'
 	
 	
-offset negatif sur un item
+offset negatif sur un item									OK
 	change les bounds
 	compliqué à résoudre, laisser de coté
 	
 	
-____________________________
+
 GESTION ERRORS
 
 	tplmodel already defined										OK
@@ -574,12 +650,13 @@ chapter padding						OK
 chapter center						OK
 dimensions							OK
 flex center							OK
-reusability							EN COURS
+reusability							OK
+classname							OK
 retest center.xd
 ps conversion
 ---------------------
+keyboard shorcut					EN COURS
 style range
-keyboard shorcut
 font formatting
 
 

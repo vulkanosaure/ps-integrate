@@ -12,31 +12,70 @@
     "minVersion": "18.1"
   },
   "uiEntryPoints": [
+    
+    
     {
-      "type": "menu",
-      "label": "Export",
-			"commandId": "export",
+      "type": "menu", "label": "Export", "commandId": "export",
 			"shortcut": { "mac": "Cmd+Shift+Q", "win": "Ctrl+Shift+Q" }
     },
     {
-      "type": "menu", "label": "select up", "commandId": "selectUp",
+      "type": "menu", "label": "Organize layers", "commandId": "organizeLayers",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+O" }
+    },
+    
+    
+    
+    
+    {
+      "type": "menu", "label": "Select up", "commandId": "selectUp",
 			"shortcut": { "mac": "", "win": "Ctrl+7" }
     },
     {
-      "type": "menu", "label": "select down", "commandId": "selectDown",
+      "type": "menu", "label": "Select down", "commandId": "selectDown",
 			"shortcut": { "mac": "", "win": "Ctrl+4" }
     },
     {
-      "type": "menu", "label": "select right", "commandId": "selectRight",
+      "type": "menu", "label": "Select right", "commandId": "selectRight",
 			"shortcut": { "mac": "", "win": "Ctrl+6" }
     },
     {
-      "type": "menu", "label": "select left", "commandId": "selectLeft",
+      "type": "menu", "label": "Select left", "commandId": "selectLeft",
 			"shortcut": { "mac": "", "win": "Ctrl+5" }
     },
+    
+    
+    {
+      "type": "menu", "label": "Move up", "commandId": "moveUp",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+7" }
+    },
+    {
+      "type": "menu", "label": "Move down", "commandId": "moveDown",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+4" }
+    },
+    {
+      "type": "menu", "label": "Move right", "commandId": "moveRight",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+6" }
+    },
+    {
+      "type": "menu", "label": "Move left", "commandId": "moveLeft",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+5" }
+    },   
+    
+    
+    {
+      "type": "menu", "label": "select add up", "commandId": "selectAddUp",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+P" }
+    },
+    {
+      "type": "menu", "label": "select add down", "commandId": "selectAddDown",
+			"shortcut": { "mac": "", "win": "Ctrl+Alt+M" }
+    },
+    
+    
+    
     {
       "type": "menu", "label": "rename", "commandId": "rename",
-			"shortcut": { "mac": "", "win": "Ctrl+Alt+R" }
+			"shortcut": { "mac": "", "win": "Ctrl+9" }
     }
   ]
 }

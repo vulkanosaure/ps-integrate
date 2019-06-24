@@ -65,6 +65,10 @@ var saveLayer = file_platform_export.saveLayer;
 
 
 
+var listTplModel = [];
+
+
+
 async function recursive_loop(container, parentItem, parentLayer, level, params, paramscopy) 
 {	
 	var layers = getLayersArray(container);
@@ -121,7 +125,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.height), level);
 			
 			
-			var errors = check_error_item(name, item);
+			var errors = check_error_item(name, item, listTplModel);
 			
 			
 			if (errors.length > 0) {
@@ -268,6 +272,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, imp.OPT_TPLMODEL)) {
 		var val = get_value_option(name, imp.OPT_TPLMODEL);
 		output[imp.OPT_TPLMODEL] = val;
+		listTplModel.push(val);
 	}
 	
 	
@@ -337,6 +342,13 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	if (has_option(name, imp.OPT_LVL)) {
 		var val = get_value_option(name, imp.OPT_LVL);
 		output[imp.OPT_LVL] = val;
+	}
+	
+	
+	//classname
+	if (has_option(name, imp.OPT_CLASS)) {
+		var val = get_value_option(name, imp.OPT_CLASS);
+		output[imp.OPT_CLASS] = val;
 	}
 	
 	

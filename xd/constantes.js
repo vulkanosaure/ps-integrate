@@ -36,6 +36,7 @@ var OPT_TPLMODEL = "tplmodel";
 var OPT_PLACEHOLDER = "ph";
 var OPT_WIDTH = "width";
 var OPT_HEIGHT = "height";
+var OPT_CLASS = "class";
 
 
 var list_tags = ["a", "button", "p", "img", "h1", "h2", "h3", "h4", "h5", "span", "div"];
@@ -51,6 +52,7 @@ OPTIONS_RULES[OPT_BGPARENT] = [0, 1];
 OPTIONS_RULES[OPT_EQUALOFFSET] = [0, 1];
 OPTIONS_RULES[OPT_GFX_TYPE] = ["layout", "data"];
 OPTIONS_RULES[OPT_LVL] = ["*"];
+OPTIONS_RULES[OPT_CLASS] = ["*"];
 OPTIONS_RULES[OPT_TAG] = list_tags;
 OPTIONS_RULES[OPT_TPL] = ["*"];
 OPTIONS_RULES[OPT_TPLMODEL] = ["*"];
@@ -110,6 +112,7 @@ var OPTIONS_SHORCUTS3 = [OPT_BGPARENT, OPT_EQUALOFFSET];
 var OPTIONS_SHORCUTS_PREFIX = {};
 OPTIONS_SHORCUTS_PREFIX[OPT_NAME] = "*";
 OPTIONS_SHORCUTS_PREFIX[OPT_TAG] = "<";
+OPTIONS_SHORCUTS_PREFIX[OPT_CLASS] = ".";
 
 
 var EXPORT_FOLDER = "EXPORT-ps-integrate";
@@ -152,6 +155,7 @@ module.exports = {
 	OPT_IMGTYPE,
 	OPT_WIDTH,
 	OPT_HEIGHT,
+	OPT_CLASS,
 	OPTIONS_RULES,
 	OPTIONS_SHORCUTS,
 	OPTIONS_SHORCUTS2,

@@ -78,6 +78,16 @@ function setSelectedLayer(selection, layer)
 	selection.items = layer;
 }
 
+function addLayerToSelection(selection, layer)
+{
+	var tab = selection.items;
+	
+	var index = tab.indexOf(layer);
+	if(index > -1) tab.pop();
+	else tab.push(layer);
+	selection.items = tab;
+}
+
 function isLayerVisible(layer)
 {
 	return (layer.visible);
@@ -411,6 +421,7 @@ module.exports = {
 	getLayersArray,
 	getLayerParent,
 	setSelectedLayer,
+	addLayerToSelection,
 	isLayerVisible,
 	isLayerContainer,
 	get_natural_type,

@@ -420,9 +420,9 @@ async function generate_template(items, tpl_id, config)
 		var layout_id = imp.getLayoutID(item);
 		
 		var classes = [];
-		// if(type == 'memory') classes.push(item[imp.OPT_TPL]);
 		classes.push(item[imp.OPT_TPL]);
 		if(item.selectorType == 'classname') classes.push(layout_id);
+		
 		
 		var data = {};
 		
@@ -459,7 +459,6 @@ async function generate_template(items, tpl_id, config)
 		
 		var classes = [];
 		if(item[imp.OPT_TPLMODEL]) classes.push(item[imp.OPT_TPLMODEL]);
-		
 		if(item.selectorType == 'classname') classes.push(layout_id);
 		
 		
@@ -526,6 +525,17 @@ async function generate_template(items, tpl_id, config)
 			strclasses = classes.join(' ');
 		}		
 		data["classes"] = strclasses;
+		
+		
+		//classes2
+		var strclasses2 = '';
+		if(item[imp.OPT_CLASS]){
+			var classes2 = item[imp.OPT_CLASS].split('/');
+			strclasses2 = classes2.join(' ');
+		}
+		data["classes2"] = strclasses2 ? ' ' + strclasses2 : '';
+		
+		
 		
 		
 		var strattributes = '';
