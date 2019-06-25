@@ -26,19 +26,6 @@ async function selectionFunction(selection, documentRoot)
 	var dir = this;
 	var item = getItemFromSelection(selection, documentRoot);
 	
-	/* 
-	var testitem = selection.editContext;
-	imp.trace('testitem : '+testitem);
-	imp.traceNode(testitem);
-	// selection.items = selection.editContext;
-	
-	testitem = item;
-	for(var i=0; i<3; i++) testitem = testitem.children.at(testitem.children.length-1);
-	testitem.name = 'yo';
-	// selection.items = testitem;
-	return;
-	*/
-	
 	await imp.selection(selection, item, dir, 'select');
 }
 

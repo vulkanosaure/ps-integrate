@@ -102,8 +102,12 @@ async function selection(sel, item, dir, command)
 			//what means delete node ? remove from parent.children ? or node.remove() ?
 			
 			
+			var rootnodes = sel.insertionParent.parent;
+			itemselect = rootnodes;
 			
 			// itemselect = parent;
+			
+			
 			
 		}
 		else if(dir == 'right'){
@@ -142,6 +146,18 @@ async function selection(sel, item, dir, command)
 		else if(dir == 'down'){
 			if(!loopOver) commands.sendBackward();
 			else commands.bringToFront();
+		}
+		else if(dir == 'right'){
+			
+			item.removeFromParent();
+			itemselect.parent.addChild(item);
+		}
+		else if(dir == 'left'){
+			
+			var parentParent = parent.parent;
+			item.removeFromParent();
+			parentParent.addChild(item);
+			// throw new Error('yo');
 		}
 	}
 	

@@ -93,14 +93,6 @@ TPL_FUNCTIONS["html"] = {
 			
 			item.display = 'flex';
 		}
-		/* 
-		trace(item.name+', dir : '+valuedir+', cx : '+cx+', cy : '+cy+', display : '+item.display);
-		
-		if(item.name == 'divcentery'){
-			throw new Error('test');
-		}
-		 */
-		
 		
 		
 		if(item.display == 'flex'){
@@ -124,11 +116,13 @@ TPL_FUNCTIONS["html"] = {
 				propsModel["childreny"] = { name: prop, value: valuecy, quote: "none" };
 			}
 			
+			
+			
 			if(item[imp.OPT_POSITION] != "absolute" && parent && parent.display != 'flex'){
 				if(lx != 'left'){
 					//if text => text align
 					if(isText){
-						item.halignLayout = lx;
+						// item.halignLayout = lx;
 					}
 					else{
 						var valuecx = imp.getFlexAlignValue(lx);
@@ -145,12 +139,22 @@ TPL_FUNCTIONS["html"] = {
 					propsModel["layouty"] = { name: prop, value: valuecy, quote: "none" };
 				}
 			}
-			
-			
-			
+		}
+		//no flex
+		else{
+			if(item[imp.OPT_POSITION] != "absolute" && parent && parent.display != 'flex'){
+				if(lx != 'left'){
+					trace('text align for layout '+lx);
+					item.halignLayout = lx;
+				}
+			}
 		}
 		
-		
+		/* 
+		if(item.name == 'helloworld'){
+			throw new Error('yo');
+		}
+		 */
 		
 		
 		//CANCEL PADDINGS
@@ -172,13 +176,14 @@ TPL_FUNCTIONS["html"] = {
 			item[imp.OPT_HEIGHT] = 'px';
 		}
 		
-		//not if row && childrenx
-		if(/* valuedir == 'row' &&  */cx){
+		//not if childrenx
+		if(cx){
 			item["p_left"] = 0; item["p_right"] = 0;
 		}
-		//not if col && childreny
-		if(/* valuedir == 'column' &&  */cy){
+		//not if childreny
+		if(cy){
 			item["p_top"] = 0; item["p_bottom"] = 0;
+			item[imp.OPT_HEIGHT] = 'px';
 		}
 		
 		if(valuedir == 'row'){
@@ -275,7 +280,7 @@ TPL_FUNCTIONS["html"] = {
 			
 			if(isText){
 				if(lx != 'left'){
-					item.textdata.halign = lx;
+					item.halignLayout = lx;
 					left = null; right = null;
 				}
 				if(ly == 'center'){
@@ -373,8 +378,11 @@ TPL_FUNCTIONS["html"] = {
 		if(isText){
 			
 			let tdata = item.textdata;
-			var halign = tdata.halign;
-			propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
+			
+			if(item[imp.OPT_WIDTH]){
+				var halign = tdata.halign;
+				propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
+			}
 			
 			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
 			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};

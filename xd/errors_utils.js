@@ -261,8 +261,8 @@ async function createErrorFile(listErrors)
 		var obj = listErrors[i];
 		var str = "";	
 		str += "Msg : "+obj.msg+"\n";
-		str += "Path : "+obj.path+"\n";
 		str += "Layer name : "+obj.name+"\n";
+		str += "Path : "+obj.path+"\n";
 		content += str + "\n";
 	}
 	await imp.createFile('export', path2, "errors.log", content);

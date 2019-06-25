@@ -203,7 +203,7 @@ async function generate_template(items, tpl_id, config)
 				
 				//define selector type
 				
-				if(item.useTag && item.countTag <= 2 && configLayout.file.sass_indent){
+				if(item.useTag && item.countTagUnnamed <= 2 && configLayout.file.sass_indent){
 					item.selectorType = 'tag';
 				}
 				else item.selectorType = 'classname';

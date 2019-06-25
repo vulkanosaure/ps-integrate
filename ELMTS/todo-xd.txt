@@ -303,7 +303,7 @@ ALGO PRE-EDITING :
 	on refuse comme itemtest
 	
 	within ybox :
-		
+		 
 	
 	
 	
@@ -599,7 +599,17 @@ bounds abs																	OK
 	
 	
 	
+	
+ps conversion
 
+	backup
+	reformat organize layer
+	convert es6 syntax ('let ', ') => ', ...)
+	add imp. partout (? pas sur que ça soit nécéssaire)
+	
+
+
+	
 
 img vs background-image										OK
 
@@ -652,10 +662,11 @@ dimensions							OK
 flex center							OK
 reusability							OK
 classname							OK
-retest center.xd
-ps conversion
+retest center.xd					OK
+ps conversion						todo
 ---------------------
-keyboard shorcut					EN COURS
+keyboard shorcut					OK
+organize layer						OK
 style range
 font formatting
 

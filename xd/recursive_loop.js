@@ -225,10 +225,14 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	else listitems = params.listItem;
 	let _len = listitems.length;
 	let listtags = listitems.map(item => item.tag);
+	let listtagsUnnamed = listitems.map(item => item.useTag ? item.tag : null);
+	
+	
 	
 	for (var _i = 0; _i < _len; _i++) {
 		let item = listitems[_i];
 		let count = 0;
+		let countUnnamed = 0;
 		let countBefore = 0;
 		listtags.forEach((tag, index) => {
 			if(tag == item.tag){
@@ -236,7 +240,12 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 				if(index < _i) countBefore++;
 			}
 		});
+		listtagsUnnamed.forEach((tag, index) => {
+			if(tag == item.tag) countUnnamed++;
+		});
 		item.countTag = count;
+		item.countTagUnnamed = countUnnamed;
+		item.indexTag = _i;
 		// item.positionTag = count - 1 - countBefore;
 		item.positionTag = countBefore;
 	}

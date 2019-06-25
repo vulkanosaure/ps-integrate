@@ -494,7 +494,8 @@ function getSelector(item, parent, sass_indent)
 	else if(item.selectorType == 'tag'){
 		selector = '& > ' + item.tag;
 		if(item.countTag > 1){
-			var positionTag = item.positionTag + 1;
+			// var positionTag = item.positionTag + 1;
+			var positionTag = item.indexTag + 1;
 			selector += ':nth-child(' + positionTag + ')';
 		}
 	}
