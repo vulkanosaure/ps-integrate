@@ -1,4 +1,6 @@
-﻿var PREFIX = "ps--";
+﻿var PLATFORM = 'xd';
+
+var PREFIX = "ps--";
 
 var PREFIX_LENGTH = PREFIX.length;
 
@@ -129,6 +131,13 @@ var DOC_HEIGHT;
 
 
 
+
+
+
+
+//___________________________________________________________________
+
+
 module.exports = {
 	PREFIX,
 	PREFIX_LENGTH,
@@ -173,4 +182,5 @@ module.exports = {
 	OPT_TPLMODEL,
 	OPT_PLACEHOLDER,
 	LIST_TAGS_NOCLOSE,
+	PLATFORM,
 };

@@ -1,12 +1,14 @@
 var imp = {};
-imp = {...imp, ...require('./platform_export.js')};
+imp = {...imp, ...require('./platform/platform_io.js')};
 imp = {...imp, ...require('./utils.js')};
-
-const fs = require("uxp").storage.localFileSystem;
-
-const file_debug = require('./debug.js');
-var trace = file_debug.trace;
+imp = {...imp, ...require('./platform/debug.js')};
 imp = {...imp, ...require('./constantes.js')};
+
+var trace = imp.trace;
+
+//___________________________________________________________________
+
+
 
 var tpl_content;
 var templateData = {};
@@ -30,7 +32,7 @@ function tpl_add_content(item, content, indent, linebreak, isBlock, contentTpl)
 		
 		if(contentTpl == undefined) contentTpl = content;
 		
-		let idtpl = item['tplparent'];
+		var idtpl = item['tplparent'];
 		indent -= item['tplmodelIndent'];
 		func(idtpl, contentTpl, indent, linebreak);
 	}
@@ -93,7 +95,7 @@ async function convertTemplate(path, params, keepNotFound)
 	if(keepNotFound == undefined) keepNotFound = false;
 	
 	// trace('convertTemplate : '+path);
-	let folderPlugin = await imp.getPluginFolder();
+	var folderPlugin = await imp.getPluginFolder();
 	var output = await imp.loadFilePath_cache(folderPlugin, path);
 	return convertTemplateFromStr(output, params, keepNotFound);
 	
@@ -130,7 +132,7 @@ function getTextFormatID(textdata, config)
 {
 	var tab = [];
 	
-	let fontname = textdata.font.toLowerCase();
+	var fontname = textdata.font.toLowerCase();
 	fontname = fontname.replace(new RegExp(' ', 'g'), '');
 	tab.push(fontname);
 	// output += textdata.color;
@@ -146,7 +148,7 @@ function getTextFormatID(textdata, config)
 	// if(textdata.leading != undefined) output += textdata.leading + "";
 	tab.push(textdata.letterspacing);
 	
-	let suffixStyle = '';
+	var suffixStyle = '';
 	if(textdata.bold) suffixStyle += 'b';
 	if(textdata.italic) suffixStyle += 'i';
 	if(suffixStyle) tab.push(suffixStyle);
@@ -229,15 +231,16 @@ Array.prototype.reverse = function(tab)
 //for template-functions
 
 
-function transformMargins(data, _property, nameItem="")
+function transformMargins(data, _property, nameItem)
 {
+	if(!nameItem) nameItem = '';
 	// trace('transformData');
 	
-	let listMargin = ['top', 'right', 'bottom', 'left'];
+	var listMargin = ['top', 'right', 'bottom', 'left'];
 	
-	let countMargin = 0;
-	for(let i in listMargin){
-		let prop = _property + '-' + listMargin[i];
+	var countMargin = 0;
+	for(var i in listMargin){
+		var prop = _property + '-' + listMargin[i];
 		// trace('- data[prop] : '+data[prop]+', .data : '+data[prop].data);
 		if(data[prop] && data[prop].data != 0) countMargin++;
 	}
@@ -245,9 +248,9 @@ function transformMargins(data, _property, nameItem="")
 	
 	if(countMargin > 1){
 		
-		let values = [];
-		for(let i in listMargin){
-			let prop = _property + '-' + listMargin[i];
+		var values = [];
+		for(var i in listMargin){
+			var prop = _property + '-' + listMargin[i];
 			var value = data[prop] ? data[prop].data : 0;
 			values.push(value);
 			
@@ -263,14 +266,14 @@ function transformMargins(data, _property, nameItem="")
 		}
 		
 		
-		let marginValue = values.join(' ');
+		var marginValue = values.join(' ');
 		data[_property] = {
 			data  :marginValue,
 			config: {},
 		};
 		
-		for(let i in listMargin){
-			let prop = _property + '-' + listMargin[i];
+		for(var i in listMargin){
+			var prop = _property + '-' + listMargin[i];
 			if(data[prop]) delete data[prop];
 		}
 	}
@@ -313,7 +316,7 @@ function propsToString(props, options, closeTag, filter)
 	if(options.separator == undefined) options.separator = ",";
 	if(options.equal == undefined) options.equal = " : ";
 	
-	let propsOK = [];
+	var propsOK = [];
 	var output = "{";
 	if(options.multiline) output += "\n\t";
 	var tab = [];
@@ -439,7 +442,7 @@ function mapProps(model, props)
 
 function getColorProperty(obj, variables)
 {
-	let value = '';
+	var value = '';
 	if(obj.a == 255) value = obj.hex;
 	else value = obj.rgba;
 	
@@ -450,20 +453,20 @@ function getColorProperty(obj, variables)
 
 function checkSassVariable(value, variables, type)
 {
-	let caseSensitive;
+	var caseSensitive;
 	if(type == 'color') caseSensitive = false;
 	else caseSensitive = true;
 	
-	let colorHandler = (type == 'color');
+	var colorHandler = (type == 'color');
 	if(colorHandler){
 		if(value.length == 4)	value = value + value.substr(1);
 	}
 	
-	let valueLC = value.toLowerCase();
+	var valueLC = value.toLowerCase();
 	
 	for(var k in variables){
-		let v = variables[k];
-		let hit = false;
+		var v = variables[k];
+		var hit = false;
 		
 		if(!caseSensitive && valueLC == v.toLowerCase()) hit = true;
 		else if(caseSensitive && value == v) hit = true;
@@ -511,7 +514,7 @@ async function getTemplateData(id)
 	//todo read from memory
 	output = templateData[id];
 	if(output) return {
-		output,
+		output: output,
 		type: 'memory',
 	}
 	
@@ -521,7 +524,7 @@ async function getTemplateData(id)
 	var exportFolder = await imp.getDataFolder();
 	var output = await imp.loadFilePath_cache(exportFolder, path);
 	if(output) return{
-		output,
+		output: output,
 		type: 'file',
 	}
 	
@@ -622,8 +625,8 @@ function getDimensionValue(parent, item, prop, propPx)
 		suffix = 'px';
 	}
 	else if(dim == '%'){
-		let parentDim = parent ? parent[propPx] : 0;
-		let percent;
+		var parentDim = parent ? parent[propPx] : 0;
+		var percent;
 		if(parent) percent = Math.round(item[propPx] / parent[propPx] * 100);
 		else percent = 100;
 		value = percent;
@@ -639,6 +642,8 @@ function getDimensionValue(parent, item, prop, propPx)
 
 
 
+
+//___________________________________________________________________
 
 module.exports = {
 	mapProps,

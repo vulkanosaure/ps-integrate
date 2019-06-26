@@ -21,10 +21,10 @@ class MathService {
 	
 	getProgressionValue(_input, _minsrc, _maxsrc, _mindst, _maxdst)
 	{
-		let _percentinput = (_input - _minsrc) / (_maxsrc - _minsrc);
+		var _percentinput = (_input - _minsrc) / (_maxsrc - _minsrc);
 		if (_percentinput < 0) _percentinput = 0;
 		if (_percentinput > 1) _percentinput = 1;
-		let _output = _mindst + (_maxdst - _mindst) * _percentinput;
+		var _output = _mindst + (_maxdst - _mindst) * _percentinput;
 		return _output;
 	}
 	

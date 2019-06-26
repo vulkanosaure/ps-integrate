@@ -602,12 +602,25 @@ bounds abs																	OK
 	
 ps conversion
 
-	backup
-	reformat organize layer
-	convert es6 syntax ('let ', ') => ', ...)
-	add imp. partout (? pas sur que ça soit nécéssaire)
+	backup												OK
+	reformat organize layer								OK
 	
-
+	shared conversion ('let ', ') => '					OK
+		'=>' only 										OK
+	
+	shared files : separation							OK
+	platform files : in a folder						OK
+	
+	entry points
+	
+	platform conversion : async, await, imp.
+		write global search/replace expressions
+		ajouter les "let " car c'est likely que je les oublie
+	
+	convert js to jsx
+	
+		todo getShadowData
+	
 
 	
 
@@ -632,9 +645,9 @@ GESTION ERRORS
 
 	tplmodel already defined										OK
 	if ph defined and templateMode==''								OK
-	if try to set svg-inline on a (natural ?) img => error
-	cannot export a line as an img (maybe shape in general?)
-	root has to be named (or auto generated)
+	if try to set svg-inline on a (natural ?) img => error			
+	cannot export a line as an img (maybe shape in general?)		
+	root has to be named (or auto generated)						
 
 
 
@@ -643,10 +656,10 @@ ____________________________
 TODO (short-term)
 
 
-padding							OK, TOCHECK
-remove textformat				? plus trop sur
-bug shadow						OK
-lvl								OK
+bug shadow							OK
+padding								OK, TOCHECK
+remove textformat					? plus trop sur
+lvl									OK
 
 refactoring tpl & btn/btnc
 	remove btn/btnc (doc too)		OK
@@ -664,6 +677,8 @@ reusability							OK
 classname							OK
 retest center.xd					OK
 ps conversion						todo
+xd dialog warning error/OK
+
 ---------------------
 keyboard shorcut					OK
 organize layer						OK

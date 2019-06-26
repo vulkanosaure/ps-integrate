@@ -1,0 +1,21 @@
+﻿dialog {
+	text: "PS-integrate complete",
+	orientation: "column",
+	alignChildren: "left",
+	alignment: "left",
+	
+	content: Group {
+		orientation: "column",
+		alignChildren: "left",
+		txtNaming: StaticText {text: "The script has finished successfully"}
+		
+	},
+	buttons: Group {
+		orientation: "column",
+		alignChildren: "bottom",
+		alignment: "fill",
+		btnClose: Button {text: "OK"}
+	}
+}
+
+

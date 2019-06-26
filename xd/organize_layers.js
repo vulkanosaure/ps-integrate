@@ -1,45 +1,16 @@
 var imp = {};
-imp = {...imp, ...require('./debug.js')};
-imp = {...imp, ...require('./platform_layer_logic.js')};
-imp = {...imp, ...require('./platform_layer_utils.js')};
+imp = {...imp, ...require('./platform/debug.js')};
+imp = {...imp, ...require('./platform/platform_layer.js')};
+imp = {...imp, ...require('./platform/platform_layer2.js')};
 imp = {...imp, ...require('./constantes.js')};
-var commands = require("commands");
+
 var trace = imp.trace;
 var tracerec = imp.tracerec;
 
+//___________________________________________________________________
 
-/*
-ALGO
-recursively go through every LEAF children
-find out which is surrounding which (in a non recursive way)
 
-what does it mean to surround something
-	that there's a group of children for which 
-	the bounds are contained within the bound of another item
-for any children
-	there could be any combination
-	forget it, im not listing all possible combination, the whole universe couldn't calculate that
-	
-for each item
-	list all other item
-	
-complexity : n2
-100 children : 10k iteration
-1000 children : 1 million iteration
-sounds doable
 
-output of this algoritm :
-	list of {
-		'container' : node
-		'items' : node[]
-	}
-	
-	
-NOTES :
-- if masque, need to force as a leaf 
-- if bounds identical => force as a leaf
-
-*/
 
 var globalSel;
 var globalSamecoords = [];
@@ -49,10 +20,10 @@ var backgrounds = [];
 
 function organizeLayers(sel, item)
 {
-	trace('organizeLayers---');
+	trace('organizeLayers');
 	
 	globalSel = sel;
-	
+	var rootNode = sel.insertionParent;
 	
 	//get flat array of leaves
 	var leaves = [];
@@ -61,63 +32,60 @@ function organizeLayers(sel, item)
 	
 	
 	//move leaves item to root
-	moveToRoot(sel, leaves);
-	trace('leaves.length : '+leaves.length);
+	
+	leaves.forEach(function(item){
+		var g = imp.groupLayers(item, sel);
+		imp.ungroupLayers(g, sel);
+	});
+	
 	
 	//group item of same coords (to root)
 	groupSameCoords(leaves);
 	
 	
-	leaves = imp.getLayersArray(sel.insertionParent);
-	trace('len : '+leaves.length);
-	
-	
 	//get groupments
-	leaves = imp.getLayersArray(sel.insertionParent);
-	var groupments = getGroupements(leaves);
+	leaves = imp.getLayersArray(rootNode);
+	groupBounded(leaves);
 	
 	
-	
-	leaves = imp.getLayersArray(sel.insertionParent);
+	leaves = imp.getLayersArray(rootNode);
 	deleteEmptyGroup(leaves);
-	
 	
 	
 	
 	//bring all from root in a group
 	
-	let children = imp.getLayersArray(sel.insertionParent);
-	sel.items = children;
-	commands.group();
+	var children = imp.getLayersArray(rootNode);
+	var newGroup = imp.groupLayers(children, sel);
 	
-	var newGroup = globalSel.items[0];
 	groupToOrder.push(newGroup);
 	
-	
 	//orderGroups
-	groupToOrder.forEach((group) => {
+	groupToOrder.forEach(function(group){
 		orderDepthGroup(group);
 	});
 	
-	
 	//send bg background here
-	backgrounds.forEach((item) => {
-		globalSel.items = item;
-		commands.sendToBack();
+	backgrounds.forEach(function(item){
+		imp.setLayerOrder(item, 'back', globalSel);
 	});
 	
-	newGroup.name = imp.PREFIX + '*container';
+	imp.setLayerName(newGroup, imp.PREFIX + '*container');
 }
+
+
+
+
 
 
 function orderDepthGroup(group)
 {
-	let children = imp.getLayersArray(group);
+	var children = imp.getLayersArray(group);
 	var len = children.length;
 	
 	// trace('children len : '+len+', groupname : '+group.name);
-	for(let i=0;i<len;i++){
-		let item = children[i];
+	for(var i=0;i<len;i++){
+		var item = children[i];
 		
 		var b = item.bounds2;
 		if(b) item.zscore = b[1] + b[0] / 10000;
@@ -125,18 +93,13 @@ function orderDepthGroup(group)
 	}
 	children.sort(compareOrder);
 	
-	/* 
-	trace('sort ::::');
-	children.forEach(item => trace('-- item : '+item.name));
-	*/
-	
-	children.forEach(item => {
-		globalSel.items = item;
-		commands.sendToBack();
+	children.forEach(function(item){
+		imp.setLayerOrder(item, 'back', globalSel);
 	});
-	
-	
 }
+
+
+
 
 
 function compareOrder( a, b ) {
@@ -173,15 +136,12 @@ function compareOrder( a, b ) {
 
 function reverseOrder(group)
 {
-	let children = imp.getLayersArray(group);
+	var children = imp.getLayersArray(group);
 	var len = children.length;
 	
-	trace('children len : '+len);
-	for(let i=0;i<len;i++){
-		let item = children[i];
-		globalSel.items = item;
-		commands.sendToBack();
-		
+	for(var i=0;i<len;i++){
+		var item = children[i];
+		imp.setLayerOrder(item, 'back', globalSel);
 	}
 }
 
@@ -192,18 +152,18 @@ function reverseOrder(group)
 
 
 
-function getGroupements(list)
+function groupBounded(list)
 {
 	var output = [];
 	var len = list.length;
 	var flatgrouped = [];
 	
-	for(let i=0;i<len;i++){
-		let item = list[i];
+	for(var i=0;i<len;i++){
+		var item = list[i];
 		
 		//si un item a été grouped, on ne le test plus
 		if(flatgrouped.indexOf(item) == -1){
-			let group = getGroupements2(item, list);
+			var group = groupBounded2(item, list);
 			if(group.length > 0){
 				output.push({
 					container: item,
@@ -211,16 +171,13 @@ function getGroupements(list)
 				});
 				flatgrouped = flatgrouped.concat(group);
 				
-				globalSel.items = group.concat([item]);
-				commands.group();
+				var newGroup = imp.groupLayers(group.concat([item]), globalSel);
 				
-				var newGroup = globalSel.items[0];
 				groupToOrder.push(newGroup);
 				backgrounds.push(item);
 				
 				newGroup.bounds2 = imp.getBounds(newGroup, null);
-				
-				item.name = imp.PREFIX + imp.OPT_BGPARENT;
+				imp.setLayerName(item, imp.PREFIX + imp.OPT_BGPARENT);
 			}
 		}
 		
@@ -229,24 +186,21 @@ function getGroupements(list)
 }
 
 
-function getGroupements2(testitem, list)
+function groupBounded2(testitem, list)
 {
 	var output = [];
 	var len = list.length;
 	// trace("testitem : "+testitem.name);
 	
-	for(let i=0;i<len;i++){
-		let item = list[i];
+	for(var i=0;i<len;i++){
+		var item = list[i];
 		if(item != testitem){		//skip self
 			
 			if(isBoundsContained(testitem, item)){
 				output.push(item);
 			}
-			
-			
 		}
 	}
-	
 	return output;
 }
 
@@ -273,34 +227,18 @@ function isBoundsContained(container, child)
 function deleteEmptyGroup(list)
 {
 	var len = list.length;
-	for(let i=0;i<len;i++){
-		let item = list[i];
+	for(var i=0;i<len;i++){
+		var item = list[i];
 		if(item.isContainer){
-			let children = imp.getLayersArray(item);
-			if(children.length == 0){
-				item.removeFromParent();
-			}
+			var children = imp.getLayersArray(item);
+			if(children.length == 0) imp.removeLayer(item);
 		}
-		if(!item.bounds2 && item.parent) item.removeFromParent();
+		if(!item.bounds2 && item.parent) imp.removeLayer(item);
 	}
 }
 
 
 
-
-
-
-function moveToRoot(sel, list)
-{
-	var len = list.length;
-	for(let i=0;i<len;i++){
-		let item = list[i];
-		sel.items = item;
-		commands.group();
-		commands.ungroup();
-		
-	}
-}
 
 
 
@@ -310,8 +248,8 @@ function groupSameCoords(list)
 	var output = [];
 	var len = list.length;
 	
-	for(let i=0;i<len;i++){
-		let item = list[i];
+	for(var i=0;i<len;i++){
+		var item = list[i];
 		if(globalSamecoords.indexOf(item) == -1){
 			groupSameCoords2(item, list);
 		}
@@ -325,8 +263,8 @@ function groupSameCoords2(testitem, list)
 	// trace("testitem : "+testitem);
 	var sameBounds = [];
 	
-	for(let i=0;i<len;i++){
-		let item = list[i];
+	for(var i=0;i<len;i++){
+		var item = list[i];
 		if(item != testitem){		//skip self
 			
 			// trace('-- ' + item.name+', bounds2 : '+item.bounds2);
@@ -337,13 +275,13 @@ function groupSameCoords2(testitem, list)
 		}
 	}
 	
+	
 	if(sameBounds.length > 0 && globalSamecoords.indexOf(testitem) == -1){
 		globalSamecoords.push(testitem);
 		var group = [testitem].concat(sameBounds);
-		globalSel.items = group;
-		commands.group();
 		
-		var newGroup = globalSel.items[0];
+		var newGroup = imp.groupLayers(group, globalSel);
+		
 		newGroup.bounds2 = imp.getBounds(newGroup, null);
 		// newGroup.name = "same coords";	//debug
 		
@@ -359,7 +297,7 @@ function equalBounds(item1, item2)
 	var b1 = item1.bounds2;
 	var b2 = item2.bounds2;
 	
-	for(let i=0;i<6;i++){
+	for(var i=0;i<6;i++){
 		if(b1[i] != b2[i]) return false;
 	}
 	return true;
@@ -371,10 +309,10 @@ function rec_flatten(item, level, list)
 {
 	if(!level) level = 0;
 	// tracerec(''+item.name, level);
-	let children = imp.getLayersArray(item);
+	var children = imp.getLayersArray(item);
 	var len = children.length;
 	
-	var hasMask = (item.mask);
+	var hasMask = imp.hasMask(item);
 	var isContainer = (len > 0);
 	
 	if(!isContainer || hasMask){
@@ -389,7 +327,7 @@ function rec_flatten(item, level, list)
 }
 
 
-
+//___________________________________________________________________
 
 module.exports = {
 	organizeLayers,

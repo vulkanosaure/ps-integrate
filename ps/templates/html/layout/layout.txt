@@ -1,1 +1,1 @@
-.{{layout_id}}{{layout_data}}
+{{selector}}{{layout_data}}

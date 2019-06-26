@@ -1,0 +1,2 @@
+var {{varname}}:VButton1 = new VButton1("{{path}}/{{filename}}");
+//{{varname}}.clickHandler = MVCRoot.getController("").onclick;

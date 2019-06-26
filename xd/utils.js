@@ -1,32 +1,25 @@
 var imp = {};
+imp = {...imp, ...require('./constantes.js')};
+imp = {...imp, ...require('./platform/debug.js')};
+imp = {...imp, ...require('./platform/platform_layer.js')};
 
-const file_constantes = require('./constantes.js');
-var PREFIX_LENGTH = file_constantes.PREFIX_LENGTH;
-var PREFIX = file_constantes.PREFIX;
-var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
-var OPTIONS_SHORCUTS = file_constantes.OPTIONS_SHORCUTS;
-var OPTIONS_SHORCUTS2 = file_constantes.OPTIONS_SHORCUTS2;
-var OPTIONS_SHORCUTS3 = file_constantes.OPTIONS_SHORCUTS3;
-var OPTIONS_SHORCUTS_PREFIX = file_constantes.OPTIONS_SHORCUTS_PREFIX;
-imp = {...imp, ...file_constantes};
+var trace = imp.trace;
+var tracerec = imp.tracerec;
 
-const file_debug = require('./debug.js');
-var trace = file_debug.trace;
-var tracerec = file_debug.tracerec;
+//___________________________________________________________________
 
-const file_platform_layer_logic = require('./platform_layer_logic.js');
-var get_natural_type = file_platform_layer_logic.get_natural_type;
+
 
 
 function has_prefix(name)
 {
-	var isprefix = (name.substr(0, PREFIX_LENGTH) == PREFIX);
+	var isprefix = (name.substr(0, imp.PREFIX_LENGTH) == imp.PREFIX);
 	return isprefix;
 }
 
 function has_option(name, idoption)
 {
-	var isprefix = (name.substr(0, PREFIX_LENGTH) == PREFIX);
+	var isprefix = (name.substr(0, imp.PREFIX_LENGTH) == imp.PREFIX);
 	if(!isprefix) return false;
 	var hasoption = (name.indexOf("--" + idoption+"=") != -1);
 	return hasoption;
@@ -64,9 +57,9 @@ function get_type(layer, name, isroot, level) {
 	if (forced_type != "") return forced_type;
 
 	if (!isroot || has_prefix(name)) {
-		var natural_type = get_natural_type(layer);
+		var natural_type = imp.get_natural_type(layer);
 		// tracerec('natural_type : '+natural_type, level);
-		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
+		if (natural_type != imp.TYPE_CONTAINER || has_prefix(name)) return natural_type;
 		else return "";
 	}
 	return "";
@@ -93,8 +86,8 @@ function handleShorcuts(name)
 	//for some specific registered case : if value only, convert into prop=value
 	
 	
-	for(var k in OPTIONS_SHORCUTS){
-		var tabprop = OPTIONS_SHORCUTS[k];
+	for(var k in imp.OPTIONS_SHORCUTS){
+		var tabprop = imp.OPTIONS_SHORCUTS[k];
 		var len = tabprop.length;
 		for(var k2 = 0; k2 < len; k2++){
 			var _prop = tabprop[k2];
@@ -117,8 +110,8 @@ function handleShorcuts(name)
 	
 	//specific keyboard with property association
 	
-	for(var k in OPTIONS_SHORCUTS2){
-		var replace = OPTIONS_SHORCUTS2[k];
+	for(var k in imp.OPTIONS_SHORCUTS2){
+		var replace = imp.OPTIONS_SHORCUTS2[k];
 		var _prop = k;
 		
 		//case middle
@@ -132,9 +125,9 @@ function handleShorcuts(name)
 	}
 	
 	//if only prop, add = 1
-	var len = OPTIONS_SHORCUTS3.length;
+	var len = imp.OPTIONS_SHORCUTS3.length;
 	for(var i = 0; i<len; i++){
-		var _prop = OPTIONS_SHORCUTS3[i];
+		var _prop = imp.OPTIONS_SHORCUTS3[i];
 		
 		//case middle
 		var regexp = new RegExp("--" + _prop + "--");
@@ -149,9 +142,9 @@ function handleShorcuts(name)
 	}
 	
 	
-	for(var k in OPTIONS_SHORCUTS_PREFIX){
+	for(var k in imp.OPTIONS_SHORCUTS_PREFIX){
 		
-		var prefix = OPTIONS_SHORCUTS_PREFIX[k];
+		var prefix = imp.OPTIONS_SHORCUTS_PREFIX[k];
 		var replace = "--" + k + "=";
 		name = name.replace("--" + prefix, replace);
 		
@@ -170,7 +163,7 @@ function handleShorcuts(name)
 function decodeNameParentRef(name, parentItem)
 {
 	if(name.charAt(0) == "&"){
-		let parentName = '';
+		var parentName = '';
 		if(parentItem) parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
 		name = parentName + name.substr(1);
 	}
@@ -180,7 +173,7 @@ function decodeNameParentRef(name, parentItem)
 function encodeNameParentRef(name, parentItem)
 {
 	if(!parentItem) return name;
-	let parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
+	var parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
 	var lenParent = parentName.length;
 	
 	if(name.substr(0, lenParent) == parentName){
@@ -203,8 +196,8 @@ function isItemExport(item, type, templateMode)
 
 function getParentsProperty(item, prop)
 {
-	let count = 0;
-	while(item.parent){
+	var count = 0;
+	while(item && item.parent){
 		if(item.parent[prop]) return item.parent[prop];
 		count++;
 		item = item.parent;
@@ -221,9 +214,9 @@ typeName = name / filename
 
 function generateItemName(parentItem, type, index, typeName)
 {
-	let output = '';
+	var output = '';
 	if(parentItem){
-		let parentName;
+		var parentName;
 		if(typeName == 'name') parentName = (parentItem[imp.OPT_TPLMODEL] || parentItem.name);
 		else if(typeName == 'filename') parentName = parentItem.name;
 		else throw new Error('wrong type for typeName');
@@ -237,7 +230,7 @@ function generateItemName(parentItem, type, index, typeName)
 
 
 
-let templateItems = {};
+var templateItems = {};
 function saveTemplateItem(tplname, ph, item)
 {
 	if(!templateItems[tplname]) templateItems[tplname] = {};
@@ -253,7 +246,7 @@ function getTemplateItem(tplname, ph)
 
 
 
-
+//___________________________________________________________________
 
 module.exports = {
 	has_prefix,

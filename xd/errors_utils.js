@@ -1,29 +1,16 @@
 var imp = {};
-
-const file_debug = require('./debug.js');
-var trace = file_debug.trace;
-
-const file_constantes = require('./constantes.js');
-var PREFIX = file_constantes.PREFIX;
-var OPTIONS_RULES = file_constantes.OPTIONS_RULES;
-var TYPE_GFX = file_constantes.TYPE_GFX;
-var TYPE_TEXT = file_constantes.TYPE_TEXT;
-var TYPE_CONTAINER = file_constantes.TYPE_CONTAINER;
-var CONTAINERS_TYPE = file_constantes.CONTAINERS_TYPE;
-var EXPORT_FOLDER = file_constantes.EXPORT_FOLDER;
-
-var OPT_PATH = file_constantes.OPT_PATH;
-var OPT_FILENAME = file_constantes.OPT_FILENAME;
-var OPT_BGPARENT = file_constantes.OPT_BGPARENT;
-var OPT_GFX_TYPE = file_constantes.OPT_GFX_TYPE;
-var OPT_DIRECTION = file_constantes.OPT_DIRECTION;
-
-imp = {...imp, ...require('./platform_export.js')};
+imp = {...imp, ...require('./platform/platform_io.js')};
 imp = {...imp, ...require('./utils.js')};
-imp = {...imp, ...file_constantes};
+imp = {...imp, ...require('./platform/debug.js')};
+imp = {...imp, ...require('./constantes.js')};
+
+var trace = imp.trace;
+
+//___________________________________________________________________
+
+
 
 var list_tplmodel = [];
-
 
 
 function check_error_layername(name, parentItem)
@@ -31,7 +18,7 @@ function check_error_layername(name, parentItem)
 	// trace('check_error_layername('+name+')');
 	var output = [];
 	
-	var len = PREFIX.length;
+	var len = imp.PREFIX.length;
 	var name2 = name.substr(len);
 	
 	var tab = name2.split("--");
@@ -39,7 +26,7 @@ function check_error_layername(name, parentItem)
 	len = tab.length;
 	for(var i = 0; i<len; i++){
 		var str = tab[i];
-		if(str != PREFIX){
+		if(str != imp.PREFIX){
 			var tab2 = str.split("=");
 			props[tab2[0]] = tab2[1];
 			
@@ -53,10 +40,10 @@ function check_error_layername(name, parentItem)
 	
 	
 	for(var k in props){
-		if(OPTIONS_RULES[k] == undefined) output.push(getErrorObject("Property '"+k+"' doesn't exist", getItemStructureStr(parentItem), name));
+		if(imp.OPTIONS_RULES[k] == undefined) output.push(getErrorObject("Property '"+k+"' doesn't exist", getItemStructureStr(parentItem), name));
 		else{
 			var value = props[k];
-			var rule = OPTIONS_RULES[k];
+			var rule = imp.OPTIONS_RULES[k];
 			
 			var type = typeof rule;
 			// trace('type : '+type+', rule : '+rule+', value : '+value);
@@ -94,13 +81,13 @@ function check_error_item(name, item, tplmodels)
 	var output = [];
 	
 	// trace('imp.TYPE_SHAPE : '+imp.TYPE_SHAPE);
-	// trace('CONTAINERS_TYPE : '+CONTAINERS_TYPE);
+	// trace('CONTAINERS_TYPE : '+imp.CONTAINERS_TYPE);
 	
-	if(item[OPT_DIRECTION] && CONTAINERS_TYPE.indexOf(item.type) == -1){
-		output.push(getErrorObject("Only containers can set option '"+OPT_DIRECTION+"'", getItemStructureStr(item), name));
+	if(item[imp.OPT_DIRECTION] && imp.CONTAINERS_TYPE.indexOf(item.type) == -1){
+		output.push(getErrorObject("Only containers can set option '"+imp.OPT_DIRECTION+"'", getItemStructureStr(item), name));
 	}
-	if(item[OPT_BGPARENT] && [TYPE_GFX, imp.TYPE_SHAPE].indexOf(item.type) == -1){
-		output.push(getErrorObject("Only img and shape can set option '"+OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));
+	if(item[imp.OPT_BGPARENT] && [imp.TYPE_GFX, imp.TYPE_SHAPE].indexOf(item.type) == -1){
+		output.push(getErrorObject("Only img and shape can set option '"+imp.OPT_BGPARENT+"'", getItemStructureStr(item), name+', type : '+item.type));
 	}
 	
 	if(item.name.charAt(0) == '$'){
@@ -160,16 +147,16 @@ function check_error_item2(parent)
 		
 		// trace('parent name : '+parent.name);
 		
-		let dir = parent["dir"];
+		var dir = parent["dir"];
 		// trace('dir : '+dir);
-		let prop = dir == 'row' ? 'x' : 'y';
-		let index_pos = dir == 'row' ? 0 : 1;
+		var prop = dir == 'row' ? 'x' : 'y';
+		var index_pos = dir == 'row' ? 0 : 1;
 		
 		// trace('dir : '+dir);
 		// trace('cur_pos : '+cur_pos);
 		
 		var len = parent.childrens.length;
-		let prev_pos;
+		var prev_pos;
 		
 		//wrapping
 		if(parent[imp.OPT_DIRECTION] == 'row' && parent[imp.OPT_WIDTH]){
@@ -182,11 +169,11 @@ function check_error_item2(parent)
 			throw new Error('name');
 		}
 		
-		for(let i=0; i<len; i++){
+		for(var i=0; i<len; i++){
 			// var _i = len - 1 - i;
 			var _i = i;
-			let _item = parent.childrens[_i];
-			let pos = _item.position[index_pos];
+			var _item = parent.childrens[_i];
+			var pos = _item.position[index_pos];
 			// trace('-- '+_item.name+', pos : '+pos+', bgparnet : '+_item["bgparent"]);
 			
 			if(i > 0 && _item["pos"] == "static" && !_item["bgparent"]){
@@ -250,7 +237,7 @@ function getItemStructureStr(item)
 
 async function createErrorFile(listErrors)
 {
-	var path2 = EXPORT_FOLDER + "/";
+	var path2 = imp.EXPORT_FOLDER + "/";
 	
 	var content = "";
 	
@@ -269,6 +256,9 @@ async function createErrorFile(listErrors)
 	
 }
 
+
+
+//___________________________________________________________________
 
 module.exports = {
 	check_error_layername,

@@ -1,8 +1,9 @@
 var imp = {};
-imp = {...imp, ...require('./mainExport.js')};
-imp = {...imp, ...require('./selection.js')};
-imp = {...imp, ...require('./debug.js')};
+imp = {...imp, ...require('./export.js')};
+imp = {...imp, ...require('./platform/selection.js')};
+imp = {...imp, ...require('./platform/debug.js')};
 imp = {...imp, ...require('./organize_layers.js')};
+imp = {...imp, ...require('./platform/platform_layer.js')};
 
 
 
@@ -18,7 +19,16 @@ function getItemFromSelection(selection, documentRoot)
 
 async function exportFunction(selection, documentRoot)
 {
-	await imp.exportFunction(selection, documentRoot);
+	var rootNode;
+	if(selection.items && selection.items.length > 0){
+		rootNode = imp.getArtboardByLayer(selection.items[0]);
+	}
+	else{
+		throw Error('please choose an artboard');
+		rootNode = documentRoot.children.at(0);
+	}
+	
+	await imp.exportFunction(rootNode);
 }
 
 async function selectionFunction(selection, documentRoot)

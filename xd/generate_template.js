@@ -1,13 +1,17 @@
 var imp = {};
-
-const file_debug = require('./debug.js');
-var trace = file_debug.trace;
-var tracerec = file_debug.tracerec;
-
 imp = {...imp, ...require('./template_utils.js')};
 imp = {...imp, ...require('./template_functions.js')};
 imp = {...imp, ...require('./constantes.js')};
 imp = {...imp, ...require('./utils.js')};
+imp = {...imp, ...require('./platform/debug.js')};
+
+var trace = imp.trace;
+var tracerec = imp.tracerec;
+
+//___________________________________________________________________
+
+
+
 
 
 async function generate_template(items, tpl_id, config)
@@ -103,7 +107,7 @@ async function generate_template(items, tpl_id, config)
 		
 		for(var idtpl in imp.templateData){
 			var filename = idtpl + '.txt';
-			let data = await imp.getTemplateData(idtpl);
+			var data = await imp.getTemplateData(idtpl);
 			
 			if(data.type == 'file') throw new Error('why ?');
 			
@@ -540,7 +544,7 @@ async function generate_template(items, tpl_id, config)
 		
 		var strattributes = '';
 		if(attributes && attributes.length > 0){
-			var tabattrs = attributes.map(obj => obj.key+'="'+obj.value+'"');
+			var tabattrs = attributes.map(function(obj){ return obj.key+'="'+obj.value+'"' });
 			strattributes = ' '+tabattrs.join(' ');
 		}
 		data["attributes"] = strattributes;
@@ -589,7 +593,7 @@ async function generate_template(items, tpl_id, config)
 			
 			var strattributes = '';
 			if(attributes && attributes.length > 0){
-				var tabattrs = attributes.map(obj => obj.key+'="'+obj.value+'"');
+				var tabattrs = attributes.map(function(obj){ return obj.key+'="'+obj.value+'"' });
 				strattributes = ' '+tabattrs.join(' ');
 			}
 			data["attributes"] = strattributes;
@@ -604,6 +608,9 @@ async function generate_template(items, tpl_id, config)
 
 }
 
+
+
+//___________________________________________________________________
 
 module.exports = {
 	generate_template,

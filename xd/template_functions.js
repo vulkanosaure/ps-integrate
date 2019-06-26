@@ -1,17 +1,14 @@
-var TPL_FUNCTIONS = {};
-
 var imp = {};
 imp = {...imp, ...require('./constantes.js')};
 imp = {...imp, ...require('./template_utils.js')};
-const file_debug = require('./debug.js');
-var trace = file_debug.trace;
+imp = {...imp, ...require('./platform/debug.js')};
+
+var trace = imp.trace;
+
+//___________________________________________________________________
 
 
-
-
-
-//______________________________________________________________
-//HTML 
+var TPL_FUNCTIONS = {};
 
 TPL_FUNCTIONS["html"] = {
 	
@@ -120,7 +117,7 @@ TPL_FUNCTIONS["html"] = {
 			
 			if(item[imp.OPT_POSITION] != "absolute" && parent && parent.display != 'flex'){
 				if(lx != 'left'){
-					//if text => text align
+					//if text : text align
 					if(isText){
 						// item.halignLayout = lx;
 					}
@@ -160,7 +157,7 @@ TPL_FUNCTIONS["html"] = {
 		//CANCEL PADDINGS
 		
 		
-		//if all children (static, !bgparent) are centerx => pas de padding x
+		//if all children (static, !bgparent) are centerx : pas de padding x
 		
 		if(item.allCenterX){
 			item["p_left"] = 0; item["p_right"] = 0;
@@ -360,7 +357,7 @@ TPL_FUNCTIONS["html"] = {
 		if(item["p_top"] > 0) propsModel["p_top"] = { name: 'padding-top', sufix: 'px' };
 		if(item["p_right"] > 0){
 			//if more padding right than left, equalize
-			let value = item["p_left"];
+			var value = item["p_left"];
 			propsModel["p_right"] = { name: 'padding-right', value: value, sufix: 'px' };
 		}
 		
@@ -377,14 +374,14 @@ TPL_FUNCTIONS["html"] = {
 		
 		if(isText){
 			
-			let tdata = item.textdata;
+			var tdata = item.textdata;
 			
 			if(item[imp.OPT_WIDTH]){
 				var halign = tdata.halign;
 				propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
 			}
 			
-			let colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
+			var colorValue = imp.getColorProperty(tdata.color, config.sass_variable.colors);
 			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};
 			
 		}
@@ -422,8 +419,8 @@ TPL_FUNCTIONS["html"] = {
 		//no else, can be cumulative
 		if(item.shapedata){
 			
-			let s = item.shapedata;
-			let isContainer = (imp.CONTAINERS_TYPE.indexOf(item.type) != -1);
+			var s = item.shapedata;
+			var isContainer = (imp.CONTAINERS_TYPE.indexOf(item.type) != -1);
 			
 			//if type img : can have shapedata too
 			if(item[imp.OPT_TAG] != 'img'){
@@ -436,21 +433,21 @@ TPL_FUNCTIONS["html"] = {
 			
 			
 			if(s.bgColor){
-				let value = imp.getColorProperty(s.bgColor, config.sass_variable.colors);
+				var value = imp.getColorProperty(s.bgColor, config.sass_variable.colors);
 				propsModel["bgColor"] = {name : "background-color", value: value};
 			}
 			else if(s.bgGradient){
 				//linear-gradient(to left, $color-purple, $color-purple-gradient);
 				
-				let value = getGradientColorStr(s.bgGradient, config.sass_variable.colors);
+				var value = getGradientColorStr(s.bgGradient, config.sass_variable.colors);
 				propsModel["bgGradient"] = {name : "background", value: value};
-				//default => to bottom
+				//default : to bottom
 				
 			}
 			
 			
 			if(s.borderWidth){	
-				let borderValue = s.borderWidth + 'px solid '+imp.getColorProperty(s.borderColor, config.sass_variable.colors);
+				var borderValue = s.borderWidth + 'px solid '+imp.getColorProperty(s.borderColor, config.sass_variable.colors);
 				propsModel["border"] = {name : "border", value:borderValue};
 			}
 			if(s.radius_topLeft) propsModel["radius_topLeft"] = {name : "border-top-left-radius", value:s.radius_topLeft, sufix:"px"};
@@ -463,26 +460,26 @@ TPL_FUNCTIONS["html"] = {
 		}
 		
 		if(item.pathdata){
-			let value = imp.getColorProperty(item.pathdata.bgColor, config.sass_variable.colors);
+			var value = imp.getColorProperty(item.pathdata.bgColor, config.sass_variable.colors);
 			propsModel["bgColor"] = {name : "fill", value: value};
 		}
 		
 		if(item.shadow){
 			
-			let s = item.shadow;
-			let c  = s.color;
+			var s = item.shadow;
+			var c  = s.color;
 			
-			let isBox = item[imp.OPT_TYPE] != imp.TYPE_TEXT;
+			var isBox = item[imp.OPT_TYPE] != imp.TYPE_TEXT;
 			
-			let tab = [];
+			var tab = [];
 			tab.push(s.x + 'px');
 			tab.push(s.y + 'px');
 			tab.push(s.blur + 'px');
 			if(isBox) tab.push('0px');
 			tab.push(c.rgba);
-			let value = tab.join(' ');
+			var value = tab.join(' ');
 			
-			let propname = isBox ? 'box-shadow' : 'text-shadow';
+			var propname = isBox ? 'box-shadow' : 'text-shadow';
 			propsModel['shadow'] = {name: propname, value: value};
 		}
 		
@@ -491,7 +488,7 @@ TPL_FUNCTIONS["html"] = {
 			
 			var testdim = parent[imp.OPT_DIRECTION] == 'row' ? imp.OPT_WIDTH : imp.OPT_HEIGHT;
 			if(item[testdim]){
-				let value = '0 0 auto';
+				var value = '0 0 auto';
 				propsModel['flex_shorhand'] = {name: "flex", value: value};
 			}
 			
@@ -499,7 +496,7 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		
-		//si child set width px => et parent DIRECT has same width px => set 100%
+		//si child set width px : et parent DIRECT has same width px : set 100%
 		if(item[imp.OPT_WIDTH] == 'px' && parent && parent[imp.OPT_WIDTH] == 'px'){
 			if(item.widthPx == parent.widthPx) item[imp.OPT_WIDTH] = '%';
 		}
@@ -563,9 +560,9 @@ TPL_FUNCTIONS["html"] = {
 		
 		
 		//delete useless margin_padding
-		let propsClean = ['margin_left2', 'margin_top2', 'margin_bottom2', 'margin_right2']
+		var propsClean = ['margin_left2', 'margin_top2', 'margin_bottom2', 'margin_right2']
 		for(var k in propsClean){
-			let prop = propsClean[k];
+			var prop = propsClean[k];
 			if(propsModel[prop] && propsModel[prop].value == 0){
 				delete propsModel[prop];
 			}
@@ -590,17 +587,17 @@ TPL_FUNCTIONS["html"] = {
 
 function getGradientColorStr(obj, colors)
 {
-	let output = '';
-	let dir = "to " + obj.dir;
-	let col1 = "";
-	let col2 = "";
-	let tab = [];
+	var output = '';
+	var dir = "to " + obj.dir;
+	var col1 = "";
+	var col2 = "";
+	var tab = [];
 	tab.push(dir);
-	let nbColor = obj.colorStops.length;
+	var nbColor = obj.colorStops.length;
 	
 	for(var i in obj.colorStops){
-		let item = obj.colorStops[i];
-		let col = imp.getColorProperty(item.color, colors);
+		var item = obj.colorStops[i];
+		var col = imp.getColorProperty(item.color, colors);
 		
 		if(nbColor > 2){
 			col += ' ';
@@ -666,7 +663,7 @@ function recTransformLvl_push(root, lvl, item)
 
 
 
-
+//___________________________________________________________________
 
 module.exports = {
 	TPL_FUNCTIONS,
