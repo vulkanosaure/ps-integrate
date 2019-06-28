@@ -36,10 +36,11 @@ function main(settings, rootNode)
 	
 	exportPath = settings.destination;
 	overwrite = settings.overwrite;
-	trace('overwrite : '+overwrite);
+	trace('exportPath : '+exportPath);
 
 	if (overwrite) {
 		deleteFolder(settings.destination, EXPORT_FOLDER);
+		
 	}
 	
 	
@@ -99,22 +100,12 @@ function main(settings, rootNode)
 		var templates = generate_template(listItem, tpl_id, config);
 		
 		
-		//ecritures des templates
-		trace('templates.length : '+templates.length);
-		
+		//write templates
 		for (var i = 0; i < templates.length; i++) {
 			
 			var tpl = templates[i];
-			
-			trace('_____________________');
-			trace('filename : '+tpl.filename);
-			trace('content : '+tpl.content);
-			
-			
 			var path = tpl.path || EXPORT_FOLDER + "/" + tpl_id + "/";
 			var folder = tpl.folder || 'export';
-			trace('path : '+path);
-			trace('folder : '+folder);
 			
 			createFile(folder, path, tpl.filename, tpl.content);
 

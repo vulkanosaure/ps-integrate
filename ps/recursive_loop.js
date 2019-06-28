@@ -107,6 +107,8 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 					}
 
 					var imgtype = item[OPT_IMGTYPE];
+					
+					trace('params.exportPath : '+params.exportPath);
 					saveLayer(layer, path, params.exportPath, false, bounds, imgtype, params.config);
 					
 					
@@ -479,17 +481,9 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	
 	
-	
 	if(type == TYPE_GFX){
-		var path = output.path;
-		if(path != "") path += "/";
-		path += output.filename;
-		output.fullpath_noext = path;
-		path += "." + output[OPT_IMGTYPE];
-		
-		output.fullpath = path;
+		setItemPath(output);
 	}
-	
 	
 	
 	
@@ -511,13 +505,17 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output[OPT_GFX_TYPE] = get_value_option_safe(name, OPT_GFX_TYPE);
 		if (output[OPT_GFX_TYPE] == "") output[OPT_GFX_TYPE] = "layout";	//layout/data
 		
+		
 		if (output[OPT_BGPARENT]) {
 			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
 			if(output.shadow) parentItem.shadow = output.shadow;
 			if(output[OPT_IMGTYPE]) parentItem[OPT_IMGTYPE] = output[OPT_IMGTYPE];
+			else parentItem[OPT_IMGTYPE] = 'png';
 			parentItem.has_graphic = true;
 			output["disable"] = true;
+			
+			setItemPath(parentItem);
 		}
 		
 		var filter = [

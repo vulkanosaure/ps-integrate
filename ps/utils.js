@@ -228,3 +228,14 @@ function getTemplateItem(tplname, ph)
 	return templateItems[tplname][ph];
 }
 
+
+function setItemPath(item)
+{
+	var path = item.path;
+	if(path != "") path += "/";
+	path += item.filename;
+	item.fullpath_noext = path;
+	path += "." + item[OPT_IMGTYPE];
+	item.fullpath = path;
+}
+

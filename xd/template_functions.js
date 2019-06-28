@@ -529,7 +529,7 @@ TPL_FUNCTIONS["html"] = {
 			var listPropertyRetina = [
 				"width",
 				"height",
-				"margin-left",
+				"margin-left", 
 				"margin-right",
 				"margin-top",
 				"margin-bottom",

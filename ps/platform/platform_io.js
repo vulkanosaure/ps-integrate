@@ -11,21 +11,24 @@ function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, config) 
 		for(var i=0; i<4; i++) bounds[i] = new UnitValue(bounds[i], 'px');
 		activeDocument.crop(bounds);
 	}
-
+	
 	//create folder if needed
 	createFolderStructure(basepath, path);
-
 	
-	var tab = path.split('.');
-	var ext = tab[tab.length - 1];
-	tab.pop();
+	if(!imgtype) imgtype = 'png';
+	var ext = imgtype;
 	
-	var saveFile = File(basepath + "/" + path);
+	var fullpath = basepath + "/" + path + '.' + ext;
+	trace('fullpath : '+fullpath);
+	var saveFile = File(fullpath);
 	var doc = app.activeDocument;
 	
-	if(config.retina){
+	
+	//tocheck, access to config
+	if(config.config.retina){
 		
-		var pathX2 = tab.join('.') + '@x2' + '.' + ext;
+		var pathX2 = path + '@x2' + '.' + ext;
+		// trace('pathX2 : '+pathX2);
 		var saveFileX2 = File(basepath + "/" + pathX2);
 		
 		var widthX1 = Math.round(doc.width / 2);
@@ -53,6 +56,7 @@ function fileExist(path, basepath) {
 function getDataFolder()
 {
 	var folder = Folder.userData;
+	foder += '/integate';
 	return folder;
 }
 function getPluginFolder()
@@ -114,27 +118,21 @@ function createFile(folderType, path, filename, content)
 
 function deleteFolder(folderBaseObj, folderRelativePath) {
 	
-	// trace('deleteFolder('+folderBaseObj+')');
-	var folder;
-	try{
-		folder = folderBaseObj.getEntry(folderRelativePath);
+	var folderItem = new Folder(folderBaseObj + "/" + folderRelativePath);
+	var theFiles = folderItem.getFiles();
+	for(var c = 0; c < theFiles.length; c++){
+			if (theFiles[c] instanceof Folder) {
+				deleteFolder(theFiles[c]);
+			}
+			else{
+				theFiles[c].remove();
+			}
 	}
-	catch(err){
-		return;
-	}
-	deleteFolderRec(folder);
+	
+	folderItem.remove();
 }
-function deleteFolderRec(folder)
-{
-	var entries = folder.getEntries();
-	for(var i=0; i<entries.length; i++){
-		var entry = entries[i];
-		// trace('entry '+i+' : '+entry+', is folder : '+entry.isFolder);
-		if(entry.isFolder) deleteFolderRec(entry);
-		else entry.delete();
-	}
-	folder.delete();
-}
+
+
 
 
 

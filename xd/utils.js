@@ -245,6 +245,20 @@ function getTemplateItem(tplname, ph)
 
 
 
+function setItemPath(item)
+{
+	var path = item.path;
+	if(path != "") path += "/";
+	path += item.filename;
+	item.fullpath_noext = path;
+	path += "." + item[imp.OPT_IMGTYPE];
+	item.fullpath = path;
+}
+
+
+
+
+
 
 //___________________________________________________________________
 
@@ -265,4 +279,5 @@ module.exports = {
 	generateItemName,
 	saveTemplateItem,
 	getTemplateItem,
+	setItemPath,
 };

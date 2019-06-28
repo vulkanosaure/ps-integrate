@@ -76,7 +76,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 			var item = create_item(layer, name, type, parentItem, level, i_normal, params);
 			lastitem = item;
 			type = item[imp.OPT_TYPE];
-			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.height), level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.heightPx), level);
 			
 			
 			var errors = imp.check_error_item(name, item, listTplModel);
@@ -119,7 +119,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 					if (parentItem && parentItem[imp.OPT_EQUALOFFSET] == 1) {
 						bounds = parentItem.bounds;
 					}
-
+					
 					var imgtype = item[imp.OPT_IMGTYPE];
 					await imp.saveLayer(layer, path, params.exportPath, false, bounds, imgtype, params.config);
 					
@@ -496,16 +496,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	if(type == imp.TYPE_GFX){
-		var path = output.path;
-		if(path != "") path += "/";
-		path += output.filename;
-		output.fullpath_noext = path;
-		path += "." + output[imp.OPT_IMGTYPE];
-		
-		output.fullpath = path;
+		imp.setItemPath(output);
 	}
-	
-	
 	
 	
 	
@@ -531,8 +523,11 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			parentItem[imp.OPT_FILENAME] = output[imp.OPT_NAME];
 			if(output.shadow) parentItem.shadow = output.shadow;
 			if(output[imp.OPT_IMGTYPE]) parentItem[imp.OPT_IMGTYPE] = output[imp.OPT_IMGTYPE];
+			else parentItem[imp.OPT_IMGTYPE] = 'png';
 			parentItem.has_graphic = true;
 			output["disable"] = true;
+			
+			imp.setItemPath(parentItem);
 		}
 		
 		

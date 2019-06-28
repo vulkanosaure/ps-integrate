@@ -1,11 +1,30 @@
-background-image:url('undefined'); 		(bgparent apparement)
+background-image:url('undefined');					OK
 
-btn restart : margin:28px 0 0 178px 0 0 0;
+btn restart : margin:28px 0 0 178px 0 0 0;			OK
 
-retina
+retina												OK
 
-deleteFolder
+deleteFolder										DOESN'T WORK
 
-integrate HTML for real (with fonts)
+integrate HTML for real (with fonts)				OK
 	integrer psd dans test/psd/
 	nommer psd-basic
+	
+append '/integrate' au chemin home
+
+decalage texte "vous incarnez"
+	
+
+order html
+layout
+
+drop shadow zone_title
+
+retina : line-height / 2 (btn_restart)
+
+
+test tplmodel
+	in memory		BUG
+	file
+
+organize layers

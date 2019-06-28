@@ -432,7 +432,8 @@ async function generate_template(items, tpl_id, config)
 		
 		var strclasses = classes.join(' ');
 		data["classes"] = strclasses;
-		data = Object.assign(data, values);
+		// data = Object.assign(data, values);
+		for(var k in values) data[k] = values[k];
 		
 		var output = await imp.convertTemplateFromStr(templateData, data, false);
 		
@@ -502,8 +503,10 @@ async function generate_template(items, tpl_id, config)
 		else if(item.type == imp.TYPE_TEXT){
 			
 			var textformat_id = imp.getTextFormatID(item.textdata, configConfig);
+			/* 
 			var text_color = imp.getTextColorID(item.textdata, config.colors);
 			var text_align = "text_" + item.textdata.halign;
+			 */
 			classes.unshift(textformat_id);
 			
 			data["content"] = item.textdata.text;	

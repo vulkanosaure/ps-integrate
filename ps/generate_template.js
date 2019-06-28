@@ -417,7 +417,9 @@ function generate_template(items, tpl_id, config)
 		
 		var strclasses = classes.join(' ');
 		data["classes"] = strclasses;
-		data = Object.assign(data, values);
+		// data = Object.assign(data, values);
+		for(var k in values) data[k] = values[k];
+		
 		
 		var output = convertTemplateFromStr(templateData, data, false);
 		

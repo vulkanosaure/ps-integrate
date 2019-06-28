@@ -65,7 +65,7 @@
 	.quizzes{
 		display:flex;
 		flex-direction:row;
-		margin:97px 0 0 232px;
+		margin-top:97px;
 		& > div:nth-child(1){
 			
 		}
@@ -110,12 +110,10 @@
 	
 	&-bulle2{
 		position:relative;
-		background-color:#1e222a;
-		border-top-left-radius:10px;
-		border-top-right-radius:10px;
-		width:370px;
+		background-image:url('images/dimensions/page-dimensions-bulle2-6.png');
+		width:370px; height:273px;
 		margin:34px 0 0 8px;
-		padding:23px 20px 22px;
+		padding:23px 20px 54px;
 		
 		&-header{
 			display:flex;
@@ -176,13 +174,13 @@
 		
 		&-author{
 			position:absolute;
-			left:59px; bottom:-32px;
+			left:59px; bottom:0px;
 			color:#7c7d7e;
 		}
 		
 		&-pointe{
 			position:absolute;
-			left:18px; bottom:-32px;
+			left:18px; bottom:0px;
 			background-image:url('images/dimensions/page-dimensions-bulle2-pointe.svg');
 			width:41px; height:32px;
 		}
@@ -196,7 +194,7 @@
 		background-color:#18191f;
 		border-radius:10px;
 		width:198px;
-		margin:97px 0 0 10px;
+		margin:65px 0 0 10px;
 		padding:28px 0 103px;
 		
 		&-title{
@@ -227,13 +225,13 @@
 		background-color:#191919;
 		border-radius:20px;
 		width:837px;
-		margin:131px 0 0 9px;
-		padding:95px 0 36px;
+		margin:69px 0 0 9px;
+		padding:157px 0 36px;
 		
 		&-score{
 			display:flex;
 			flex-direction:column;
-			position:absolute; top:-62px;
+			position:absolute; top:0px;
 			left:50%;
 			transform:translateX(-50%);
 			background-color:#ffffff;

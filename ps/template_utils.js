@@ -227,22 +227,24 @@ function transformMargins(data, _property, nameItem)
 	var listMargin = ['top', 'right', 'bottom', 'left'];
 	
 	var countMargin = 0;
-	for(var i in listMargin){
-		var prop = _property + '-' + listMargin[i];
-		// trace('- data[prop] : '+data[prop]+', .data : '+data[prop].data);
+	listMargin.forEach(function(margin){
+		// trace('listMargin : '+i);
+		var prop = _property + '-' + margin;
+		// trace('- data[prop] : '+data[prop]+', .data : '+(data[prop] && data[prop].data));
 		if(data[prop] && data[prop].data != 0) countMargin++;
-	}
+	});
 	// trace('_property : '+_property+', countMargin : '+countMargin);
 	
 	if(countMargin > 1){
 		
 		var values = [];
-		for(var i in listMargin){
-			var prop = _property + '-' + listMargin[i];
+		// for(var i in listMargin){
+		listMargin.forEach(function(margin){
+			var prop = _property + '-' + margin;
 			var value = data[prop] ? data[prop].data : 0;
 			values.push(value);
 			
-		}
+		});
 		// trace('values : '+values);
 		
 		if(values[0] == values[2] && values[1] == values[3]){
@@ -260,10 +262,11 @@ function transformMargins(data, _property, nameItem)
 			config: {},
 		};
 		
-		for(var i in listMargin){
-			var prop = _property + '-' + listMargin[i];
+		// for(var i in listMargin){
+		listMargin.forEach(function(margin){
+			var prop = _property + '-' + margin;
 			if(data[prop]) delete data[prop];
-		}
+		});
 	}
 	
 	return data;
