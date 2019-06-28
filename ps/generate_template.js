@@ -105,6 +105,7 @@ function generate_template(items, tpl_id, config)
 	}
 	
 	
+	
 	return output;
 	
 	
@@ -486,8 +487,10 @@ function generate_template(items, tpl_id, config)
 		else if(item.type == TYPE_TEXT){
 			
 			var textformat_id = getTextFormatID(item.textdata, configConfig);
+			/* 
 			var text_color = getTextColorID(item.textdata, config.colors);
 			var text_align = "text_" + item.textdata.halign;
+			 */
 			classes.unshift(textformat_id);
 			
 			data["content"] = item.textdata.text;	

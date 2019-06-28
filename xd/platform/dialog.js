@@ -35,8 +35,8 @@ function showDialogError(listErrors)
 		}
 		
 		contentTrace += obj.msg+'\n';
+		contentTrace += 'Location : '+obj.path+'\n';
 		contentTrace += obj.name+'\n';
-		contentTrace += 'Layer : '+obj.path+'\n';
 		contentTrace += '\n';
 		
 		count++;

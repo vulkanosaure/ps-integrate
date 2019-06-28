@@ -1,0 +1,11 @@
+background-image:url('undefined'); 		(bgparent apparement)
+
+btn restart : margin:28px 0 0 178px 0 0 0;
+
+retina
+
+deleteFolder
+
+integrate HTML for real (with fonts)
+	integrer psd dans test/psd/
+	nommer psd-basic

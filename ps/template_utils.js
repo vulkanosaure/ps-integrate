@@ -1,4 +1,4 @@
-var tpl_content;
+﻿var tpl_content;
 var templateData = {};
 var tpl_indent;
 
@@ -147,9 +147,9 @@ function getTextFormatID(textdata, config)
 }
 
 
+//not used anymore
 function getTextColorID(textdata, colors)
 {
-	
 	var output = '';
 	
 	for(var k in colors){

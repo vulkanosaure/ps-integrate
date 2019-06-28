@@ -12,7 +12,7 @@ function exportFunction(rootNode)
 	var bounds = getBounds(rootNode, null, false);
 	DOC_WIDTH = bounds[4];
 	DOC_HEIGHT = bounds[5]; 
-	trace('DOC DIMS : '+DOC_WIDTH+', '+DOC_HEIGHT);
+	trace('DOC DIMS : '+(DOC_WIDTH+1)+', '+(DOC_HEIGHT+1));
 	
 	var settings = {
 		overwrite: true,
@@ -89,23 +89,33 @@ function main(settings, rootNode)
 	
 	if (params.listErrors.length > 0) {
 		trace('errors');
-		showDialogError(params.listErrors);
 		createErrorFile(params.listErrors);
+		showDialogError(params.listErrors);
+		
 		
 	}
 	else{
 		
-		
 		var templates = generate_template(listItem, tpl_id, config);
 		
-
+		
 		//ecritures des templates
-
+		trace('templates.length : '+templates.length);
+		
 		for (var i = 0; i < templates.length; i++) {
-
+			
 			var tpl = templates[i];
+			
+			trace('_____________________');
+			trace('filename : '+tpl.filename);
+			trace('content : '+tpl.content);
+			
+			
 			var path = tpl.path || EXPORT_FOLDER + "/" + tpl_id + "/";
 			var folder = tpl.folder || 'export';
+			trace('path : '+path);
+			trace('folder : '+folder);
+			
 			createFile(folder, path, tpl.filename, tpl.content);
 
 		}

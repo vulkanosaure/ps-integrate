@@ -1,76 +1,45 @@
+// function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, config) {
 function saveLayer(layer, path, basepath, shouldMerge, bounds, imgtype, config) {
+	activeDocument.activeLayer = layer;
+
+	dupLayers(layer);
+	if (shouldMerge === undefined || shouldMerge === true) {
+		activeDocument.mergeVisibleLayers();
+	}
+	if (!bounds) activeDocument.trim(TrimType.TRANSPARENT, true, true, true, true);
+	else{
+		for(var i=0; i<4; i++) bounds[i] = new UnitValue(bounds[i], 'px');
+		activeDocument.crop(bounds);
+	}
+
+	//create folder if needed
+	createFolderStructure(basepath, path);
+
 	
-	// trace('createFolderStructure basepath : '+basepath+', path : '+path);
-	var folder = createFolderStructure(basepath, path);
+	var tab = path.split('.');
+	var ext = tab[tab.length - 1];
+	tab.pop();
 	
-	if(!imgtype) imgtype = 'png';
+	var saveFile = File(basepath + "/" + path);
+	var doc = app.activeDocument;
 	
-	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png
-	var tab = path.split('/');
-	var filename = tab[tab.length-1];
-	var filename2 = filename + '@x2';
-	
-	var ext = imgtype;
-	filename += '.' + ext;
-	filename2 += '.' + ext;
-	
-	const file = folder.createFile(filename);
-	const file2 = folder.createFile(filename2);
-	
-	var type;
-	if(imgtype == 'png') type = application.RenditionType.PNG;
-	else if(imgtype == 'svg') type = application.RenditionType.SVG;
-	else throw new Error('wrong imgtype '+imgtype);
-	
-	
-	var saveShadow;
-	if(layer.shadow && layer.shadow.visible){
-		saveShadow = layer.shadow;
-		layer.shadow = null;
+	if(config.retina){
+		
+		var pathX2 = tab.join('.') + '@x2' + '.' + ext;
+		var saveFileX2 = File(basepath + "/" + pathX2);
+		
+		var widthX1 = Math.round(doc.width / 2);
+		SavePNG(saveFileX2);
+		doc.close(SaveOptions.DONOTSAVECHANGES);
+		
+		app.open(saveFileX2);
+		var doc = app.activeDocument;
+		doc.resizeImage(UnitValue(widthX1, "px"), undefined, 300, ResampleMethod.BICUBICSHARPER);  
 	}
 	
-	var disableStroke = false;
-	if(layer.strokeEnabled){
-		layer.strokeEnabled = false;
-		disableStroke = true;
-	}
+	SavePNG(saveFile);
 	
-	var saveCornerRadius;
-	if(layer.hasRoundedCorners){
-		saveCornerRadius = layer.cornerRadii;
-		layer.setAllCornerRadii(0);
-	}
-	
-	
-	var settings = [{
-			node: layer,
-			outputFile: file,
-			type: type,
-			scale: 1,
-			minify: true,
-			embedImages: true,
-			overwrite: true,
-	}];
-	
-	if(config.retina && imgtype!='svg'){
-		settings.push({
-			node: layer,
-			outputFile: file2,
-			type: type,
-			scale: 2,
-			minify: true,
-			embedImages: true,
-			overwrite: true,
-		});
-	}
-	
-	
-	application.createRenditions(settings);
-	
-	if(saveShadow) layer.shadow = saveShadow;
-	if(disableStroke) layer.strokeEnabled = true;
-	if(saveCornerRadius) layer.cornerRadii = saveCornerRadius;
-	
+	doc.close(SaveOptions.DONOTSAVECHANGES);
 }
 
 
@@ -96,29 +65,20 @@ function getPluginFolder()
 
 
 function createFolderStructure(basepath, path) {
-	
-	// trace('createFolderStructure('+basepath+', '+path+')');
-	
-	//path = EXPORT-ps-integrate/images/webfolder/inscription_2.png
-	
 	var tab = path.split("/");
 	var len = tab.length - 1;
 	var cumul = "";
-	
-	var f = basepath;
 
-	for (var i = 0; i < len; i++) {
+	for (i = 0; i < len; i++) {
 		var folder = tab[i];
 		cumul += folder + "/";
-		try{
-			f = f.createFolder(folder);
-		}
-		catch(err){
-			f = f.getEntry(folder);
-		}
+
+		var f = new Folder(basepath + "/" + cumul);
+		if (!f.exists) f.create();
+
 	}
-	return f;
 }
+
 
 
 
@@ -129,7 +89,6 @@ var pluginFolder;
 function createFile(folderType, path, filename, content) 
 {
 	// trace('createFile : '+folderType+', '+path+', '+filename);
-	
 	var base;
 	if(folderType == 'export'){
 		if(!exportFolder) exportFolder = getDataFolder();
@@ -141,14 +100,13 @@ function createFile(folderType, path, filename, content)
 	}
 	else throw new Error('wrong folder type '+folderType);
 	
-	
 	var folder = createFolderStructure(base, path);
-	// trace('folder : '+folder);
-	// trace('filename : '+filename);
-	var file = folder.createFile(filename, {
-		overwrite: true,
-	});
-	file.write(content);
+	
+	var file = new File(base + "/" + path + filename);
+	file.encoding = "UTF8";
+	file.open("w", "TEXT", "????");
+	file.writeln(content);
+	file.close();
 	
 }
 
@@ -238,5 +196,15 @@ function loadResource(file)
 }
 
 
+
+function SavePNG(saveFile) {
+	var pngOpts = new ExportOptionsSaveForWeb;
+	pngOpts.format = SaveDocumentType.PNG
+	pngOpts.PNG8 = false;
+	pngOpts.transparency = true;
+	pngOpts.interlaced = false;
+	pngOpts.quality = 100;
+	activeDocument.exportDocument(new File(saveFile), ExportType.SAVEFORWEB, pngOpts);
+}
 
 

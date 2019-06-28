@@ -33,13 +33,14 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 	for (var _i = 0; _i < len; _i++) {
 
-		// var i = _i;
-		var i =  len - 1 - _i;
-		var i2 = _i;
+		var i_invert =  len - 1 - _i;
+		var i_normal = _i;
 		
 		tracerec('_____________________________________ _i : '+_i, level);
 		
-		var layer = layers[i];
+		var layer;
+		if(imp.PLATFORM == 'xd') layer = layers[i_invert];
+		else if(imp.PLATFORM == 'ps') layer = layers[i_normal];
 
 		var enable = imp.isLayerVisible(layer);
 		if (!enable) continue;
@@ -72,7 +73,7 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 
 		if (type != "") {
 
-			var item = create_item(layer, name, type, parentItem, level, i2, params);
+			var item = create_item(layer, name, type, parentItem, level, i_normal, params);
 			lastitem = item;
 			type = item[imp.OPT_TYPE];
 			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.height), level);
@@ -534,13 +535,14 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			output["disable"] = true;
 		}
 		
-		//added for : border and radius
-		output["shapedata"] = imp.getShapeData(layer, output.widthPx, output.heightPx, filter);
 		
 		var filter = [
 			'bgColor',
 			'bgGradient',
 		];
+		
+		//added for : border and radius
+		output["shapedata"] = imp.getShapeData(layer, output.widthPx, output.heightPx, filter);
 		
 		for(var k in output["shapedata"]){
 			if(filter.indexOf(k) > -1) delete output["shapedata"][k];

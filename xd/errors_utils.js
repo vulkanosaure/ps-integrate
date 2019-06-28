@@ -216,21 +216,17 @@ function getItemStructureStr(item)
 	while(true){
 		if(item == null) break;
 		tab.push(item.name);
-		// trace("item.name : "+item.name+", parent : "+item.parent);
 		secu++;
 		item = item.parent;
 		if(secu == 20) return;
 	}
-	// tab.reverse();
-	// var str = tab.join(" / ");
-	
 	var str = '';
 	var len = tab.length;
 	for (var i = len - 1; i >= 0; i--) {
 		var value = tab[i];
-		str += value + ' / ';
+		str += value;
+		if(i > 0) str += ' / ';
 	}
-	
 	return str;
 }
 
@@ -248,8 +244,8 @@ async function createErrorFile(listErrors)
 		var obj = listErrors[i];
 		var str = "";	
 		str += "Msg : "+obj.msg+"\n";
-		str += "Layer name : "+obj.name+"\n";
-		str += "Path : "+obj.path+"\n";
+		str += "Location : "+obj.path+"\n";
+		str += ""+obj.name+"\n";
 		content += str + "\n";
 	}
 	await imp.createFile('export', path2, "errors.log", content);

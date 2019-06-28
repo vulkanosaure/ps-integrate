@@ -167,7 +167,7 @@ function check_error_item2(parent)
 			if(i > 0 && _item["pos"] == "static" && !_item["bgparent"]){
 				if(pos < prev_pos){
 					output.push(getErrorObject("The order of the layer seems incorrect : "+prev_pos+" / "+pos, getItemStructureStr(_item), ''));
-					
+					// throw new Error('wait');
 					break;
 				}
 			}
@@ -216,7 +216,8 @@ function getItemStructureStr(item)
 	var len = tab.length;
 	for (var i = len - 1; i >= 0; i--) {
 		var value = tab[i];
-		str += value + ' / ';
+		str += value;
+		if(i > 0) str += ' / ';
 	}
 	
 	return str;
@@ -235,9 +236,9 @@ function createErrorFile(listErrors)
 		//linebreak don't work
 		var obj = listErrors[i];
 		var str = "";	
-		str += "Msg : "+obj.msg+"\n";
-		str += "Layer name : "+obj.name+"\n";
-		str += "Path : "+obj.path+"\n";
+		str += ""+obj.msg+"\n";
+		str += "Location : "+obj.path+"\n";
+		str += ""+obj.name+"\n";
 		content += str + "\n";
 	}
 	createFile('export', path2, "errors.log", content);

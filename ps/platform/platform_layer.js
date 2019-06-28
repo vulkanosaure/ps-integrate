@@ -1,30 +1,19 @@
 function get_natural_imgtype(layer)
 {
-	var kind = layer.constructor.name;
-	if(kind == 'Path') return 'svg';
-	else return 'png';
+	//svg / png in XD
+	return null;
 }
 
 
 
 function get_natural_type(layer)
 {
-	var kind = layer.constructor.name;
-	var fillkind = layer.fill ? layer.fill.constructor.name : '';
-	// trace('kind : '+kind+', fillkind : '+fillkind);
-	
-	// trace('get_natural_type');
-	if(layer.isContainer) return TYPE_CONTAINER;
+	if(layer.typename == "LayerSet") return TYPE_CONTAINER;
 	else{
-		
-		//todo later
-		if(kind == '') return TYPE_GFX;
-		else if(kind == 'Rectangle' && fillkind == 'ImageFill') return TYPE_GFX;
-		else if(['Rectangle', 'Ellipse', 'Line'].indexOf(kind) > -1) return TYPE_SHAPE;
-		else if(kind == 'Path') return TYPE_GFX;
-		else if(kind == 'Text') return TYPE_TEXT;
+		var kind = layer.kind;
+		if(kind == LayerKind.NORMAL) return TYPE_GFX;
+		else if(kind == LayerKind.TEXT) return TYPE_TEXT;
 		else return TYPE_CONTAINER;
-		
 		//else throw new Error("whats that "+kind+", name : "+layer.name);
 	}
 }
@@ -120,18 +109,22 @@ function getTextData(layer)
 	var ti = layer.textItem;
 	var textdata = {};
 	trace("name : " + name + ", kind : " + layer.kind);
+	
+	var tabcolor;
 	try {
-		textdata.color = ti.color.rgb.hexValue;
+		var rgb = ti.color.rgb;
+		tabcolor = [rgb.red, rgb.green, rgb.blue];
 	}
 	catch (e) {
-		textdata.color = 0x888888;
+		tabcolor = [0, 0, 0];
 	}
+	textdata.color = getColorData(tabcolor, 1.0);
 
 	textdata.font = ti.font;
 	// textdata.size = Math.round(ti.size.value);
 	textdata.size = Math.round(getFontSize(layer));
 	textdata.text = ti.contents;
-
+	
 	//remove linebreak before and after
 	textdata.text = textdata.text.replace(/\r/g, "\\n");
 	textdata.text = textdata.text.replace(/^\\n/g, "");
@@ -141,7 +134,7 @@ function getTextData(layer)
 
 
 
-	tracerec("textItem : " + layer.textItem + ", " + textdata.text, level);
+	tracerec("textItem : " + layer.textItem + ", " + textdata.text, 0);
 	trace("textdata.size : " + textdata.size);
 
 	try { textdata.leading = Math.round(getUnitValue(ti.leading)); } catch (e) { };
@@ -196,37 +189,140 @@ function isBorderRadiusEqual(r)
 }
 
 
+function isFxVisible()
+{
+	var ref = new ActionReference();  
+	ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") );   
+	var fxVisible = executeActionGet(ref).getBoolean(stringIDToTypeID('layerFXVisible')); 
+	return fxVisible;
+}
+
+
 
 function getShadowData(layer)
 {
-	//https://stackoverflow.com/questions/13301279/getting-text-layer-shadow-parameters-extendscript-cs5-photoshop-scripting
-	//must check layerFXVisible
+	trace('getShadowData');
+	activeDocument.activeLayer = layer;
+	var output;
 	
-	//use scriptingListener to find out the fx names
-	//and the props names
+	if(isFxVisible()){
 	
-	let output;
-	var idfx = [
-		'dropShadow',
-	];
-	
-	var fx;
-	var ind = 0;
-	while(fx == null){
-		fx = getLayerFx(layer, idfx[ind]);
-		ind++;
+		var listidfx = ['dropShadow', 'outerGlow'];
+		
+		var properties = [
+			['Opct', 'opacity', 'unitdouble'],				//71	//OK
+			['Clr' , 'color', 'color'],
+			// ['RGBC' , 'RGBColor', 'color'],
+			['Nose', 'noise', 'unitdouble'],					//OK
+			['blur', 'blur', 'double'],								//blur = size (in ps)
+			// ['Sz'  , 'size', 'integer'],
+			['Dstn', 'distance', 'unitdouble'],				//OK
+			['#Ang', 'angleUnit', 'string'],					//undefined
+			['lagl', 'localLightingAngle', 'double'],	//OK
+			['uglg', 'useGlobalAngle', 'boolean'],		//undefined
+		];
+		
+		/* 
+		var listdebug = [];
+		for(var i in listdebug){
+			var charID = listdebug[i];
+			trace(charID+' : '+charIDtoStringID(charID));
+		}
+		*/
+		
+		//use the first fx it finds, with dropShadow as a priority
+		
+		var len = listidfx.length;
+		for(var i=0;i<len;i++){
+			var idfx = listidfx[i];
+			trace('getLayerFx : '+idfx+' / '+i);
+			var fx = getLayerFx(layer, idfx);
+			
+			if(fx){
+				trace('______________________fx : '+idfx);
+				
+				var obj = {};
+				
+				// ['enab', 'enabled', 'boolean'],						//OK
+				var enabled = getFxAttribute(fx, 'enabled', 'boolean');
+				if(enabled){
+					
+					var len2 = properties.length;
+					for(var j=0;j<len2;j++){
+						var tab = properties[j];
+						var stringID = tab[1];
+						var type = tab[2];
+						var value;
+						try{ value = getFxAttribute(fx, stringID, type) }
+						catch(e){}
+						
+						if(value != undefined){
+							obj[stringID] = value;
+						}
+					}
+					
+					// for(var k in obj) trace('-- '+k+' : '+obj[k]);
+					
+					var x, y;
+					
+					if(obj['localLightingAngle'] != undefined){
+						var angle = obj['localLightingAngle'] || 0;
+						var anglerad = angle * Math.PI / 180;
+						// trace('anglerad : '+anglerad);
+						var dist = obj['distance'];
+						x = Math.round(Math.cos(anglerad) * dist);
+						y = Math.round(Math.sin(anglerad) * dist);
+					}
+					else{
+						x = 0;
+						y = 0;
+					}
+					
+					var opacity = obj['opacity'] / 255;
+					var tabcolor = obj['color'];
+					var objcolor = getColorData(tabcolor, opacity);
+					
+					output = {
+						x: x, y: y,
+						blur: obj['blur'],
+						color: objcolor,
+						colorHex: objcolor.hex,
+					};
+					break;
+				}
+			}
+		}
 	}
-	
-	if(fx){
-		trace('fx ok');
-		var distance = getFxAttribute(fx, 'distance');
-		trace('distance : '+distance);
+	/* 
+	trace('output : ');
+	if(output){
+		for(var k in output){
+			trace('- '+k+' : '+output[k]);
+			if(k == 'color'){
+				trace('--- r : '+output[k].r);
+				trace('--- g : '+output[k].g);
+				trace('--- b : '+output[k].b);
+				trace('--- a : '+output[k].a);
+				trace('--- hex : '+output[k].hex);
+			}
+		}
 	}
-	
-	throw new Error('todo');
-	
+	 */
+	// throw new Error('yo');
 	return output;
 }
+
+
+
+
+function charIDtoStringID(charID)
+{
+	// trace('charIDtoStringID : '+charID);
+	return app.typeIDToStringID(app.charIDToTypeID(charID));  
+}
+
+
+
 
 
 function getLayerFx(layer, type)
@@ -238,22 +334,115 @@ function getLayerFx(layer, type)
 	if ( hasFX ){
 		var ref = new ActionReference();
 		ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") ); 
-		res = executeActionGet(ref).getObjectValue(stringIDToTypeID('layerEffects')).getObjectValue(stringIDToTypeID(type));
+		try{
+			res = executeActionGet(ref).getObjectValue(stringIDToTypeID('layerEffects')).getObjectValue(stringIDToTypeID(type));
+		}
+		catch(e){};
 	}
 	return res;
 }
-function getFxAttribute(fx, attribute)
+function getFxAttribute(fx, attribute, type)
 {
-	return fx.getUnitDoubleValue(stringIDToTypeID(attribute));
+	// trace('getAttr : '+attribute+', type : '+type);
+	var typeid = stringIDToTypeID(attribute);
+	
+	var output;
+	if(type == 'unitdouble') output = fx.getUnitDoubleValue(typeid);
+	else if(type == 'double') output = fx.getDouble(typeid);
+	else if(type == 'integer') output = fx.getInteger(typeid);
+	else if(type == 'boolean') output = fx.getBoolean(typeid);
+	else if(type == 'color'){
+		var obj = fx.getObjectValue(typeid);
+		var r = obj.getDouble(stringIDToTypeID('blue'));
+		var g = obj.getDouble(stringIDToTypeID('grain'));
+		var b = obj.getDouble(stringIDToTypeID('red'));
+		output = [Math.round(r), Math.round(g), Math.round(b)];
+	}
+	
+	return output;
+}
+
+function getBackgroundColor()
+{
+	var ref = new ActionReference();  
+	ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") );   
+	var layerDesc = executeActionGet(ref);  
+	var adjList = layerDesc.getList(stringIDToTypeID('adjustment'));  
+	var theColors = adjList.getObjectValue(0).getObjectValue(stringIDToTypeID('color'));  
+	var tab = [];
+	for(var i=0;i<theColors.count;i++){ //enumerate descriptor's keys  
+		var val = Math.round(theColors.getUnitDoubleValue(theColors.getKey(i)));
+		tab.push(val);
+	}
+	return tab;
+}
+
+function hasBgColor(layer)
+{
+	activeDocument.activeLayer = layer;
+	var ref = new ActionReference();  
+	ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") );   
+	var layerDesc = executeActionGet(ref);  
+	var adjList;
+	try{
+		adjList = layerDesc.getList(stringIDToTypeID('adjustment'));
+	}
+	catch(e){}
+	return (adjList);
+}
+
+
+function getFillOpacity()
+{
+	var ref = new ActionReference();  
+	ref.putEnumerated( charIDToTypeID("Lyr "), charIDToTypeID("Ordn"), charIDToTypeID("Trgt") );   
+	var layerDesc = executeActionGet(ref);  
+	var output = layerDesc.getUnitDoubleValue(stringIDToTypeID('fillOpacity'));  
+	return output;
+}
+
+ 
+function getColorData(colorTab, globalAlpha)
+{
+	var colorObj = {
+		r: colorTab[0],
+		g: colorTab[1],
+		b: colorTab[2],
+		a: 255,
+	};
+	var c = colorObj;
+	var alpha = c.a * globalAlpha;
+	var alpha1 = alpha / 255;
+	
+	if(alpha1 < 1){
+		alpha1 = MathService.round(alpha1, 0.01);
+	}
+	
+	return {
+		r: c.r,
+		g: c.g,
+		b: c.b,
+		a: alpha,
+		rgba: "rgba(" + c.r + ", " + c.g + ", " + c.b + ", " + alpha1 + ")",
+		hex: '#' + rgbToHex(c.r, c.g, c.b),
+	}
 }
 
 
 
-
-function getColorData(colorObj, globalAlpha)
-{
-	throw new Error('todo');
+function rgbToHex2(rgb) { 
+  var hex = Number(rgb).toString(16);
+  if (hex.length < 2) hex = "0" + hex;
+  return hex;
 }
+function rgbToHex(r, g, b) {   
+  var red = rgbToHex2(r);
+  var green = rgbToHex2(g);
+  var blue = rgbToHex2(b);
+  return red+green+blue;
+};
+
+
 
 function getGradientColorData(colorObj, globalAlpha)
 {
@@ -301,17 +490,10 @@ function getPathData(layer)
 
 
 
-function getShapeData(layer, width, height)
+
+function getShapeData(layer, width, height, filter)
 {
-	throw new Error('todo');
-	
-	var layerkind = layer.constructor.name;
-	// trace('getShapeData '+width+', '+height+', layerkind : '+layerkind);
-	
-	//recursive fix, if shape nested
-	layer = retrieveNestedType(layer, ['Rectangle', 'Ellipse', 'Line']);
-	
-	
+	trace('getShapeData '+layer.name);
 	/*
 	borderWidth
 	borderColor
@@ -319,57 +501,120 @@ function getShapeData(layer, width, height)
 	radius_topLeft, ...
 	bgColor
 	bgGradient
-	
-	//todo line, (only consider non diagonal, shape sinon)
-	
-	//todo shadow (not here, global)
-	//todo ellipse (only consider circle, sinon shape)
-	//todo bgGradient
 	*/
+	
+	//dans la version XD :
+	//je cherche parmis les enfants le premier child de type :
+	//rectangle, ellipse, line
+	
+	/*
+	idée : 
+	- les property que je cherche peuvent etre sur des sub children
+	indépendemment pour chacune
+	
+	fonction recursive get
+		je transmet une fonction test
+		avec un arg
+		
+	
+	*/
+	
 	var output = {};
 	
-	layerkind = layer.constructor.name;
-	if(layer.fillEnabled){
-		var fillkind = layer.fill ? layer.fill.constructor.name : '';
-		if(fillkind == 'Color') output.bgColor = getColorData(layer.fill, layer.opacity);
-		if(fillkind == 'LinearGradientFill') output.bgGradient = getGradientColorData(layer.fill, layer.opacity);
-	}
+	//border
 	
+	var l = retriveLayerWithFX(layer, hasFX, 'frameFX');
+	// trace('l retrieved : '+(l && l.name));
 	
-	else output.bgColor = '';
-	if(layer.strokeEnabled){
-		output.borderWidth = layer.strokeWidth;
-		output.borderColor = getColorData(layer.stroke, layer.opacity);
-	}
-	else{
-		output.borderWidth = null;
-		output.borderColor = null;
-	}
-	
-	if(layerkind == 'Rectangle'){
-		var radius = layer.cornerRadii;
-		if(isBorderRadiusEqual(radius)){
-			// trace('radius equal');
-			output.radius = radius.topLeft;
-		}
-		else{
-			output.radius_topLeft = radius.topLeft;
-			output.radius_topRight = radius.topRight;
-			output.radius_bottomRight = radius.bottomRight;
-			output.radius_bottomLeft = radius.bottomLeft;
+	if(l){
+		
+		activeDocument.activeLayer = l;
+		var fx = getLayerFx(l, 'frameFX');
+		if(fx){
+			trace('fx');
+			var enabled = getFxAttribute(fx, 'enabled', 'boolean');
+			if(enabled){
+				trace('enabled');
+				var borderWidth = getFxAttribute(fx, 'size', 'unitdouble');
+				var tabcolor = getFxAttribute(fx, 'color', 'color');
+				var opacity = getFxAttribute(fx, 'opacity', 'unitdouble');
+				
+				opacity = opacity / 255;
+				output['borderColor'] = getColorData(tabcolor, opacity);
+				output['borderWidth'] = borderWidth;
+				
+			}
 		}
 	}
-	else if(layerkind == 'Ellipse' && layer.isCircle){
-		output.radius = Math.ceil(width / 2);
-	}
-	else if(layerkind == 'Line'){
-		//Line: .start : !Point .end : !Point
-		if(output.borderWidth) output.borderWidth *= 0.5;
+	
+	
+	//bgColor
+	
+	if(!filter || filter.indexOf('bgColor') == -1){
+		
+		var l = retriveLayerWithFX(layer, hasBgColor, null);
+		if(l){
+			activeDocument.activeLayer = l;
+			
+			var tabcolor = getBackgroundColor();
+			// trace('tabcolor : '+tabcolor);
+			var fillOpacity = getFillOpacity() / 255;
+			// trace('fillOpacity : '+fillOpacity);
+			var opacity = l.opacity / 255;
+			output['bgColor'] = getColorData(tabcolor, opacity * fillOpacity);
+			
+		}
 	}
 	
 	
+	// if(layer.name == 'ps--shape--bgparent--*bgbtn') throw new Error('yo');
 	
 	return output;
+}
+
+
+
+var layer_with_fx;
+
+function retriveLayerWithFX(baselayer, fn, arg)
+{
+	retriveLayerWithFX_rec(baselayer, 0, fn, arg);
+	return layer_with_fx;
+}
+function retriveLayerWithFX_rec(container, level, fn, arg)
+{
+	var layers = getLayersArray(container);
+	var len = layers ? layers.length : 0;
+	for (var i = 0; i < len; i++) {
+		
+		var layer = layers[i];
+		tracerec(i+' :: '+layer.name);
+		
+		var success = fn(layer, arg);
+		if(success){
+			layer_with_fx = layer;
+			break;
+		}
+		else{
+			var isContainer = isLayerContainer(layer);
+			if(isContainer){
+				retriveLayerWithFX_rec(layer, level + 1, fn, arg);
+			}
+		}
+	}
+}
+
+function hasFX(layer, type)
+{
+	activeDocument.activeLayer = layer;
+	if(isFxVisible()){
+		var fx = getLayerFx(layer, type);
+		if(fx){
+			var enabled = getFxAttribute(fx, 'enabled', 'boolean');
+			if(enabled) return true;
+		}
+	}
+	return false;
 }
 
 

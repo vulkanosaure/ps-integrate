@@ -140,8 +140,8 @@ function hasLayerMask() {
    var m_Dsc01= executeActionGet( m_Ref01 );  
    return m_Dsc01.hasKey(cTID('Usrs'));  
 }  
-  
-  
+
+
 function activateLayerMask() {  
    var m_Dsc01 = new ActionDescriptor();  
    var m_Ref01 = new ActionReference();  

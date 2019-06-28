@@ -1,6 +1,7 @@
 function showDialogOK()
 {
-	var scriptFileDirectory = new File($.fileName).parent;
+	var scriptFileDirectory = getPluginFolder();
+	trace(scriptFileDirectory + "/dialog/dialog-ok.json");
 	var rsrcFile = new File(scriptFileDirectory + "/dialog/dialog-ok.json");
 	var rsrcString = loadResource(rsrcFile);
 	if (! rsrcString) {
@@ -23,7 +24,7 @@ function showDialogOK()
 
 function showDialogError(listErrors)
 {
-	var scriptFileDirectory = new File($.fileName).parent;
+	var scriptFileDirectory = getPluginFolder();
 	var rsrcFile = new File(scriptFileDirectory + "/dialog/dialog-error.json");
 	var rsrcString = loadResource(rsrcFile);
 	if (! rsrcString) {
@@ -61,28 +62,36 @@ function showDialogError(listErrors)
 		
 		var fontsize = 12;
 		var fontsizesmall = 11;
-		var grey = 0.5;
+		var grey = 0.6;
 		
 		var gsub;
 		var text;
 		gsub = g.add("group", undefined, "");
-		text = gsub.add('statictext', undefined, "Msg : ");
-		text.graphics.font = ScriptUI.newFont("Arial","BOLD", fontsize);
-		gsub.add('statictext', undefined, obj.msg).graphics.font = ScriptUI.newFont("Arial","REGULAR", fontsize);
+		gsub.margins = [0, -4, 0, 0];
+		var textmsg = gsub.add('statictext', undefined, obj.msg);
+		textmsg.graphics.font = ScriptUI.newFont("Arial","REGULAR", fontsize);
+		textmsg.graphics.foregroundColor = textmsg.graphics.newPen(textmsg.graphics.PenType.SOLID_COLOR, [1, 0.5, 0.3, 1], 1);
+		
 		
 		
 		gsub = g.add("group", undefined, "");
+		gsub.margins = [0, -8, 0, 0];
 		gsub.add('statictext', undefined, "Location : ").graphics.font = ScriptUI.newFont("Arial","BOLD", fontsizesmall);
 		gsub.add('statictext', undefined, obj.path).graphics.font = ScriptUI.newFont("Arial","REGULAR", fontsizesmall);
 		
 		
 		gsub = g.add("group", undefined, "");
+		gsub.margins = [0, -8, 0, -3];
+		/* 
 		text = gsub.add('statictext', undefined, "Layer name : ");
 		text.graphics.font = ScriptUI.newFont("Arial","BOLD", fontsizesmall);
 		text.graphics.foregroundColor = text.graphics.newPen (text.graphics.PenType.SOLID_COLOR,[grey, grey, grey,1], 1);
+		 */
 		text = gsub.add('statictext', undefined, obj.name);
 		text.graphics.font = ScriptUI.newFont("Arial","REGULAR", fontsizesmall);
 		text.graphics.foregroundColor = text.graphics.newPen (text.graphics.PenType.SOLID_COLOR,[grey, grey, grey,1], 1);
+		
+		
 		
 	}
 	

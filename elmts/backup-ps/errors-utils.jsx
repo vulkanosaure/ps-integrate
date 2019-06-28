@@ -23,7 +23,6 @@
 		else{
 			var value = props[k];
 			var rule = OPTIONS_RULES[k];
-			
 			var type = typeof rule;
 			
 			//regex

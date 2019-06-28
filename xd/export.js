@@ -111,12 +111,10 @@ async function main(settings, rootNode)
 	
 	if (params.listErrors.length > 0) {
 		trace('errors');
-		imp.showDialogError(params.listErrors);
 		await imp.createErrorFile(params.listErrors);
-		
+		imp.showDialogError(params.listErrors);
 	}
 	else{
-		
 		
 		var templates = await imp.generate_template(listItem, tpl_id, config);
 		

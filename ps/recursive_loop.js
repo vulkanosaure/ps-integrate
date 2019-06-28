@@ -16,12 +16,16 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 	for (var _i = 0; _i < len; _i++) {
 
 		// var i = _i;
-		var i =  len - 1 - _i;
-		var i2 = _i;
+		var i_invert =  len - 1 - _i;
+		var i_normal = _i;
+		
 		
 		tracerec('_____________________________________ _i : '+_i, level);
 		
-		var layer = layers[i];
+		
+		var layer;
+		if(PLATFORM == 'xd') layer = layers[i_invert];
+		else if(PLATFORM == 'ps') layer = layers[i_normal];
 
 		var enable = isLayerVisible(layer);
 		if (!enable) continue;
@@ -31,7 +35,7 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		
 		
 
-
+		
 		if (has_prefix(name)) {
 			
 			//shortcuts
@@ -47,6 +51,8 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		
 		var isRoot = (parentItem == null);
 		var type = get_type(layer, name, isRoot, level);
+		tracerec('isRoot : '+isRoot+', type : '+type, level);
+		
 
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
@@ -54,14 +60,13 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 
 		if (type != "") {
 
-			var item = create_item(layer, name, type, parentItem, level, i2, params);
+			var item = create_item(layer, name, type, parentItem, level, i_normal, params);
 			lastitem = item;
 			type = item[OPT_TYPE];
-			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.height), level);
+			tracerec("item type : " + type + ", name: " + item.name + ", path : " + item.path + ", width : " + Math.round(item.widthPx) + ", height : " + Math.round(item.heightPx), level);
 			
 			
 			var errors = check_error_item(name, item, listTplModel);
-			
 			
 			if (errors.length > 0) {
 				tracerec("errors : " + errors, level);
@@ -159,10 +164,10 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 	var listitems;
 	if (parentItem) listitems = parentItem.childrens;
 	else listitems = params.listItem;
+	
 	var _len = listitems.length;
 	var listtags = listitems.map(function(item){ return item.tag});
 	var listtagsUnnamed = listitems.map(function(item){ return item.useTag ? item.tag : null });
-	
 	
 	
 	for (var _i = 0; _i < _len; _i++) {
@@ -185,7 +190,6 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		// item.positionTag = count - 1 - countBefore;
 		item.positionTag = countBefore;
 	}
-	
 	
 	
 }
@@ -516,19 +520,19 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			output["disable"] = true;
 		}
 		
-		//added for : border and radius
-		output["shapedata"] = getShapeData(layer, output.widthPx, output.heightPx, filter);
-		
 		var filter = [
 			'bgColor',
 			'bgGradient',
 		];
 		
+		//added for : border and radius
+		output["shapedata"] = getShapeData(layer, output.widthPx, output.heightPx, filter);
+		
 		for(var k in output["shapedata"]){
 			if(filter.indexOf(k) > -1) delete output["shapedata"][k];
 		}
 		
-		
+
 	}
 
 

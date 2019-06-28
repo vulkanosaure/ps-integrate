@@ -336,7 +336,7 @@ function getRotation(layer)
 
 
 
-function getShapeData(layer, width, height)
+function getShapeData(layer, width, height, filter = null)
 {
 	let layerkind = layer.constructor.name;
 	// trace('getShapeData '+width+', '+height+', layerkind : '+layerkind);

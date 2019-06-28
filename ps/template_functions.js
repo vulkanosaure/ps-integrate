@@ -371,6 +371,8 @@ TPL_FUNCTIONS["html"] = {
 				propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
 			}
 			
+			//tdata.color = 'FFFFFF';	//should be color object
+			
 			var colorValue = getColorProperty(tdata.color, config.sass_variable.colors);
 			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};
 			

@@ -40,12 +40,10 @@ function get_forced_type(name)
 
 function get_type(layer, name, isroot, level) {
 	var forced_type = get_forced_type(name);
-	// tracerec('forced_type : '+forced_type, level);
 	if (forced_type != "") return forced_type;
 
 	if (!isroot || has_prefix(name)) {
 		var natural_type = get_natural_type(layer);
-		// tracerec('natural_type : '+natural_type, level);
 		if (natural_type != TYPE_CONTAINER || has_prefix(name)) return natural_type;
 		else return "";
 	}
