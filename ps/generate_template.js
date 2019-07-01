@@ -105,7 +105,6 @@ function generate_template(items, tpl_id, config)
 	}
 	
 	
-	
 	return output;
 	
 	
@@ -333,6 +332,18 @@ function generate_template(items, tpl_id, config)
 	
 	
 	
+	function getNextStaticItem(index, items)
+	{
+		var output = null;
+		var len = items.length;
+		
+		for(var i=index + 1; i < len; i++){
+			var item = items[i];
+			if(item[OPT_POSITION] == 'static') output = item;
+		}
+		return output;
+	}
+	
 	
 	
 	
@@ -344,12 +355,12 @@ function generate_template(items, tpl_id, config)
 		var prevStaticItem = null;
 		
 		
-		// for(var i=len - 1; i>=0; i--){
 		for(var i=0; i < len; i++){
 			
 			var item = items[i];
+			var nextStaticItem = getNextStaticItem(i, items);
 			
-			var data = TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, configConfig, configLayout);
+			var data = TPL_FUNCTIONS[tpl_id].getLayoutData(item, parent, prevItem, prevStaticItem, nextStaticItem, configConfig, configLayout);
 			
 			var sass_indent = configLayout.file.sass_indent;
 			var closeTag = !sass_indent;
@@ -419,7 +430,6 @@ function generate_template(items, tpl_id, config)
 		data["classes"] = strclasses;
 		// data = Object.assign(data, values);
 		for(var k in values) data[k] = values[k];
-		
 		
 		var output = convertTemplateFromStr(templateData, data, false);
 		

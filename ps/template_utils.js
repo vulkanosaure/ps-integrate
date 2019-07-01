@@ -1,4 +1,4 @@
-﻿var tpl_content;
+var tpl_content;
 var templateData = {};
 var tpl_indent;
 
@@ -147,9 +147,9 @@ function getTextFormatID(textdata, config)
 }
 
 
-//not used anymore
 function getTextColorID(textdata, colors)
 {
+	
 	var output = '';
 	
 	for(var k in colors){
@@ -271,7 +271,6 @@ function transformMargins(data, _property, nameItem)
 	
 	return data;
 }
-
 
 
 /*
@@ -403,7 +402,7 @@ function mapProps(model, props)
 			
 			
 			if(tab != null){
-				if(tab.quote != undefined){
+				if(tab.quote != undefined && tab.quote != 'none'){
 					var strquote;
 					if(tab.quote == "simple") strquote = "'";
 					else if(tab.quote == "double") strquote = '"';
@@ -539,7 +538,7 @@ function getPlaceHolderValues_rec(parent, config, values)
 {
 	var item = parent;
 	if(item[OPT_PLACEHOLDER]){
-			
+		
 		var key = item[OPT_PLACEHOLDER];
 		var value;
 		if(item.type == TYPE_TEXT){
@@ -627,5 +626,7 @@ function getDimensionValue(parent, item, prop, propPx)
 	
 	return { value: value, sufix : suffix };
 }
+
+
 
 

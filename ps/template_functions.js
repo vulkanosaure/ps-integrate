@@ -58,7 +58,7 @@ TPL_FUNCTIONS["html"] = {
 	
 	
 	
-	getLayoutData : function (item, parent, prevItem, isLayerOfType, config, configLayout)
+	getLayoutData : function (item, parent, prevItem, prevStaticItem, nextStaticItem, config, configLayout)
 	{
 		// trace('item.position : '+item.position);
 		
@@ -68,9 +68,10 @@ TPL_FUNCTIONS["html"] = {
 		var ly = item[OPT_LAYOUT_Y];
 		var cx = item[OPT_CHILDREN_X];
 		var cy = item[OPT_CHILDREN_Y];
+		var parentcx = parent ? parent[OPT_CHILDREN_X] : null;
+		var parentcy = parent ? parent[OPT_CHILDREN_Y] : null;
 		
 		var isText = ([TYPE_TEXT].indexOf(item.type) != -1);
-		var prevStaticItem = isLayerOfType;
 		
 		var propsModel = {};
 		var name = item[OPT_NAME];
@@ -137,11 +138,6 @@ TPL_FUNCTIONS["html"] = {
 			}
 		}
 		
-		/* 
-		if(item.name == 'helloworld'){
-			throw new Error('yo');
-		}
-		 */
 		
 		
 		//CANCEL PADDINGS
@@ -235,6 +231,11 @@ TPL_FUNCTIONS["html"] = {
 				var prevDim = prevStaticItem ? prevStaticItem.widthPx : 0;
 				var valuex = x - (prevPosition + prevDim);
 				var valuey = y;
+				if(parent){
+					var nextPosition = nextStaticItem ? nextStaticItem.position[0] : parent.widthPx;
+					var valuex2 = nextPosition - (x + item.widthPx);
+					var valuey2 = parent.heightPx - (y + item.heightPx);
+				}
 			}
 			else if(direction == "col"){
 				
@@ -242,6 +243,11 @@ TPL_FUNCTIONS["html"] = {
 				var prevDim = prevStaticItem ? prevStaticItem.heightPx : 0;
 				var valuex = x;
 				var valuey = y - (prevPosition + prevDim);
+				if(parent){
+					var nextPosition = nextStaticItem ? nextStaticItem.position[1] : parent.heightPx;
+					var valuex2 = parent.widthPx - (x + item.widthPx);
+					var valuey2 = nextPosition - (y + item.heightPx);
+				}
 			}
 			
 			
@@ -258,21 +264,29 @@ TPL_FUNCTIONS["html"] = {
 				if(pcy != 'top' && firstY) valuey = 0;
 			}
 			
+			
 			var top = ly != 'top' ? 'auto' : valuey;
 			var left = lx != 'left' ? 'auto' : valuex;
 			
-			var bottom = ly == 'center' ? 'auto' : null;
-			var right = lx == 'center' ? 'auto' : null;
+			var bottom;
+			if(ly == 'center') bottom = 'auto';
+			else if(ly == 'bottom' || parentcy == 'bottom') bottom = valuey2; 
+			
+			var right;
+			if(lx == 'center') right = 'auto';
+			else if(lx == 'right' || parentcx == 'right') right = valuex2; 
+			
 			
 			
 			if(isText){
 				if(lx != 'left'){
 					item.halignLayout = lx;
-					left = null; right = null;
+					left = null; 
+					if(right == 'auto') right = null;
 				}
 				if(ly == 'center'){
-					var v = parent.heightPx + "px";
-					propsModel["lineHeight"] = {name : 'line-height', value : v, quote : 'none'};
+					var v = parent.heightPx;
+					propsModel["lineHeight"] = {name : 'line-height', value : v, sufix : 'px', quote : 'none'};
 					top = null; bottom = null;
 				}
 			}
@@ -370,8 +384,6 @@ TPL_FUNCTIONS["html"] = {
 				var halign = tdata.halign;
 				propsModel["halign"] = {name : 'text-align', value : halign, quote : 'none'};
 			}
-			
-			//tdata.color = 'FFFFFF';	//should be color object
 			
 			var colorValue = getColorProperty(tdata.color, config.sass_variable.colors);
 			propsModel["color"] = {name : 'color', value : colorValue, quote : 'none'};
@@ -521,13 +533,20 @@ TPL_FUNCTIONS["html"] = {
 			var listPropertyRetina = [
 				"width",
 				"height",
-				"margin-left",
+				"margin-left", 
 				"margin-right",
 				"margin-top",
 				"margin-bottom",
 				"margin_left2",
 				"margin_top2",
+				"margin_bottom2",
+				"margin_right2",
 				"margin_global",
+				"p_left",
+				"p_top",
+				"p_right",
+				"p_bottom",
+				"lineHeight",
 			];
 			
 			var len = listPropertyRetina.length;
@@ -567,7 +586,6 @@ TPL_FUNCTIONS["html"] = {
 		
 		data = transformMargins(data, 'margin');
 		data = transformMargins(data, 'padding');
-		
 		
 		return data;
 		
@@ -650,7 +668,5 @@ function recTransformLvl_push(root, lvl, item)
 	}
 	
 }
-
-
 
 

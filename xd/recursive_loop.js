@@ -26,6 +26,8 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 	var len = layers.length;
 	// trace('layers : '+layers);
 	
+	
+	
 	var allCenterX = true;
 	var allCenterY = true;
 	var lastitem;
@@ -37,10 +39,12 @@ async function recursive_loop(container, parentItem, parentLayer, level, params,
 		var i_normal = _i;
 		
 		tracerec('_____________________________________ _i : '+_i, level);
-		
+		/* 
 		var layer;
 		if(imp.PLATFORM == 'xd') layer = layers[i_invert];
 		else if(imp.PLATFORM == 'ps') layer = layers[i_normal];
+		 */
+		var layer = layers[i_invert];
 
 		var enable = imp.isLayerVisible(layer);
 		if (!enable) continue;
@@ -380,8 +384,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	
-	var shadow = imp.getShadowData(layer);
+	var retina = params.config.config.retina;
+	var shadow = imp.getShadowData(layer, retina);
 	if(shadow) output.shadow = shadow;
 	
 	

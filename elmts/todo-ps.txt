@@ -1,0 +1,24 @@
+if fx hidden (global visibility)
+	=> still counted in bounds
+	il faudrait, soit ds la phase order layer, soit rec => 
+		"clear layer style" sur les calques qui possède des styles non visibles
+		
+		
+		
+before bounds
+	delete fx ?
+	ex : psd-conversion : "vous incarnez"
+	
+	
+zone title => why wrong position left ?
+
+organize layers
+
+
+append '/integrate' au chemin home
+
+decalage texte "vous incarnez"
+
+layout root
+
+deleteFolder										DOESN'T WORK

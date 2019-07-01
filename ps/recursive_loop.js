@@ -8,6 +8,8 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 	var len = layers.length;
 	// trace('layers : '+layers);
 	
+	
+	
 	var allCenterX = true;
 	var allCenterY = true;
 	var lastitem;
@@ -15,17 +17,16 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 
 	for (var _i = 0; _i < len; _i++) {
 
-		// var i = _i;
 		var i_invert =  len - 1 - _i;
 		var i_normal = _i;
 		
-		
 		tracerec('_____________________________________ _i : '+_i, level);
-		
-		
+		/* 
 		var layer;
 		if(PLATFORM == 'xd') layer = layers[i_invert];
 		else if(PLATFORM == 'ps') layer = layers[i_normal];
+		 */
+		var layer = layers[i_invert];
 
 		var enable = isLayerVisible(layer);
 		if (!enable) continue;
@@ -35,7 +36,7 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		
 		
 
-		
+
 		if (has_prefix(name)) {
 			
 			//shortcuts
@@ -51,8 +52,6 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		
 		var isRoot = (parentItem == null);
 		var type = get_type(layer, name, isRoot, level);
-		tracerec('isRoot : '+isRoot+', type : '+type, level);
-		
 
 		var parentitemname = (parentItem) ? parentItem.name : "";
 		
@@ -67,6 +66,7 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 			
 			
 			var errors = check_error_item(name, item, listTplModel);
+			
 			
 			if (errors.length > 0) {
 				tracerec("errors : " + errors, level);
@@ -105,10 +105,8 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 					if (parentItem && parentItem[OPT_EQUALOFFSET] == 1) {
 						bounds = parentItem.bounds;
 					}
-
-					var imgtype = item[OPT_IMGTYPE];
 					
-					trace('params.exportPath : '+params.exportPath);
+					var imgtype = item[OPT_IMGTYPE];
 					saveLayer(layer, path, params.exportPath, false, bounds, imgtype, params.config);
 					
 					
@@ -166,10 +164,10 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 	var listitems;
 	if (parentItem) listitems = parentItem.childrens;
 	else listitems = params.listItem;
-	
 	var _len = listitems.length;
 	var listtags = listitems.map(function(item){ return item.tag});
 	var listtagsUnnamed = listitems.map(function(item){ return item.useTag ? item.tag : null });
+	
 	
 	
 	for (var _i = 0; _i < _len; _i++) {
@@ -192,6 +190,7 @@ function recursive_loop(container, parentItem, parentLayer, level, params, param
 		// item.positionTag = count - 1 - countBefore;
 		item.positionTag = countBefore;
 	}
+	
 	
 	
 }
@@ -346,6 +345,12 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	output.widthPx = Math.round(bounds[4]);
 	output.heightPx = Math.round(bounds[5]);
 	
+	trace('x1 : '+x1+', y1 : '+y1+', x2 : '+x2+', y2 : '+y2);
+	
+	//x1 : -4, y1 : 65, x2 : 716, y2 : 166
+	if(output.name == 'bg_title') throw new Error('wait');
+	// ps--img--*bg_title--bgparent
+	
 	
 	
 	if (has_option(name, OPT_WIDTH)) output[OPT_WIDTH] = get_value_option(name, OPT_WIDTH);
@@ -367,8 +372,8 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	
 	
-	
-	var shadow = getShadowData(layer);
+	var retina = params.config.config.retina;
+	var shadow = getShadowData(layer, retina);
 	if(shadow) output.shadow = shadow;
 	
 	
@@ -481,10 +486,10 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	}
 	
 	
+	
 	if(type == TYPE_GFX){
 		setItemPath(output);
 	}
-	
 	
 	
 	
@@ -505,7 +510,6 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 		output[OPT_GFX_TYPE] = get_value_option_safe(name, OPT_GFX_TYPE);
 		if (output[OPT_GFX_TYPE] == "") output[OPT_GFX_TYPE] = "layout";	//layout/data
 		
-		
 		if (output[OPT_BGPARENT]) {
 			parentItem[OPT_PATH] = output[OPT_PATH];
 			parentItem[OPT_FILENAME] = output[OPT_NAME];
@@ -517,6 +521,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			
 			setItemPath(parentItem);
 		}
+		
 		
 		var filter = [
 			'bgColor',
@@ -530,7 +535,7 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 			if(filter.indexOf(k) > -1) delete output["shapedata"][k];
 		}
 		
-
+		
 	}
 
 
@@ -639,5 +644,3 @@ function create_item(layer, name, type, parentItem, level, index, params) {
 	
 	return output;
 }
-
-

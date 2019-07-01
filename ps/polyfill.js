@@ -17,3 +17,15 @@ if (!Array.prototype.forEach) {
 		for(var i=0; i<len; i++) fn(this[i], i);
 	};
 }
+
+
+function array_reverse(tab)
+{
+  if(!tab) return tab;
+  var output = new Array();
+  for(var i = tab.length-1; i >= 0; i--) {
+    output.push(tab[i]);
+  }
+  return output;
+}
+

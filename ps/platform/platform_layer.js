@@ -42,7 +42,9 @@ function getLayerParent(item)
 
 function getLayersArray(container)
 {
-	return container.layers;
+	var output = container.layers;
+	output = array_reverse(output);
+	return output;
 }
 
 
@@ -199,9 +201,11 @@ function isFxVisible()
 
 
 
-function getShadowData(layer)
+function getShadowData(layer, retina)
 {
-	trace('getShadowData');
+	trace('getShadowData '+retina);
+	
+	
 	activeDocument.activeLayer = layer;
 	var output;
 	
@@ -278,13 +282,27 @@ function getShadowData(layer)
 						y = 0;
 					}
 					
-					var opacity = obj['opacity'] / 255;
+					var opacity = obj['opacity'] / 100;
+					
+					//opacity is too weak in css
+					if(idfx == 'outerGlow') opacity *= 2.0;
+					
+					if(opacity > 1) opacity = 1;
+					
 					var tabcolor = obj['color'];
 					var objcolor = getColorData(tabcolor, opacity);
 					
+					var blur = obj['blur'];
+					
+					if(retina){
+						x = Math.round(x * 0.5);
+						y = Math.round(y * 0.5);
+						blur = Math.round(blur * 0.6);
+					}
+					
 					output = {
 						x: x, y: y,
-						blur: obj['blur'],
+						blur: blur,
 						color: objcolor,
 						colorHex: objcolor.hex,
 					};
@@ -309,6 +327,26 @@ function getShadowData(layer)
 	}
 	 */
 	// throw new Error('yo');
+	return output;
+}
+
+
+
+
+function hasShadowFx(layer)
+{
+	var output = false;
+	var listidfx = ['dropShadow', 'outerGlow'];
+	var len = listidfx.length;
+	for(var i=0;i<len;i++){
+		var idfx = listidfx[i];
+		var fx = getLayerFx(layer, idfx);
+		trace('get '+idfx+' : '+fx);
+		if(fx){
+			output = true;
+			break;
+		}
+	}
 	return output;
 }
 
@@ -353,9 +391,9 @@ function getFxAttribute(fx, attribute, type)
 	else if(type == 'boolean') output = fx.getBoolean(typeid);
 	else if(type == 'color'){
 		var obj = fx.getObjectValue(typeid);
-		var r = obj.getDouble(stringIDToTypeID('blue'));
+		var r = obj.getDouble(stringIDToTypeID('red'));
 		var g = obj.getDouble(stringIDToTypeID('grain'));
-		var b = obj.getDouble(stringIDToTypeID('red'));
+		var b = obj.getDouble(stringIDToTypeID('blue'));
 		output = [Math.round(r), Math.round(g), Math.round(b)];
 	}
 	

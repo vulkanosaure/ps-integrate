@@ -26,6 +26,7 @@ function getBounds(layer, type, hideabsolute)
 	}
 	
 	if(type == TYPE_GFX) rasterizeLayerStyle(targetLayer);
+	
 	var bounds = targetLayer.bounds;
 	
 	// trace('bounds : '+bounds);
@@ -38,6 +39,14 @@ function getBounds(layer, type, hideabsolute)
     for(var i=0; i<length; i++){
         output[i] = getUnitValue(bounds[i]);
 	}
+	
+	if(output[0] > DOC_WIDTH) output[0] = DOC_WIDTH;
+	if(output[2] > DOC_WIDTH) output[2] = DOC_WIDTH;
+	
+	if(output[1] > DOC_WIDTH) output[1] = DOC_HEIGHT;
+	if(output[3] > DOC_WIDTH) output[3] = DOC_HEIGHT;
+	
+	
 	output[4] = output[2] - output[0];
 	output[5] = output[3] - output[1];
   

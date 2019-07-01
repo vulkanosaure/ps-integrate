@@ -414,7 +414,7 @@ function mapProps(model, props)
 			
 			
 			if(tab != null){
-				if(tab.quote != undefined){
+				if(tab.quote != undefined && tab.quote != 'none'){
 					var strquote;
 					if(tab.quote == "simple") strquote = "'";
 					else if(tab.quote == "double") strquote = '"';

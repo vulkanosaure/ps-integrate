@@ -599,6 +599,18 @@ bounds abs																	OK
 	
 	
 	
+
+padding text XD
+
+	only top it seems
+	study / google
+	centraliser avec gestion sur PS
+	test, ne pas casser un centery (line-height)
+	
+	
+	
+	
+	
 	
 ps conversion
 
@@ -676,8 +688,9 @@ flex center							OK
 reusability							OK
 classname							OK
 retest center.xd					OK
-ps conversion						todo
-xd dialog warning error/OK
+xd dialog warning error/OK			OK
+ps conversion						TODO
+zindex prop (pour bg)
 
 ---------------------
 keyboard shorcut					OK

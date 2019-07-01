@@ -218,7 +218,7 @@ function isBorderRadiusEqual(r)
 
 
 
-function getShadowData(layer)
+function getShadowData(layer, retina)
 {
 	let output;
 	if(layer.shadow && layer.shadow.visible){
